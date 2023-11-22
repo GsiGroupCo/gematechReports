@@ -12,6 +12,7 @@ class HorasExtra extends Model
     protected $fillable = [
         'horasextras_id',
         'empleado_id',
+        'user_id',
         'fecha',
         'hora_inicial',
         'hora_final',
@@ -26,5 +27,8 @@ class HorasExtra extends Model
         return $this->belongsTo(Empleado::class, 'empleado_id', 'empleado_id');
     }
 
+    public function Autorizador(){
+        return $this->belongsTo(User::class, 'user_id', 'user_id');
+    }
 
 }

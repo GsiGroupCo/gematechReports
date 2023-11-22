@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from "react"
-import Modal from "../Modal";
+import Modal from "../../UI/Modal";
 
 const Aprobadas = ({ HorasExtras, Auth }) => {
   
@@ -96,26 +96,26 @@ const Aprobadas = ({ HorasExtras, Auth }) => {
                   setModalShow(true)
                 }} className='w-full h-auto border-b-2  cursor-pointer  px-4 py-4 gap-3  flex flex-col justify-center items-center justify-items-center bg-white'>
                     <div className='w-full  h-full flex flex-col md:flex-row text-center justify-evenly items-start justify-items-center'>
-                      <div className={`${Auth ? 'w-[14%]' : 'w-full md:hidden'} h-full flex justify-start md:justify-center items-center`}>
-                        <span className='font-semibold'> {horasExtras.responsable.nombre}</span>
+                      <div className={`${Auth ? 'w-full lg:w-[14%]' : 'w-full md:hidden'} h-full flex justify-start lg:justify-center items-center`}>
+                        <span className='font-semibold'><span className="sm:hidden"> Trabajador: </span> {horasExtras.responsable.nombre}</span>
                       </div>
-                      <div className={`${Auth ? 'w-[14%]' : 'w-full md:w-[16%]'} h-full flex justify-start md:justify-center items-center`}>
-                        <span className='font-semibold'> {horasExtras.estado}</span>
+                      <div className={`${Auth ? 'w-full lg:w-[14%]' : 'w-full md:w-[16%]'} h-full flex justify-start lg:justify-center items-center`}>
+                        <span className='font-semibold'><span className="sm:hidden"> Estado: </span> {horasExtras.estado}</span>
                       </div>
-                      <div className={`${Auth ? 'w-[14%]' : 'w-full md:w-[16%]'} h-full flex justify-start md:justify-center items-center`}>
-                        <span className='font-semibold'> {horasExtras.ot}</span>
+                      <div className={`${Auth ? 'w-full lg:w-[14%]' : 'w-full md:w-[16%]'} h-full flex justify-start lg:justify-center items-center`}>
+                        <span className='font-semibold'><span className="sm:hidden"> OT: </span> {horasExtras.ot}</span>
                       </div>
-                      <div className={`${Auth ? 'w-[14%]' : 'w-full md:w-[16%]'} h-full flex justify-start md:justify-center items-center`}>
-                        <span className='font-semibold'> {horasExtras.fecha.toString()}</span>
+                      <div className={`${Auth ? 'w-full lg:w-[14%]' : 'w-full md:w-[16%]'} h-full flex justify-start lg:justify-center items-center`}>
+                        <span className='font-semibold'><span className="sm:hidden"> Fecha: </span> {horasExtras.fecha.toString()}</span>
                       </div>
-                      <div className={`${Auth ? 'w-[14%]' : 'w-full md:w-[16%]'} h-full flex justify-start md:justify-center items-center`}>
-                        <span className='font-semibold'> {horasExtras.hora_inicial}</span>
+                      <div className={`${Auth ? 'w-full lg:w-[14%]' : 'w-full md:w-[16%]'} h-full flex justify-start lg:justify-center items-center`}>
+                        <span className='font-semibold'><span className="sm:hidden"> Hora Inicial: </span> {horasExtras.hora_inicial}</span>
                       </div>
-                      <div className={`${Auth ? 'w-[14%]' : 'w-full md:w-[16%]'} h-full flex justify-start md:justify-center items-center`}>
-                        <span className='font-semibold'> {horasExtras.hora_final}</span>
+                      <div className={`${Auth ? 'w-full lg:w-[14%]' : 'w-full md:w-[16%]'} h-full flex justify-start lg:justify-center items-center`}>
+                        <span className='font-semibold'><span className="sm:hidden"> Hora Final: </span> {horasExtras.hora_final}</span>
                       </div>
-                      <div className={`${Auth ? 'w-[14%]' : 'w-full md:w-[16%]'} h-full flex justify-start md:justify-center items-center`}>
-                        <span className='font-semibold'> {horasExtras.detalles}</span>
+                      <div className={`${Auth ? 'w-full lg:w-[14%]' : 'w-full md:w-[16%]'} h-full flex justify-start lg:justify-center items-center`}>
+                        <span className='font-semibold'><span className="sm:hidden"> Detalles: </span> {horasExtras.detalles}</span>
                       </div>
                     </div>
                 </div>

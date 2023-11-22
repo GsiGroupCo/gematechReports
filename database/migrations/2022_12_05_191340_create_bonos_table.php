@@ -18,6 +18,7 @@ class CreateBonosTable extends Migration
             $table->string('bono_id')->unique();
             $table->string('ot_id');
             $table->string('empleado_id');
+            $table->string('user_id')->nullable();
             $table->string('lugar_bono');
             $table->date('fecha_bono');
             $table->string('cliente');
@@ -28,6 +29,7 @@ class CreateBonosTable extends Migration
         });
         Schema::table('bonos', function (Blueprint $table) {
             $table->foreign('empleado_id')->references('empleado_id')->on('empleados');
+            $table->foreign('user_id')->references('user_id')->on('users');
         });
     }
 

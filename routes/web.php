@@ -8,6 +8,7 @@ use App\Http\Controllers\ExcelController;
 use App\Http\Controllers\PermisosController;
 use App\Http\Controllers\BonosController;
 use App\Http\Controllers\HorasController;
+use App\Http\Controllers\AnexosController;
 
 Route::get('/', function () {
     return  redirect('identy');
@@ -44,7 +45,15 @@ Route::controller(HorasController::class) -> group(function () {
 });
 
 Route::controller(PermisosController::class) -> group(function () {
-    Route::post('/permisos/store','store') -> name ('horas.autorizacion') -> middleware('auth');
+    Route::post('/permisos/store','store')          -> name ('permiso.store')     -> middleware('auth');
+    Route::patch('/permisos/edit','edit')           -> name ('permiso.edit')      -> middleware('auth');
+    Route::patch('/permisos/aprobe','aprobe')       -> name ('permiso.disaprobe') -> middleware('auth');
+    Route::patch('/permisos/disaprobe','disaprobe') -> name ('permiso.aprobe')    -> middleware('auth');
+});
+
+Route::controller(AnexosController::class) -> group(function () {
+    Route::post('/anexo/store','store')    -> name ('anexo.store')  -> middleware('auth');
+    Route::patch('/anexo/delete','delete') -> name ('anexo.delete') -> middleware('auth'); 
 });
 
 Route::controller(ExcelController::class)->group(function () {

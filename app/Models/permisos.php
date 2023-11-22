@@ -12,6 +12,7 @@ class permisos extends Model
     protected $fillable = [
         'permiso_id',
         'empleado_id',
+        'user_id',
         'motivo',
         'fecha_inicio',
         'fecha_terminacion',
@@ -25,6 +26,10 @@ class permisos extends Model
 
     public function Responsable(){
         return $this->belongsTo(Empleado::class, 'empleado_id', 'empleado_id');
+    }
+
+    public function Autorizador(){
+        return $this->belongsTo(User::class, 'user_id', 'user_id');
     }
 }
 

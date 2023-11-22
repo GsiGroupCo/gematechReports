@@ -17,6 +17,7 @@ class CreatePermisosTable extends Migration
             $table->id();
             $table->string('permiso_id')->unique();
             $table->string('empleado_id');
+            $table->string('user_id')->nullable();
             $table->string('motivo');
             $table->date('fecha_inicio');
             $table->date('fecha_terminacion');
@@ -31,6 +32,7 @@ class CreatePermisosTable extends Migration
 
         Schema::table('permisos', function (Blueprint $table) {
             $table->foreign('empleado_id')->references('empleado_id')->on('empleados');
+            $table->foreign('user_id')->references('user_id')->on('users');
         });
     }
 

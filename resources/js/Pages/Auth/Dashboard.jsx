@@ -1,10 +1,11 @@
-import Appbar from '@/Components/Appbar'
-import PanelBonos from '@/Components/Bonos/PanelBonos'
-import ConfiguracionPanel from '@/Components/Config/ConfigPanel'
-import PanelHoras from '@/Components/Horas/PanelHoras'
+import Appbar from '@/Components/UI/Appbar'
+import PanelBonos from '@/Components/Paneles/Bonos/PanelBonos'
+import ConfiguracionPanel from '@/Components/Paneles/Config/ConfigPanel'
+import PanelHoras from '@/Components/Paneles/Horas/PanelHoras'
 import CursorIcon from '@/Components/Icons/Arrow'
-import Modal from '@/Components/Modal'
-import { PermisoRow } from '@/Components/Permisos/Row'
+import Modal from '@/Components/UI/Modal'
+import PanelPermisos from '@/Components/Paneles/Permisos/PanelPermisos'
+import { PermisoRow } from '@/Components/Paneles/Permisos/Row'
 import { Link } from '@inertiajs/react'
 import React, { useState } from 'react'
 import { useEffect } from 'react'
@@ -134,7 +135,7 @@ export default function Dashboard({ PermisosData, HorasData, BonosData, status, 
                         <div className='w-full h-full bg-white flex flex-col justify-start items-start justify-items-center'>
                             <div className="w-full h-full bg-white flex flex-col justify-start items-start justify-items-center">
                                 {
-                                    Permisos ? <PermisoRow Permisos = { Permisos }  Auth = { true }  /> : null
+                                    Permisos ? <PanelPermisos Admin = { Admin } Auth = { true } Permisos = { Permisos } /> : null
                                 }
                             </div>
                         </div>

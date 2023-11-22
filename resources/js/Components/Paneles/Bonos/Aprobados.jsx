@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import Modal from "../Modal";
+import Modal from "../../UI/Modal";
 
 const Aprobadas = ({Bonos, Auth}) => {
 
@@ -88,26 +88,26 @@ const Aprobadas = ({Bonos, Auth}) => {
                 setModalShow(true)
               }} className='w-full h-auto border-b-2   cursor-pointer  px-4 py-2  flex flex-col justify-center items-center justify-items-center bg-white'>
                 <div className='w-full h-full flex flex-col md:flex-row text-center  justify-evenly items-center justify-items-center'>
-                  <div className={`${Auth ? 'w-[14%]' : 'hidden'} h-auto flex justify-center items-center`}>
-                    <span className='font-bold '> {Bonos.responsable.nombre} </span>
+                  <div className={`${Auth ? 'w-full lg:w-[14%]' : 'hidden'} h-auto flex lg:justify-center items-center`}>
+                    <span className='font-bold '> <span className="sm:hidden"> TRABAJADOR: </span> {Bonos.responsable.nombre} </span>
                   </div>
-                  <div className={`${Auth ? 'w-[14%]' : 'w-full md:w-[16%]'} h-full flex justify-start md:justify-center items-center`}>
-                    <span className='font-semibold'>{Bonos.estado} </span>
+                  <div className={`${Auth ? 'w-full lg:w-[14%]' : 'w-full md:w-[16%]'} h-full flex justify-start lg:justify-center items-center`}>
+                    <span className='font-semibold'><span className="sm:hidden"> ESTADO: </span>{Bonos.estado} </span>
                   </div>
-                  <div className={`${Auth ? 'w-[14%]' : 'w-full md:w-[16%]'} h-full flex justify-start md:justify-center items-center`}>
-                    <span className='font-semibold'> {Bonos.ot_id} </span>
+                  <div className={`${Auth ? 'w-full lg:w-[14%]' : 'w-full md:w-[16%]'} h-full flex justify-start lg:justify-center items-center`}>
+                    <span className='font-semibold'><span className="sm:hidden"> OT: </span>  {Bonos.ot_id} </span>
                   </div>
-                    <div className={`${Auth ? 'w-[14%]' : 'w-full md:w-[16%]'} h-full flex justify-start md:justify-center items-center`}>
-                    <span className='font-semibold'>{Bonos.fecha_bono.toString()} </span>
+                    <div className={`${Auth ? 'w-full lg:w-[14%]' : 'w-full md:w-[16%]'} h-full flex justify-start lg:justify-center items-center`}>
+                    <span className='font-semibold'><span className="sm:hidden"> FECHA: </span> {Bonos.fecha_bono.toString()} </span>
                   </div>
-                    <div className={`${Auth ? 'w-[14%]' : 'w-full md:w-[16%]'} h-full flex justify-start md:justify-center items-center`}>
-                    <span className='font-semibold'> {Bonos.cliente} </span>
+                    <div className={`${Auth ? 'w-full lg:w-[14%]' : 'w-full md:w-[16%]'} h-full flex justify-start lg:justify-center items-center`}>
+                    <span className='font-semibold'><span className="sm:hidden"> BONO: </span>  {Bonos.cliente} </span>
                   </div>  
-                  <div className={`${Auth ? 'w-[14%]' : 'w-full md:w-[16%]'} h-full flex justify-start md:justify-center items-center`}>
-                    <span className='font-semibold'> {Bonos.lugar_bono} </span>
+                  <div className={`${Auth ? 'w-full lg:w-[14%]' : 'w-full md:w-[16%]'} h-full flex justify-start lg:justify-center items-center`}>
+                    <span className='font-semibold'><span className="sm:hidden"> LUGAR: </span>  {Bonos.lugar_bono} </span>
                   </div>
-                  <div className={`${Auth ? 'w-[14%]' : 'w-full md:w-[16%]'} h-full flex justify-start md:justify-center items-center`}>
-                    <span className='font-semibold'> {Bonos.detalles} </span>
+                  <div className={`${Auth ? 'w-full lg:w-[14%]' : 'w-full md:w-[16%]'} h-full flex justify-start lg:justify-center items-center`}>
+                    <span className='font-semibold'><span className="sm:hidden"> DETALLES: </span>  {Bonos.detalles} </span>
                   </div>
                 </div> 
               </div>

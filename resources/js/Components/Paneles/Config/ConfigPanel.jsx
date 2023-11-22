@@ -1,14 +1,14 @@
 import { router } from '@inertiajs/react'
 import React, { useState } from 'react'
-import RegisterUser from '../forms/RegisterUser/RegisterUser'
-import RegisterWorker from '../forms/RegisterWorker/RegisterWorker'
-import ChangePasswordForm from '../forms/ChangePasswordForm/ChangePasswordForm'
-import RegisterHoras from '../forms/RegisterHoras/RegisterHoras'
-import RegisterBonos from '../forms/RegistarBonos/RegisterBonos'
-import RegisterPermisos from '../forms/RegisterPermisos/RegisterPermisos'
-import ExcelHorasForm from '../forms/Auth/ExcelHorasForm'
-import ExcelBonosForm from '../forms/Auth/ExcelBonosForm'
-import ExcelPermisosForm from '../forms/Auth/ExcelPermisosForm'
+import RegisterUser from '../../forms/Auth/RegisterUser/RegisterUser'
+import RegisterWorker from '../../forms/Auth/RegisterWorker/RegisterWorker'
+import ChangePasswordForm from '../../forms/Auth/ChangePasswordForm/ChangePasswordForm'
+import RegisterHoras from '../../forms/Horas/RegisterHoras/RegisterHoras'
+import RegisterBonos from '../../forms/Bonos/RegistarBonos/RegisterBonos'
+import RegisterPermisos from '../../forms/Permisos/RegisterPermisos/RegisterPermisos'
+import ExcelHorasForm from '../../forms/Auth/ExcelHorasForm'
+import ExcelBonosForm from '../../forms/Auth/ExcelBonosForm'
+import ExcelPermisosForm from '../../forms/Auth/ExcelPermisosForm'
 
 export default function ConfiguracionPanel({ onClose, Auth, cc, status, error, Personal, Admin }) {
 

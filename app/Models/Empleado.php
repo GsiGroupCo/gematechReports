@@ -24,5 +24,6 @@ class Empleado extends Model
     public function horas_extras(){
         return $this->hasMany(HorasExtra::class, 'empleado_id', 'empleado_id');
     }
+ 
 
 }

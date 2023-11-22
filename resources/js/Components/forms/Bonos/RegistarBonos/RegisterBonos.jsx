@@ -27,20 +27,20 @@ export default function RegisterBonos({ cc, onClose }) {
 
   const today = new Date();
   const year = today.getFullYear();
-  const month = String(today.getMonth() + 1).padStart(2, '0'); // los meses van de 0 a 11, por lo que añadimos 1
+  const month = String(today.getMonth() + 1).padStart(2, '0');  
   const day = today.getDate();
   
   const currentDate = `${year}-${month}-${String(day).padStart(2, '0')}`;
   const firstDayOfMonth = `${year}-${month}-01`;
-  const fifteenthDayOfMonth = `${year}-${month}-15`;
+  const thirteenthDayOfMonth = `${year}-${month}-30`;
   
   let minDate, maxDate;
   
-  if (day <= 15) {
+  if (day <= 30) {
     minDate = firstDayOfMonth;
-    maxDate = fifteenthDayOfMonth;
+    maxDate = thirteenthDayOfMonth;
   } else {
-    minDate = fifteenthDayOfMonth;
+    minDate = thirteenthDayOfMonth;
     maxDate = currentDate;
   }
   
