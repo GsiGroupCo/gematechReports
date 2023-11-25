@@ -14,10 +14,8 @@ class CreatePermisosTable extends Migration
     public function up()
     {
         Schema::create('permisos', function (Blueprint $table) {
-            $table->id();
             $table->string('permiso_id')->unique();
             $table->string('empleado_id');
-            $table->string('user_id')->nullable();
             $table->string('motivo');
             $table->date('fecha_inicio');
             $table->date('fecha_terminacion');
@@ -26,13 +24,14 @@ class CreatePermisosTable extends Migration
             $table->time('hora_fin');
             $table->string('cant_horas');
             $table->string('observaciones');
+            $table->string('detalles') -> nullable();
+            $table->string('remuneracion');
             $table->string('estado');
             $table->timestamps();
         });
 
         Schema::table('permisos', function (Blueprint $table) {
             $table->foreign('empleado_id')->references('empleado_id')->on('empleados');
-            $table->foreign('user_id')->references('user_id')->on('users');
         });
     }
 

@@ -4,7 +4,7 @@ import { useForm } from '@inertiajs/react';
 
 export default function DesautorizarPermiso({ PermisoData, onClose }) { 
 
-  const { data , post } = useForm()
+  const { data , patch } = useForm()
   
   const formik = useFormik({
     initialValues:initialValue(),
@@ -13,7 +13,7 @@ export default function DesautorizarPermiso({ PermisoData, onClose }) {
     onSubmit: async (formValue) => {
       data.permiso_id  = PermisoData.permiso_id
       data.descripcion = formValue.detalles 
-      post(`/permiso/desautorizacion`)
+      patch(`/permisos/disaprobe`)
       onClose()
     }
   })
@@ -36,7 +36,7 @@ export default function DesautorizarPermiso({ PermisoData, onClose }) {
         <input
           type="submit"
           className={`w-full h-auto px-4 py-2 bg-red-500 text-white hover:font-semibold shadow shadow-black cursor-pointer hover:bg-red-800 transition duration-700 ease-in-out rounded-md `}
-          value = 'Des-autorizar'
+          value = 'Desautorizar'
         />
       </form>
   )

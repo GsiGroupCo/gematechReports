@@ -14,7 +14,6 @@ class CreateEmpleadosTable extends Migration
     public function up()
     {
         Schema::create('empleados', function (Blueprint $table) {
-            $table->id();
             $table->string('empleado_id')->unique();
             $table->string('nombre');
             $table->string('cargo');

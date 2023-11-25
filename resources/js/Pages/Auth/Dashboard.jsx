@@ -14,6 +14,8 @@ import { Toaster, toast } from 'sonner'
 
 export default function Dashboard({ PermisosData, HorasData, BonosData, status, error, Personal, Admin }) {
 
+    console.log(PermisosData)
+
     const [Permisos, setPermisos] = useState()
     const [Horas, setHoras] = useState()
     const [Bonos, setBonos] = useState()

@@ -6,15 +6,8 @@ import EyeIcon from "@/Components/Icons/Eye";
 import CloseEyeIcon from "@/Components/Icons/CloseEye";
 import { useForm } from "@inertiajs/react";
 
-export default function RegisterUser({ onClose, status }) {
+export default function RegisterUser({ onClose }) {
 
-
-  useEffect(() => {
-    if(status === 'Usuario registrado'){
-      onClose()
-    }
-  }, [status])
-  
   const [showPassword, setShowPassword] = useState(false);
 
   const { data , post } = useForm()
@@ -29,6 +22,7 @@ export default function RegisterUser({ onClose, status }) {
       data.cargo    = formValue.cargo
       data.password = formValue.password
       post(`/register`)
+      onClose()
     }
   })
 
@@ -91,12 +85,27 @@ export default function RegisterUser({ onClose, status }) {
         </label>
         <select id="cargo" name="cargo"  value = { formik.values.cargo } onChange = { formik.handleChange} className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
           <option value="" disabled> POR FAVOR SELECCIONE UNA OPCION </option>
-          <option value="DDM">Director de Mantenimiento</option>
-          <option value="IDP">Ingeniero de Produccion</option>
-          <option value="IDS">Ingeniero de Sistemas</option>
-          <option value="IHSQE">Ingeniero HSQE</option>
-          <option value="AHSQE">Auxiliar HSQE</option>
-          <option value="CONT">Contabilidad</option>
+          <option value="Gerencia">
+            Gerencia
+          </option>
+          <option value="Gerente general">
+            Gerente General
+          </option>
+          <option value="Coordinador de MTTO">
+            Director de Mantenimiento
+          </option>  
+          <option value="HSEQ / GESTION DE TALENTO HUMANO">
+            Ingeniero HSQE
+          </option>
+          <option value="LOGISTICA">
+            Logistica
+          </option>
+          <option value="AUX PERMISOS">
+            Auxiliar HSQE
+          </option>
+          <option value="CONTABILIDAD">
+            Contabilidad
+          </option>
         </select>
         {
           formik.touched.cargo && formik.errors.cargo && (

@@ -12,7 +12,6 @@ class HorasExtra extends Model
     protected $fillable = [
         'horasextras_id',
         'empleado_id',
-        'user_id',
         'fecha',
         'hora_inicial',
         'hora_final',
@@ -25,6 +24,10 @@ class HorasExtra extends Model
 
     public function Responsable(){
         return $this->belongsTo(Empleado::class, 'empleado_id', 'empleado_id');
+    }
+
+    public function Historial(){
+        return $this->hasMany(HoraHistory::class, 'horasextras_id', 'horasextras_id');
     }
 
     public function Autorizador(){

@@ -14,10 +14,8 @@ class CreateHorasExtrasTable extends Migration
     public function up()
     {
         Schema::create('horas_extras', function (Blueprint $table) {
-            $table->id();
             $table->string('horasextras_id')->unique();
             $table->string('empleado_id');
-            $table->string('user_id')->nullable();
             $table->string('fecha');
             $table->time('hora_inicial');
             $table->time('hora_final');
@@ -30,7 +28,6 @@ class CreateHorasExtrasTable extends Migration
         });
         Schema::table('horas_extras', function (Blueprint $table) {
             $table->foreign('empleado_id')->references('empleado_id')->on('empleados');
-            $table->foreign('user_id')->references('user_id')->on('users');
         });
     }
 

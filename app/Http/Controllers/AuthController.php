@@ -25,7 +25,7 @@ class AuthController extends Controller
         return Inertia::render('Auth/Dashboard',[
             'Admin'        => $user -> cargo,
             'Personal'     => Empleado::all(),
-            'PermisosData' => permisos::with('Responsable')->whereHas('Responsable', function ($query) {
+            'PermisosData' => permisos::with('Responsable','Anexos')->whereHas('Responsable', function ($query) {
                                 $query->where('estado', 'LIKE', 'VIGENTE');
                               }) -> whereYear('created_at', '>=', $year) ->orderBy('updated_at', 'desc') -> get(),  
             'HorasData'    => HorasExtra::with('Responsable')->whereHas('Responsable', function ($query) {

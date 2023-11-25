@@ -4,28 +4,26 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateDocumentosPermisosTable extends Migration
+class CreatePermisosAproveHistoryTable extends Migration
 {
-
+ 
     public function up()
     {
-        Schema::create('documentos_permisos', function (Blueprint $table) {
-            $table->id();
-            $table->string('document_id') -> unique();
+        Schema::create('permisos_history', function (Blueprint $table) {
+            $table->string('permisos_history_id')->unique();
             $table->string('permiso_id');
             $table->string('user_id');
-            $table->string('nombre');
-            $table->string('urlDocument');
+            $table->string('state');
             $table->timestamps();
         });
-
-        Schema::table('documentos_permisos', function (Blueprint $table) {
+        Schema::table('permisos_history', function (Blueprint $table) {
             $table->foreign('permiso_id')->references('permiso_id')->on('permisos');
+            $table->foreign('user_id')->references('user_id')->on('users'); 
         });
     }
-
+ 
     public function down()
     {
-        Schema::dropIfExists('documentos_permisos');
+        Schema::dropIfExists('permisos_history');
     }
 }

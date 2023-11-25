@@ -13,7 +13,6 @@ class Bono extends Model
         'bono_id',
         'ot_id',
         'empleado_id',
-        'user_id',
         'lugar_bono',
         'fecha_bono',
         'estado',
@@ -24,6 +23,10 @@ class Bono extends Model
 
     public function Responsable(){
         return $this->belongsTo(Empleado::class, 'empleado_id', 'empleado_id');
+    }
+
+    public function Historial(){
+        return $this->hasMany(BonoHistory::class, 'bono_id', 'bono_id');
     }
 
     public function Autorizador(){

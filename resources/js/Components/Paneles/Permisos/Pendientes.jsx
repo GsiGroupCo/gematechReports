@@ -1,15 +1,12 @@
 import { Link, useForm } from "@inertiajs/react";
 import { useEffect, useState } from "react";
 import Modal from "../../UI/Modal";
-import EditHoras from "../../forms/Horas/EditHoras";
-import DesaprobarHora from "../../forms/Horas/DesaprobarHora";
-import DesautorizarHora from "../../forms/Horas/DesautorizarHora";
 import DesautorizarPermiso from "../../forms/Permisos/DesautorizarPermiso";
 import EditPermiso from "@/Components/forms/Permisos/EditarPermisos/EditarPermisos";
 
     const Pendiente = ({ Permisos, Auth, Admin }) => { 
 
-    const { data, post } = useForm();
+    const { data, patch } = useForm();
 
     const [Editar, setEditar]             = useState(false)
     const [Desautorizar, setDesautorizar] = useState(false)
@@ -28,17 +25,13 @@ import EditPermiso from "@/Components/forms/Permisos/EditarPermisos/EditarPermis
       hora_fin          : "" ,
       cant_horas        : "" ,
       observaciones     : "" ,
+      remuneracion      : "" ,
       estado            : ""         
     }) 
 
     function AutorizarPermiso(permiso_id){
         data.permiso_id = permiso_id 
-        post(`/permiso/autorizar`)
-    }
- 
-    function DesAutorizarPermiso(permiso_id){
-        data.permiso_id = permiso_id
-        post(`/permiso/desautorizar`)
+        patch(`/permisos/aprobe`)
     }
     
     const PermisosPendientesAprobar = Permisos.filter(
@@ -93,7 +86,7 @@ import EditPermiso from "@/Components/forms/Permisos/EditarPermisos/EditarPermis
                         onChange={(e) => FiltroPendientesAutorizar(e.target.value.toLowerCase())}
                     />
                 </div>
-                <div className='hidden w-full py-4 md:w-full h-full sm:flex flex-col md:flex-row justify-center items-center justify-items-center bg-[#323c7c] text-white'>
+                <div className='hidden w-full py-4 md:w-full h-full md:flex flex-col md:flex-row justify-center items-center justify-items-center bg-[#323c7c] text-white'>
                     <div className={`${Auth ? 'w-[16%]' : 'hidden'} h-auto flex justify-center items-center`}>
                         <span className='font-bold'> Nombre </span>
                     </div>
@@ -116,7 +109,7 @@ import EditPermiso from "@/Components/forms/Permisos/EditarPermisos/EditarPermis
                 {
                     PermisosPendientesAutorizar 
                     ? PermisosPendientesAutorizar.map((permisos) => ( 
-                        <div key={permisos.permiso_id} className='w-full bg-white border-b-2 md:w-full h-full flex flex-col text-center md:flex-row justify-center items-center justify-items-center '>
+                        <div key={permisos.permiso_id} className='w-full bg-white border-b-2 md:w-full h-full flex flex-col text-center md:flex-row justify-center items-center justify-items-center py-2 px-4'>
                             <div className={`${Auth ? 'w-full lg:w-[16%] ' : 'hidden'} h-auto flex lg:justify-center lg:items-center`}>
                                 <span className='font-semibold'> <span className="sm:hidden"> Trabajador: </span> {permisos.responsable.nombre}</span>
                             </div>
@@ -132,7 +125,7 @@ import EditPermiso from "@/Components/forms/Permisos/EditarPermisos/EditarPermis
                             <div className={`${Auth ? 'w-full lg:w-[16%] ' : 'w-[20%]'} h-auto flex lg:justify-center lg:items-center`}>
                                 <span className='font-semibold'> <span className="sm:hidden"> Jornada: </span> {permisos.jornada}</span>
                             </div>
-                            <div className={` ${Auth ? 'w-full lg:w-[16%] h-full flex flex-col justify-center items-center gap-1 p-4' : 'hidden' } `}>
+                            <div className={` ${Auth ? 'w-full lg:w-[16%] h-full flex flex-col justify-center items-center gap-1  py-2' : 'hidden' } `}>
                                 <div className="w-full flex flex-col lg:flex-row gap-1 lg:gap-3 justify-center items-center">
                                     <div onClick = { () => AutorizarPermiso( permisos.permiso_id )}   className='w-full h-auto px-4 py-2 text-white bg-green-500 hover:bg-green-800 hover:border-green-500 cursor-pointer border border-white rounded-md hover:text-white transition duration-700 ease-out font-bold flex justify-center items-center'>
                                         Autorizar
@@ -151,6 +144,7 @@ import EditPermiso from "@/Components/forms/Permisos/EditarPermisos/EditarPermis
                                             hora_fin          : permisos.hora_fin,
                                             cant_horas        : permisos.cant_horas,
                                             observaciones     : permisos.observaciones,
+                                            remuneracion      : permisos.remuneracion,
                                             estado            : permisos.estado
                                             })  
                                             setModalShow(true)
@@ -172,6 +166,7 @@ import EditPermiso from "@/Components/forms/Permisos/EditarPermisos/EditarPermis
                                             hora_fin          : permisos.hora_fin,
                                             cant_horas        : permisos.cant_horas,
                                             observaciones     : permisos.observaciones,
+                                            remuneracion      : permisos.remuneracion,
                                             estado            : permisos.estado
                                             })
                                             setModalInfoShow(true)
@@ -180,21 +175,21 @@ import EditPermiso from "@/Components/forms/Permisos/EditarPermisos/EditarPermis
                                         Informacion
                                     </div>
                                     <div onClick = { () => {
-                                        setEditar(false)
-                                        setDesaprobar(false)
+                                        setEditar(false) 
                                         setDesautorizar(true)
-                                        setPermisoSelected({ 
-                                        permiso_id        : permisos.permiso_id,
-                                        empleado_id       : permisos.empleado_id,
-                                        motivo            : permisos.motivo,
-                                        fecha_inicio      : permisos.fecha_inicio,
-                                        fecha_terminacion : permisos.fecha_terminacion,
-                                        jornada           : permisos.jornada,
-                                        hora_inicio       : permisos.hora_inicio,
-                                        hora_fin          : permisos.hora_fin,
-                                        cant_horas        : permisos.cant_horas,
-                                        observaciones     : permisos.observaciones,
-                                        estado            : permisos.estado
+                                        setPermisoSelected({
+                                            permiso_id        : permisos.permiso_id,
+                                            empleado_id       : permisos.empleado_id,
+                                            motivo            : permisos.motivo,
+                                            fecha_inicio      : permisos.fecha_inicio,
+                                            fecha_terminacion : permisos.fecha_terminacion,
+                                            jornada           : permisos.jornada,
+                                            hora_inicio       : permisos.hora_inicio,
+                                            hora_fin          : permisos.hora_fin,
+                                            cant_horas        : permisos.cant_horas,
+                                            observaciones     : permisos.observaciones,
+                                            remuneracion      : permisos.remuneracion,
+                                            estado            : permisos.estado    
                                         })  
                                         setModalShow(true)
                                     } }   className='w-full lg:w-1/2 h-auto px-4 py-2 text-white bg-red-500 hover:bg-red-800 hover:border-red-500 cursor-pointer border border-white rounded-md hover:text-white transition duration-700 ease-out font-bold flex justify-center items-center'>
@@ -230,10 +225,16 @@ import EditPermiso from "@/Components/forms/Permisos/EditarPermisos/EditarPermis
                 } 
                 <Modal
                     isVisible = { ModalInfoShow }
-                    tittle = {` Detalles de Permiso `}
+                    tittle = {` Detalles de Permiso  - ${ PermisoSelected.remuneracion }`}
                     onClose = { () => setModalInfoShow(false) }
                 >
                     <div className="w-full h-auto p-4 flex flex-col justify-start items-center gap-3">  
+                        <div className="w-full h-auto flex flex-col sm:flex-row justify-center items-center gap-3 rounded-lg border shadow-inner p-4">
+                            <div className="w-full h-auto flex flex-col justify-start items-start">
+                                <span>Trabajador:</span> 
+                                <span className="font-bold">{ PermisoSelected.empleado_id }</span> 
+                            </div>
+                        </div>
                         <div className="w-full h-auto flex flex-col sm:flex-row justify-center items-center gap-3 rounded-lg border shadow-inner p-4">
                             <div className="w-full h-auto flex flex-col justify-start items-start">
                                 <span>Motivo:</span> 
@@ -273,7 +274,7 @@ import EditPermiso from "@/Components/forms/Permisos/EditarPermisos/EditarPermis
                                 <span>Estado:</span>
                                 <span className="font-bold">{ PermisoSelected.estado }</span> 
                             </div>
-                        </div>
+                        </div> 
                         <div className="w-full h-auto flex justify-start items-center gap-3 rounded-lg border shadow-inner p-4"> 
                             <div className="w-full h-auto flex flex-col justify-start items-start">
                                 <span>Observaciones:</span>

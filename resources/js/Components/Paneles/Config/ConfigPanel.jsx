@@ -137,7 +137,7 @@ export default function ConfiguracionPanel({ onClose, Auth, cc, status, error, P
                             defaultPanel ? (
                                 <>
                                     <div className='w-full h-auto p-4 gap-2 flex flex-col justify-center items-center justify-items-center'>
-                                        {  Admin === 'HSEQ / GESTION DE TALENTO HUMANO' || Admin === 'Coordinador de MTTO' || Admin === 'Gerencia' ? (
+                                        {  Admin === 'HSEQ / GESTION DE TALENTO HUMANO' || Admin === 'Coordinador de MTTO' || Admin === 'Gerencia' || Admin === 'Gerente general' ? (
                                             <>
                                                 <div onClick={()=>ShowPanelRegisterUser()} className='w-full h-auto px-4 py-2 cursor-pointer bg-white rounded-md border border-white text-[#323c7c] hover:bg-[#323c7c] hover:text-white transition duration-700 ease-in-out font-bold'>
                                                     Registrar Usuario

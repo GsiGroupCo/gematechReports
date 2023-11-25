@@ -19,7 +19,7 @@ export function validationSchema(){
         .min(8, 'La contraseña debe tener al menos 8 caracteres')
         .required('La Contraseña es requerida'),
         cargo: Yup.string()
-        .oneOf(['DDM', 'IDP', 'IDS', 'IHSQE','AHSQE','CONT'], 'Selecciona un cargo válido')
+        .oneOf(['Gerencia', 'Gerente general', 'Coordinador de MTTO', 'HSEQ / GESTION DE TALENTO HUMANO','AUX PERMISOS','CONTABILIDAD','LOGISTICA'], 'Selecciona un cargo válido')
         .required('El cargo es requerido'),
     })
 }

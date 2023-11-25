@@ -67,25 +67,28 @@ export default function Aprobados({ Permisos, Auth }) {
       </div>
       <div  className=' hidden w-full h-auto border-b-2 border-[#323c7c] cursor-pointer md:flex flex-col md:flex-row justify-center items-center justify-items-center bg-white'>
           <div className='w-full py-4 md:w-full h-full flex flex-col md:flex-row justify-center items-center justify-items-center bg-[#323c7c] text-white'>
-            <div className={`${Auth ? 'w-[14%]' : 'hidden'} h-auto flex justify-center items-center`}>
+            <div className={`${Auth ? 'w-[12%]' : 'hidden'} h-auto flex justify-center items-center`}>
+                <span className='font-bold'> Estado </span>
+            </div>
+            <div className={`${Auth ? 'w-[12%]' : 'w-[14%]'} h-auto flex justify-center items-center`}>
                 <span className='font-bold'> Nombre </span>
             </div>
-            <div className={`${Auth ? 'w-[14%]' : 'w-[16%]'} h-auto flex justify-center items-center`}>
+            <div className={`${Auth ? 'w-[12%]' : 'w-[14%]'} h-auto flex justify-center items-center`}>
                 <span className='font-bold'> Motivo </span>
             </div>
-            <div className={`${Auth ? 'w-[14%]' : 'w-[16%]'} h-auto flex justify-center items-center`}>
+            <div className={`${Auth ? 'w-[12%]' : 'w-[14%]'} h-auto flex justify-center items-center`}>
                 <span className='font-bold'> Fecha Inicio </span>
             </div>
-            <div className={`${Auth ? 'w-[14%]' : 'w-[16%]'} h-auto flex justify-center items-center`}>
+            <div className={`${Auth ? 'w-[12%]' : 'w-[14%]'} h-auto flex justify-center items-center`}>
                 <span className='font-bold'> Fecha Final  </span>
             </div>
-            <div className={`${Auth ? 'w-[14%]' : 'w-[16%]'} h-auto flex justify-center items-center`}>
+            <div className={`${Auth ? 'w-[12%]' : 'w-[14%]'} h-auto flex justify-center items-center`}>
                 <span className='font-bold'> Hora Inicio </span>
             </div>
-            <div className={`${Auth ? 'w-[14%]' : 'w-[16%]'} h-auto flex justify-center items-center`}>
+            <div className={`${Auth ? 'w-[12%]' : 'w-[14%]'} h-auto flex justify-center items-center`}>
                 <span className='font-bold'> Hora Final </span>
             </div>
-            <div className={`${Auth ? 'w-[14%]' : 'w-[16%]'} h-auto flex justify-center items-center`}>
+            <div className={`${Auth ? 'w-[12%]' : 'w-[14%]'} h-auto flex justify-center items-center`}>
                 <span className='font-bold'> Jornada </span>
             </div>
           </div>
@@ -111,26 +114,29 @@ export default function Aprobados({ Permisos, Auth }) {
                     setModalShow(true)
                 }} className='w-full h-auto border-b-2  cursor-pointer  px-4 py-4 gap-3  flex flex-col justify-center items-center justify-items-center bg-white'>
                     <div className='w-full  h-full flex flex-col md:flex-row text-center justify-evenly items-start justify-items-center'>
-                      <div className={`${Auth ? 'w-full lg:w-[14%]' : 'w-full md:hidden'} h-full flex justify-start lg:justify-center items-center`}>
-                        <span className='font-semibold'><span className="sm:hidden"> Trabajador: </span> {permisos.responsable.nombre}</span>
+                      <div className={`${Auth ? 'w-full lg:w-[12%]' : 'w-full md:w-[14%]'} h-full flex justify-start lg:justify-center items-center`}>
+                        <span className='font-semibold'><span className="sm:hidden"> Trabajador: </span> { permisos.estado } </span>
                       </div>
-                      <div className={`${Auth ? 'w-full lg:w-[14%]' : 'w-full md:w-[16%]'} h-full flex justify-start lg:justify-center items-center`}>
-                        <span className='font-semibold'><span className="sm:hidden"> Motivo: </span> {permisos.motivo}</span>
+                      <div className={`${Auth ? 'w-full lg:w-[12%]' : 'w-full md:hidden'} h-full flex justify-start lg:justify-center items-center`}>
+                        <span className='font-semibold'><span className="sm:hidden"> Trabajador: </span> { permisos.responsable.nombre } </span>
                       </div>
-                      <div className={`${Auth ? 'w-full lg:w-[14%]' : 'w-full md:w-[16%]'} h-full flex justify-start lg:justify-center items-center`}>
-                        <span className='font-semibold'><span className="sm:hidden"> Fecha Inicio: </span> {permisos.fecha_inicio}</span>
+                      <div className={`${Auth ? 'w-full lg:w-[12%]' : 'w-full md:w-[14%]'} h-full flex justify-start lg:justify-center items-center`}>
+                        <span className='font-semibold'><span className="sm:hidden"> Motivo: </span> { permisos.motivo }</span>
                       </div>
-                      <div className={`${Auth ? 'w-full lg:w-[14%]' : 'w-full md:w-[16%]'} h-full flex justify-start lg:justify-center items-center`}>
-                        <span className='font-semibold'><span className="sm:hidden"> Fecha Terminacion: </span> {permisos.fecha_terminacion}</span>
+                      <div className={`${Auth ? 'w-full lg:w-[12%]' : 'w-full md:w-[14%]'} h-full flex justify-start lg:justify-center items-center`}>
+                        <span className='font-semibold'><span className="sm:hidden"> Fecha Inicio: </span> { permisos.fecha_inicio }</span>
                       </div>
-                      <div className={`${Auth ? 'w-full lg:w-[14%]' : 'w-full md:w-[16%]'} h-full flex justify-start lg:justify-center items-center`}>
-                        <span className='font-semibold'><span className="sm:hidden"> Hora Inicial: </span> {permisos.hora_inicio}</span>
+                      <div className={`${Auth ? 'w-full lg:w-[12%]' : 'w-full md:w-[14%]'} h-full flex justify-start lg:justify-center items-center`}>
+                        <span className='font-semibold'><span className="sm:hidden"> Fecha Terminacion: </span> { permisos.fecha_terminacion }</span>
                       </div>
-                      <div className={`${Auth ? 'w-full lg:w-[14%]' : 'w-full md:w-[16%]'} h-full flex justify-start lg:justify-center items-center`}>
-                        <span className='font-semibold'><span className="sm:hidden"> Hora Final: </span> {permisos.hora_fin}</span>
+                      <div className={`${Auth ? 'w-full lg:w-[12%]' : 'w-full md:w-[14%]'} h-full flex justify-start lg:justify-center items-center`}>
+                        <span className='font-semibold'><span className="sm:hidden"> Hora Inicial: </span> { permisos.hora_inicio }</span>
                       </div>
-                      <div className={`${Auth ? 'w-full lg:w-[14%]' : 'w-full md:w-[16%]'} h-full flex justify-start lg:justify-center items-center`}>
-                        <span className='font-semibold'><span className="sm:hidden"> Jornada: </span> {permisos.jornada}</span>
+                      <div className={`${Auth ? 'w-full lg:w-[12%]' : 'w-full md:w-[14%]'} h-full flex justify-start lg:justify-center items-center`}>
+                        <span className='font-semibold'><span className="sm:hidden"> Hora Final: </span> { permisos.hora_fin }</span>
+                      </div>
+                      <div className={`${Auth ? 'w-full lg:w-[12%]' : 'w-full md:w-[14%]'} h-full flex justify-start lg:justify-center items-center`}>
+                        <span className='font-semibold'><span className="sm:hidden"> Jornada: </span> { permisos.jornada }</span>
                       </div>
                     </div>
                 </div>

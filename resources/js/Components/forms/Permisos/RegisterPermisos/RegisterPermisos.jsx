@@ -12,18 +12,34 @@ export default function RegisterPermisos({ Personal, onClose }) {
     initialValues:initialValue(),
     validationSchema: validationSchema(),
     validateOnChange: false,
-    onSubmit: async (formValue) => {
-      data.taqActivos = taqActivos;
+    onSubmit: async (formValue) => { 
+      data.Motivo           = formValue.Motivo;
+      data.FechaInicio      = formValue.FechaInicio;
+      data.FechaTerminacion = formValue.FechaTerminacion;
+      data.Solicitante      = formValue.Solicitante;
+      data.Jornada          = formValue.Jornada;
+      data.HoraInicio       = formValue.HoraInicio;
+      data.HoraTerminacion  = formValue.HoraTerminacion; 
+      data.Observaciones    = formValue.Observaciones;
+      for (const key in checkboxValues) {
+        data[key] = checkboxValues[key];
+      }
       files.forEach((file, index) => {
-        const propertyName = `Image_${index + 1}`;
-        data[propertyName] = file;
+        const propertyName  = `Docs_${index + 1}`;
+        data[propertyName]  = file;
       });
-      data.CantImages = files.length; 
-      post('/')
+      data.CantDocs = files.length;
+      post('/permisos/store')
       onClose();
     }
   })
 
+  
+  const [checkboxValues, setCheckboxValues] = useState({
+    Rec: false,
+    NotRec: false,
+  });
+  
   const Areas = [{
     "id"     : "101168387",
     "value"  : "Rec",
@@ -34,9 +50,6 @@ export default function RegisterPermisos({ Personal, onClose }) {
     "name"   : "No Remunerado"
   }]
 
-  const checkboxValues = {
-  };
-
   useEffect(() => {
     return () => {
       files.forEach(file => URL.revokeObjectURL(file));
@@ -44,19 +57,24 @@ export default function RegisterPermisos({ Personal, onClose }) {
   }, [files]);
 
   const handleFileChange = (event) => {
-    const selectedFiles = event.target.files;
-    setFiles(Array.from(selectedFiles)); 
+    const selectedFiles = event.target.files; 
+    setFiles([...files, ...Array.from(selectedFiles)]);
   };
-
+  
   const handleCheckboxChange = (event) => {
-    const { name, checked } = event.target;
-    checkboxValues[name] = checked;
+    const { name, checked } = event.target; 
+    const newCheckboxValues = { ...checkboxValues, [name]: checked }; 
+    if (checked) {
+      const otherCheckbox = name === 'Rec' ? 'NotRec' : 'Rec';
+      newCheckboxValues[otherCheckbox] = false;
+    }
+    setCheckboxValues(newCheckboxValues);
   };
 
   return (
     <form 
       onSubmit = { formik.handleSubmit }
-      className="w-full h-[500px] overflow-y-auto flex flex-col justify-start items-start bg-gray-800  justify-items-center px-4 py-4 gap-5 "
+      className="min-w-[540px] w-full  sm:h-[500px] overflow-y-auto flex flex-col justify-start items-start bg-gray-800  justify-items-center px-4 py-4 gap-5 "
       method="POST"
     >
       <div className='w-full flex flex-col '>
@@ -74,6 +92,7 @@ export default function RegisterPermisos({ Personal, onClose }) {
           <option value="LICENCIA"> LICENCIA </option>
           <option value="CITA MEDICA"> CITA MEDICA</option>
           <option value="PERSONAL"> PERSONAL </option>
+          <option value="LOGISTICA"> LOGISTICA </option>
           <option value="VACACIONAL"> VACACIONAL </option>
           <option value="OTRO"> OTRO </option>
         </select>
@@ -221,53 +240,69 @@ export default function RegisterPermisos({ Personal, onClose }) {
             ))
           }
         </div>
-        {
-          files.length > 0 ?  (
-            <div className='w-full h-full grid grid-cols-3 gap-4  px-4 py-2'>
-              {
-                files.map((file, index) => (
-                <div key={index} className='w-auto max-w-[200px] max-h-[150px] h-auto rounded-md'>
-                  {file.type.startsWith('image/') ? (
-                    <img
-                      src={URL.createObjectURL(file)}
-                      alt={`File ${index}`}
-                      className="w-full h-full object-cover "
-                      loading="lazy"
-                    />
-                  ) : (
-                    <div className="flex items-center justify-center w-full h-full border-2 px-4 py-2 border-gray-300 border-dashed rounded-lg">
-                      <p>{file.name}</p>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          ) : (
-            <label htmlFor="Image" className=" flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
-              <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                  <svg className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
-                      <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
-                  </svg>
-                  <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold">Click para subir</span> o selecciona y desliza aqui </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">SVG, PNG, JPG or GIF (MAX. 800x400px)</p>
+        <div className='w-full h-auto'>
+          {
+            files.length > 0 ?  (
+              <div className='w-full h-full grid grid-cols-3 gap-4  px-4 py-2'>
+                {
+                  files.map((file, index) => (
+                  <div key={index} className='w-auto max-w-[200px] max-h-[150px] h-auto rounded-md'>
+                    {file.type.startsWith('image/') ? (
+                      <img
+                        src={URL.createObjectURL(file)}
+                        alt={`File ${index}`}
+                        className="w-full h-full object-cover "
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className="flex items-center justify-center w-auto h-auto border-2 px-4 py-2 border-gray-300 border-dashed rounded-lg">
+                        <p>{file.name}</p>
+                      </div>
+                    )}
+                  </div>
+                ))}
+                <label htmlFor="Image" className=" flex flex-col items-center justify-center w-full h-16 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                  <div className="flex flex-col items-center justify-center p-4 ">
+                      <p className="text-xs text-gray-500 dark:text-gray-400"> Agregar  mas Documentos </p>
+                  </div>
+                  <input
+                    id="Image"
+                    name="Image"
+                    type="file"
+                    accept="image/*,.pdf,.doc,.docx" 
+                    multiple  
+                    onChange={handleFileChange}
+                    className="hidden"
+                  />
+                </label>
               </div>
-              <input
-                id="Image"
-                name="Image"
-                type="file"
-                accept="image/*,.pdf,.doc,.docx" 
-                multiple  
-                onChange={handleFileChange}
-                className="hidden"
-              />
-            </label>
-          )
-        }
-        {
-          formik.touched.taq && formik.errors.taq && (
-            <div className="text-red-500 font-bold">{formik.errors.taq}</div>
-          )
-        }
+            ) : (
+              <label htmlFor="Image" className=" flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                    <svg className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
+                    </svg>
+                    <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold">Click para subir</span> o selecciona y desliza aqui </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">SVG, PNG, JPG or GIF (MAX. 800x400px)</p>
+                </div>
+                <input
+                  id="Image"
+                  name="Image"
+                  type="file"
+                  accept="image/*,.pdf,.doc,.docx" 
+                  multiple  
+                  onChange={handleFileChange}
+                  className="hidden"
+                />
+              </label>
+            )
+          }
+          {
+            formik.touched.taq && formik.errors.taq && (
+              <div className="text-red-500 font-bold">{formik.errors.taq}</div>
+            )
+          }
+        </div>
       <input
         type="submit"
         className={`w-full h-auto px-4 py-2 bg-[#323c7c] text-white shadow shadow-black cursor-pointer hover:bg-blue-800 transition duration-300 ease-in-out rounded-md `}

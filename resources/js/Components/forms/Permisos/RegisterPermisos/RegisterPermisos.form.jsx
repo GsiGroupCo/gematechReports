@@ -8,8 +8,7 @@ export function initialValue() {
       Solicitante:"",
       Jornada:"",
       HoraInicio:"",
-      HoraTerminacion:"",
-      CantHoras:"",
+      HoraTerminacion:"", 
       Observaciones: ""
     }
 }
@@ -34,8 +33,7 @@ export function validationSchema(){
           return horaFinal >= horaInicial;
         }
         return true;
-      }).required('La Hora Final es requerida'),
-      CantHoras: Yup.string().required('La Cantidad de Horas es requerido'),
+      }).required('La Hora Final es requerida'), 
       Jornada: Yup.string().required('La Jornada es obligatoria'),
       Solicitante: Yup.string().required('El Solicitante es obligatorio'),
       Observaciones: Yup.string().required('Las Observaciones son requeridas')

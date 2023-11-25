@@ -6,7 +6,7 @@ const Modal = ({ isVisible, onClose, children, tittle }) => {
   
   return (
     <div className="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex justify-center items-center"> 
-      <div className='w-auto'>
+      <div className='min-w-[500px] w-auto'>
         <div className='bg-white rounded border border-[#323c7c] shadow-md'>
           <div className='w-full h-auto bg-[#323c7c] px-4 py-2 flex justify-between items-center justify-items-center text-white font-bold'>
             { tittle }

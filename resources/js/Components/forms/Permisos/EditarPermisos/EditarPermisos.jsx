@@ -4,26 +4,36 @@ import { initialValue, validationSchema } from './EditarPermisos.form';
 import { useForm } from '@inertiajs/react';
 
 export default function EditPermiso({ PermisoSelected, onClose }) {
-  
+   
   const [files, setFiles] = useState([]);
   const [filtro, setFiltro] = useState("");
-  const { data , post } = useForm()
+  const { data , patch } = useForm()
   const formik = useFormik({
     initialValues:initialValue(PermisoSelected),
     validationSchema: validationSchema(),
     validateOnChange: false,
-    onSubmit: async (formValue) => {
-      data.taqActivos = taqActivos;
-      files.forEach((file, index) => {
-        const propertyName = `Image_${index + 1}`;
-        data[propertyName] = file;
-      });
-      data.CantImages = files.length; 
-      post('/')
+    onSubmit: async (formValue) => { 
+      data.Motivo            = formValue.Motivo,
+      data.FechaInicio       = formValue.FechaInicio,
+      data.FechaTerminacion  = formValue.FechaTerminacion,
+      data.Solicitante       = formValue.Solicitante,
+      data.Jornada           = formValue.Jornada,
+      data.HoraInicio        = formValue.HoraInicio,
+      data.HoraTerminacion   = formValue.HoraTerminacion, 
+      data.Observaciones     = formValue.Observaciones
+      for (const key in checkboxValues) {
+        data[key] = checkboxValues[key];
+      }
+      patch('/permisos/update')
       onClose();
     }
   })
-
+  
+  const [checkboxValues, setCheckboxValues] = useState({
+    Rec: false,
+    NotRec: false,
+  });
+  
   const Areas = [{
     "id"     : "101168387",
     "value"  : "Rec",
@@ -34,23 +44,20 @@ export default function EditPermiso({ PermisoSelected, onClose }) {
     "name"   : "No Remunerado"
   }]
 
-  const checkboxValues = {
-  };
-
   useEffect(() => {
     return () => {
       files.forEach(file => URL.revokeObjectURL(file));
     };
   }, [files]);
-
-  const handleFileChange = (event) => {
-    const selectedFiles = event.target.files;
-    setFiles(Array.from(selectedFiles)); 
-  };
-
+ 
   const handleCheckboxChange = (event) => {
-    const { name, checked } = event.target;
-    checkboxValues[name] = checked;
+    const { name, checked } = event.target; 
+    const newCheckboxValues = { ...checkboxValues, [name]: checked }; 
+    if (checked) {
+      const otherCheckbox = name === 'Rec' ? 'NotRec' : 'Rec';
+      newCheckboxValues[otherCheckbox] = false;
+    }
+    setCheckboxValues(newCheckboxValues);
   };
 
   return (
@@ -133,7 +140,13 @@ export default function EditPermiso({ PermisoSelected, onClose }) {
           <label htmlFor="HoraInicio" className='font-bold text-white'>
             Hora Inicio
           </label>
-          <input type="time"  name="HoraInicio"  id="HoraInicio"  value = { formik.values.HoraInicio }   onChange = { formik.handleChange } className = {`w-full h-auto px-4 py-2 rounded-md focus:outline-none border border-black ${ formik.touched.HoraInicio && formik.errors.HoraInicio ? 'border-red-500' : 'border-black' }`}/>
+          <input 
+            type="time"  
+            name="HoraInicio"  
+            id="HoraInicio"  
+            value = { formik.values.HoraInicio } 
+            onChange = { formik.handleChange }
+            className = {`w-full h-auto px-4 py-2 rounded-md focus:outline-none border border-black ${ formik.touched.HoraInicio && formik.errors.HoraInicio ? 'border-red-500' : 'border-black' }`}/>
           {
             formik.touched.HoraInicio && formik.errors.HoraInicio && (
               <div className="text-red-500 font-bold">{formik.errors.HoraInicio}</div>
