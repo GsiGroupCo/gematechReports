@@ -13,7 +13,6 @@ export default function DesaprobarHora({ HoraData, onClose }) {
     onSubmit: async (formValue) => {
       data.horasextras_id  = HoraData.horasextras_id
       data.descripcion     = formValue.detalles
-      console.log(data)
       post(`/horas/desaprobada`)
       onClose()
     }

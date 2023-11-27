@@ -51,7 +51,7 @@ const PanelHoras = ({ HorasExtras, Auth, Admin }) => {
                 Auth ? (
                     <>
                         {
-                            Admin === 'Gerencia' || Admin === 'Coordinador de MTTO' || Admin === 'Gerente general'  ? (
+                            Admin === 'Gerencia' || Admin === 'Coordinador de MTTO' || Admin === 'Gerente general' || Admin === 'Logistica' ? (
                                 <div className='w-full h-auto  bg-gray-200 px-4 py-2 flex justify-center items-center justify-items-center gap-5'> 
                                     <button onClick={ () => ShowMeHorasAprobadas() } className={`w-1/2 h-full px-4 py-2 ${HorasAprobadas ? 'bg-white text-[#323c7c] border-[#323c7c]' : 'bg-[#323c7c] text-white border-white' }  border border-black hover:bg-white hover:text-[#323c7c] transition duration-700 ease-in-out font-bold`}>
                                         Todas las Horas

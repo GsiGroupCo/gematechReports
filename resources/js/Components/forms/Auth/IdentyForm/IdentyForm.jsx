@@ -28,7 +28,6 @@ export default function IdentyForm() {
         get(`/dashboard/${data.cc}`)
         onClose()
       } catch (error) {
-        console.log(e)
       }
     }
   })

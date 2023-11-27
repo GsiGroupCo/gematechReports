@@ -20,7 +20,6 @@ export default function LoginForm() {
         data.password = formValue.password
         post('/token')
       } catch (error) {
-        console.log(error)
       }
     }
   })

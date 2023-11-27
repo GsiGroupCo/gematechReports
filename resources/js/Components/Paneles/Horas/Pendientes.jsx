@@ -6,12 +6,7 @@ import DesaprobarHora from "../../forms/Horas/DesaprobarHora";
 import DesautorizarHora from "../../forms/Horas/DesautorizarHora";
 
     const Pendientes = ({ HorasExtras, Auth, Admin }) => { 
-      
-    console.log(`hola`)
-    console.log(HorasExtras)
-    console.log(Auth)
-    console.log(Admin)
-
+       
     const { data, post } = useForm();
 
     const [Editar, setEditar]             = useState(false)
@@ -45,7 +40,7 @@ import DesautorizarHora from "../../forms/Horas/DesautorizarHora";
         (horasExtras) => horasExtras.estado === "Pendiente"
     );
 
-    const [HorasPendientesAprobar, setHorasPendientesAprobar] = useState(HorasExtrasPendientesAprobar);
+    const [HorasPendientesAprobar, setHorasPendientesAprobar] = useState(HorasExtrasPendientesAprobar); 
     const FiltroPendientesAprobar = ( searchTerm ) => {
         const filtered = HorasExtrasPendientesAprobar.filter((horas) => {
             const horasextras_id = horas.horasextras_id.toLowerCase();
@@ -71,6 +66,7 @@ import DesautorizarHora from "../../forms/Horas/DesautorizarHora";
     );
 
     const [HorasPendientesAutorizar, setHorasPendientesAutorizar] = useState(HorasExtrasPendientesAutorizar);
+     
     const FiltroPendientesAutorizar = ( searchTerm ) => {
         const filtered = HorasExtrasPendientesAutorizar.filter((horas) => {
             const horasextras_id = horas.horasextras_id.toLowerCase();
@@ -99,7 +95,7 @@ import DesautorizarHora from "../../forms/Horas/DesautorizarHora";
     return (
         <>
             {
-                Admin === 'Coordinador de MTTO' || Admin === 'Gerente general' ? (
+                Admin === 'Coordinador de MTTO' ? (
                     <div className="w-full h-full bg-gray-200 flex flex-col justify-start items-start justify-items-center overflow-hidden overflow-y-auto">
                         <div className='w-full h-auto bg-gray-200 gap-2 flex justify-evenly items-center justify-items-center p-2 '>
                             <input 
@@ -134,9 +130,9 @@ import DesautorizarHora from "../../forms/Horas/DesautorizarHora";
                             </div>
                         </div>
                         {
-                            HorasPendientesAutorizar 
+                            HorasPendientesAprobar 
                             ?  
-                                HorasPendientesAutorizar.map((horasExtras) => (
+                                HorasPendientesAprobar.map((horasExtras) => (
                                     <div key={horasExtras.horasextras_id} className='w-full  h-auto border-b-2   cursor-pointer  px-4 py-2  flex flex-col md:flex-row justify-center items-center justify-items-center gap-3 bg-white'>
                                         <div className='w-full md:w-full h-full flex flex-col text-center md:flex-row justify-center items-center justify-items-center'>
                                             <div className={`${Auth ? 'w-full lg:w-[20%] ' : 'hidden'} h-auto flex lg:justify-center lg:items-center`}>
@@ -157,8 +153,8 @@ import DesautorizarHora from "../../forms/Horas/DesautorizarHora";
                                         </div>
                                         <div className={` ${Auth ? 'w-full md:w-1/4 h-full flex flex-col justify-center items-center gap-1' : 'hidden' } `}>
                                             <div className="w-full flex flex-col lg:flex-row gap-1 lg:gap-3 justify-center items-center">
-                                                <div onClick = { () => AutorizarHora( horasExtras.horasextras_id )}   className='w-full h-auto px-4 py-2 text-white bg-green-500 hover:bg-green-800 hover:border-green-500 cursor-pointer border border-white rounded-md hover:text-white transition duration-700 ease-out font-bold flex justify-center items-center'>
-                                                    Autorizar
+                                                <div onClick = { () => AprobarHora( horasExtras.horasextras_id )}   className='w-full h-auto px-4 py-2 text-white bg-green-500 hover:bg-green-800 hover:border-green-500 cursor-pointer border border-white rounded-md hover:text-white transition duration-700 ease-out font-bold flex justify-center items-center'>
+                                                    Aprobar
                                                 </div>
                                                 <div onClick = { () => { 
                                                         setDesaprobar(false)
@@ -264,7 +260,7 @@ import DesautorizarHora from "../../forms/Horas/DesautorizarHora";
                             </div>
                         </Modal>
                     </div>
-                )  : Auth === 'Logistica' ? (
+                )  : Admin === 'Logistica' ? (
                     <div className="w-full h-full bg-gray-200 flex flex-col justify-start items-start justify-items-center overflow-hidden overflow-y-auto">
                         <div className='w-full h-auto bg-gray-200 gap-2 flex justify-evenly items-center justify-items-center p-2 '>
                             <input 

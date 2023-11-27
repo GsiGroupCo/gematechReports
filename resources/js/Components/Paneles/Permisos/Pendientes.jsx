@@ -134,18 +134,18 @@ import EditPermiso from "@/Components/forms/Permisos/EditarPermisos/EditarPermis
                                             setDesautorizar(false)
                                             setEditar(true)
                                             setPermisoSelected({
-                                            permiso_id        : permisos.permiso_id,
-                                            empleado_id       : permisos.empleado_id,
-                                            motivo            : permisos.motivo,
-                                            fecha_inicio      : permisos.fecha_inicio,
-                                            fecha_terminacion : permisos.fecha_terminacion,
-                                            jornada           : permisos.jornada,
-                                            hora_inicio       : permisos.hora_inicio,
-                                            hora_fin          : permisos.hora_fin,
-                                            cant_horas        : permisos.cant_horas,
-                                            observaciones     : permisos.observaciones,
-                                            remuneracion      : permisos.remuneracion,
-                                            estado            : permisos.estado
+                                                permiso_id        : permisos.permiso_id,
+                                                empleado_id       : permisos.empleado_id,
+                                                motivo            : permisos.motivo,
+                                                fecha_inicio      : permisos.fecha_inicio,
+                                                fecha_terminacion : permisos.fecha_terminacion,
+                                                jornada           : permisos.jornada,
+                                                hora_inicio       : permisos.hora_inicio,
+                                                hora_fin          : permisos.hora_fin,
+                                                cant_horas        : permisos.cant_horas,
+                                                observaciones     : permisos.observaciones,
+                                                remuneracion      : permisos.remuneracion,
+                                                estado            : permisos.estado
                                             })  
                                             setModalShow(true)
                                     }}   

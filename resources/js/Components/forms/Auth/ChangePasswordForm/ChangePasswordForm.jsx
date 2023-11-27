@@ -29,7 +29,6 @@ export default function ChangePasswordForm({ status, onClose }) {
       data.confirm_new_password = formValue.confirm_new_password
       data.new_password         = formValue.new_password
       data.old_password         = formValue.old_password
-      console.log(data)
       post(`/change`)
     }
   })
