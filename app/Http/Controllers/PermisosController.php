@@ -5,17 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\Anexos;
 use Illuminate\Http\Request;
 
-use Inertia\Inertia;
-
 use App\Models\permisos;
-use App\Models\Empleado;
-
-use Illuminate\Support\Facades\Auth;
+use App\Models\PermisosHistory;
 
 class PermisosController extends Controller
 {
     public function store(Request $request)
-    {       
+    {        
         try { 
              // Convertir las cadenas de hora a objetos DateTime
             $datetimeA = \DateTime::createFromFormat('H:i', $request -> HoraInicio);
@@ -76,18 +72,22 @@ class PermisosController extends Controller
             $diferencia = $datetimeA->diff($datetimeB);
             $horas = $diferencia->format('%H');
             $minutos = $diferencia->format('%I');
-            dd($request -> permiso_id);
-            permisos::where( 'permiso_id' , 'LIKE' , $request -> permiso_id )->update([
-                'empleado_id'       => $request -> Solicitante,
-                'motivo'            => $request -> Motivo,
-                'fecha_inicio'      => $request -> FechaInicio,
-                'fecha_terminacion' => $request -> FechaTerminacion,
-                'jornada'           => $request -> Jornada,
-                'hora_inicio'       => $request -> HoraInicio,
-                'hora_fin'          => $request -> HoraTerminacion,
-                'cant_horas'        => $horas.':'.$minutos,
-                'observaciones'     => $request -> Observaciones
-            ]);
+            $exist = count(permisos::where('permiso_id','LIKE',$request -> permiso_id) -> get());
+            if($exist === 1){
+                permisos::where( 'permiso_id' , 'LIKE' , $request -> permiso_id )->update([
+                    'empleado_id'       => $request -> Solicitante,
+                    'motivo'            => $request -> Motivo,
+                    'fecha_inicio'      => $request -> FechaInicio,
+                    'fecha_terminacion' => $request -> FechaTerminacion,
+                    'jornada'           => $request -> Jornada,
+                    'hora_inicio'       => $request -> HoraInicio,
+                    'hora_fin'          => $request -> HoraTerminacion,
+                    'cant_horas'        => $horas.':'.$minutos,
+                    'observaciones'     => $request -> Observaciones
+                ]);
+            }else{
+                return redirect() -> route('home') -> with('status', 'Permiso No encontrado'); 
+            }
             return redirect() -> route('home') -> with('status', 'Permiso Actualizado'); 
         } catch (\Throwable $th) { 
             return redirect() -> route('home') -> with('error', 'Problema Actualizando permiso');
@@ -97,16 +97,23 @@ class PermisosController extends Controller
     public function aprobe(Request $request)
     {        
         try {
-            $exist = permisos::where('permiso_id', 'LIKE', $request -> permiso_id) -> count();
+            $exist = permisos::where('permiso_id', 'LIKE', $request -> permiso_id) -> count(); 
             if($exist === 1){
                 permisos::where('permiso_id', 'LIKE', $request -> permiso_id) -> update([
                     'estado' => 'Aprobado'
+                ]); 
+                PermisosHistory::create([
+                    'permisos_history_id' => uniqid(TRUE),
+                    'permiso_id'          => $request -> permiso_id,
+                    'user_id'             => $request -> user_id,
+                    'state'               => 'Aprobado'
                 ]);
                 return redirect() -> route('home') -> with('status', 'Permiso Aprobado');
             }else{
                 return redirect() -> route('home') -> with('status', 'Permiso No encontrado');
             }
         } catch (\Throwable $th) {
+            dd($th);
             return redirect() -> route('home') -> with('error', 'Problema Aprobando Permiso');
         }
     }
@@ -119,6 +126,12 @@ class PermisosController extends Controller
                 permisos::where('permiso_id', 'LIKE', $request -> permiso_id) -> update([
                     'estado'   => 'Desaprobado',
                     'detalles' => $request -> descripcion
+                ]);
+                PermisosHistory::create([
+                    'permisos_history_id' => uniqid(TRUE),
+                    'permiso_id'          => $request -> permiso_id,
+                    'user_id'             => $request -> user_id,
+                    'state'               => 'Desaprobado'
                 ]);
                 return redirect() -> route('home') -> with('status', 'Permiso desaprobado');
             }else{

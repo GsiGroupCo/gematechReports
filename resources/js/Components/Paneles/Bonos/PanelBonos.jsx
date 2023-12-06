@@ -7,64 +7,35 @@ import CursorIcon from '../../Icons/Arrow';
 
 const PanelBonos = ({ Bonos, Auth, Admin }) => {
     
-    const [DefaultPanel, setDefaultPanel] = useState(true)
     const [BonosAprobados, setBonosAprobados] = useState(false)
-    const [BonosPendientes, setBonosPendientes] = useState(false)
-    
-    function ShowDefault() {
-        setDefaultPanel(true)
-        setBonosAprobados(false)
-        setBonosPendientes(false)
-    }
+    const [BonosPendientes, setBonosPendientes] = useState(true)
 
-    function ShowMeBonosAprobadas() {
-        if(BonosAprobados){
-            ShowDefault()
-        }else{
-            setDefaultPanel(false)
-            setBonosPendientes(false)
-            setBonosAprobados(true)
-        }
+    function ShowMeBonosAprobadas() { 
+        setBonosPendientes(false)
+        setBonosAprobados(true)
     }
 
     function ShowMeBonosPendientes() {
-        if(BonosPendientes){
-            ShowDefault()
-        }else{
-            setDefaultPanel(false)
-            setBonosAprobados(false)
-            setBonosPendientes(true)
-        }
+        setBonosAprobados(false)
+        setBonosPendientes(true)
     }
 
     return (
-        <div className='w-full h-full bg-gray-200 flex flex-col justify-start items-start justify-items-center'>
+        <div className='w-full h-auto bg-gray-200 flex flex-col justify-start items-start justify-items-center'>
             {
                 Auth ? (
                     <>
                         {
-                            Admin === 'Gerencia' || Admin === 'Coordinador de MTTO' || Admin === 'Gerente general' ?  (
-                                <div className='w-full h-auto  bg-gray-200 px-4 py-2 flex justify-center items-center justify-items-center gap-5'> 
-                                    <button onClick={ () => ShowMeBonosAprobadas() } className={`w-1/2 h-full px-4 py-2 ${BonosAprobados ? 'bg-white text-[#323c7c] border-[#323c7c]' : 'bg-[#323c7c] text-white border-white' }  border border-black hover:bg-white hover:text-[#323c7c] transition duration-700 ease-in-out font-bold`}>
-                                        Todos los Bonos
+                            Admin.cargo === 'Gerencia' || Admin.cargo === 'Coordinador de MTTO' || Admin.cargo === 'Gerente general' ?  (
+                                <div className='w-full bg-gray-800 pt-4 h-auto flex justify-center items-center gap-3 px-4 sm:px-64'>
+                                    <button onClick={ () => ShowMeBonosAprobadas() } className={`w-auto h-auto px-4 py-1 rounded-sm cursor-pointer transition duration-700 ease-in-out border border-white font-bold hover:text-gray-800 hover:bg-white ${ BonosAprobados ? 'bg-white text-gray-800 font-bold' : 'bg-gray-800 text-white font-bold'}`}>
+                                        Aprobados
                                     </button>
-                                    <button onClick={ () => ShowMeBonosPendientes() } className={`w-1/2 h-full px-4 py-2 ${BonosPendientes ? 'bg-white text-[#323c7c] border-[#323c7c]' : 'bg-[#323c7c] text-white border-white' }  border border-black hover:bg-white hover:text-[#323c7c] transition duration-700 ease-in-out font-bold`}>
-                                        Bonos Pendientes
+                                    <button onClick={ () => ShowMeBonosPendientes() } className={`w-auto h-auto px-4 py-1 rounded-sm cursor-pointer transition duration-700 ease-in-out border border-white font-bold hover:text-gray-800 hover:bg-white ${ BonosPendientes ? 'bg-white text-gray-800 font-bold' : 'bg-gray-800 text-white font-bold'}`}>
+                                        Pendientes
                                     </button>
                                 </div>
                             ) : null
-                        }
-                        {
-                            DefaultPanel
-                            ?
-                                <div className='w-full h-full bg-gray-800 flex flex-col justify-center items-center'>
-                                    <CursorIcon color="#fff" width={`70`} height={`70`} />
-                                    <span className='text-white font-semibold'> Por favor selecciona una opcion </span>
-                                    <span className='text-white font-semibold'> Todos los Bonos o </span>
-                                    <span className='text-white font-semibold'> Bonos Pendientes </span>
-                                </div> 
-                            :
-                                null
                         }
                         {
                             BonosAprobados 
@@ -79,7 +50,7 @@ const PanelBonos = ({ Bonos, Auth, Admin }) => {
                             BonosPendientes 
                             ? 
                                 <>
-                                    <Pendientes Bonos = { Bonos } Auth = { Auth } Admin = { Admin }/>
+                                    <Pendientes  Bonos = { Bonos } Auth = { Auth } Admin = { Admin }/>
                                 </>
                             : 
                                 null

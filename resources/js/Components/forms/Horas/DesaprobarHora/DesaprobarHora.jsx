@@ -2,7 +2,7 @@ import { useFormik } from "formik";
 import { initialValue, validationSchema } from './DesaprobarHora.form';
 import { useForm } from '@inertiajs/react';
 
-export default function DesaprobarHora({ HoraData, onClose }) { 
+export default function DesaprobarHora({ HoraData, onClose, Admin }) { 
 
   const { data , post } = useForm()
   
@@ -13,6 +13,7 @@ export default function DesaprobarHora({ HoraData, onClose }) {
     onSubmit: async (formValue) => {
       data.horasextras_id  = HoraData.horasextras_id
       data.descripcion     = formValue.detalles
+      data.user_id         = Admin.user_id
       post(`/horas/desaprobada`)
       onClose()
     }

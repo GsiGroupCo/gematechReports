@@ -9,6 +9,7 @@ import { router } from '@inertiajs/react'
 import React from 'react'
 import { useEffect, useState } from 'react'
 import { Toaster, toast } from 'sonner'
+import PanelPermisos from '@/Components/Paneles/Permisos/PanelPermisos'
 
 export default function Dashboard({ Permisos, Horas, Bonos, status, error, cc, welcome}) {
 
@@ -74,8 +75,7 @@ export default function Dashboard({ Permisos, Horas, Bonos, status, error, cc, w
     }
 
     return (
-        <main className='w-full h-screen'> 
-            <Toaster richColors position="top-center"/>
+        <main className='w-full h-screen overflow-hidden overflow-y-auto bg-gray-800'> 
             <Appbar>
                 <div className='w-full h-full flex justify-evenly items-center gap-3'>
                     <div className='w-[150px] md:w-auto px-2 py-1 h-auto flex flex-col md:flex-row justify-center items-center justify-items-center gap-3'> 
@@ -99,9 +99,10 @@ export default function Dashboard({ Permisos, Horas, Bonos, status, error, cc, w
                     </div>
                 </div>
             </Appbar>
-            <div className={`w-full h-full flex flex-col justify-center items-center justify-items-center  `} >
+            <div className={`w-full h-full flex flex-col justify-start items-center justify-items-center  `} >
                 {
-                    DefaultPanel ? <div className='w-full h-full bg-gray-800 flex flex-col justify-center items-center'>
+                    DefaultPanel ? 
+                    <div className='w-full h-full bg-gray-800 flex flex-col justify-center items-center'>
                         <CursorIcon color="#fff" width={`70`} height={`70`} />
                         <span className='text-white font-semibold'> Por favor selecciona una opcion </span>
                         <span className='text-white font-semibold'> Horas Extras </span>
@@ -116,15 +117,7 @@ export default function Dashboard({ Permisos, Horas, Bonos, status, error, cc, w
                     BonosPanel ? <PanelBonos  Bonos = { Bonos }  Auth = { false } /> : null
                 }
                 {
-                    PermisosPanel ? 
-                        <div className='w-full h-full bg-gray-800 flex flex-col justify-start items-start justify-items-center'>
-                            <div className="w-full h-full bg-white flex flex-col justify-start items-start justify-items-center overflow-hidden overflow-y-auto">
-                                {
-                                    Permisos ? <PermisoRow Permisos = { Permisos } /> : null
-                                }
-                            </div>
-                        </div>
-                    : null
+                    PermisosPanel ? <PanelPermisos Permisos={ Permisos } Auth = { false } /> : null
                 }
             </div>
             <Modal 
@@ -133,7 +126,7 @@ export default function Dashboard({ Permisos, Horas, Bonos, status, error, cc, w
                 onClose = { () => setModalShow(false) }
             >
                 <ConfiguracionPanel Auth = { false } cc = { cc } status = { status } error = { error }  onClose = { () => setModalShow(false) } />
-            </Modal> 
+            </Modal>
         </main>
     )
 }

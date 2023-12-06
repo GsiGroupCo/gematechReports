@@ -9,6 +9,9 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use App\Models\permisos;
 use App\Models\HorasExtra;
 use App\Models\Bono;
+use App\Models\BonoHistory;
+use App\Models\HoraHistory;
+use App\Models\PermisosHistory;
 
 class ExcelController extends Controller
 {
@@ -27,11 +30,12 @@ class ExcelController extends Controller
         $sheet = $spreadsheet->getActiveSheet();
 
 
-        $cantidad_permisos = count(permisos::where([ ['fecha_inicio','>=',$Fecha_inicio],['fecha_inicio','<=',$Fecha_corte] ])->get());
+        $cantidad_permisos = count(permisos::where([['fecha_inicio','>=',$Fecha_inicio],['fecha_inicio','<=',$Fecha_corte]])->get());
         $position = 4 ;
         if($cantidad_permisos > 1){
             for($i = 0; $i < $cantidad_permisos; $i++){
-                $permisos = permisos::with('responsable')-> where([ ['fecha_inicio','>=',$Fecha_inicio],['fecha_inicio','<=',$Fecha_corte] ])->get();
+                $permisos = permisos::with('responsable')-> where([['fecha_inicio','>=',$Fecha_inicio],['fecha_inicio','<=',$Fecha_corte]])->get(); 
+                $historyAuth = PermisosHistory::with('responsable')->where([['state','LIKE','Aprobado'],['permiso_id','LIKE',$permisos[$i]['permiso_id']]])->get();
                 $spreadsheet->getActiveSheet()->insertNewRowBefore($position, 1);
                 $sheet->setCellValue('A'.$position, $permisos[$i]['responsable']['cc']);
                 $sheet->setCellValue('B'.$position, $permisos[$i]['responsable']['nombre']);
@@ -67,8 +71,10 @@ class ExcelController extends Controller
                 $sheet->setCellValue('N'.$position, $permisos[$i]['hora_inicio']);
                 $sheet->setCellValue('O'.$position, $permisos[$i]['hora_fin']);
                 $sheet->setCellValue('P'.$position, $permisos[$i]['cant_horas']);
-                $sheet->setCellValue('Q'.$position, $permisos[$i]['observaciones']);
-
+                $sheet->setCellValue('Q'.$position, $permisos[$i]['observaciones']);                
+                if($historyAuth -> count() === 1){ 
+                    $sheet->setCellValue('R'.$position, $historyAuth[0]['responsable']['nombre']); 
+                }
                 $spreadsheet->getActiveSheet()->getStyle('A'.$position)->getFill()->getStartColor()->setARGB('FFFFFF');
                 $spreadsheet->getActiveSheet()->getStyle('B'.$position)->getFill()->getStartColor()->setARGB('FFFFFF');
                 $spreadsheet->getActiveSheet()->getStyle('C'.$position)->getFill()->getStartColor()->setARGB('ffffcc');
@@ -125,14 +131,21 @@ class ExcelController extends Controller
         if($cantidad_horas >= 1){
             for($i = 0; $i < $cantidad_horas; $i++){
                 $horas = HorasExtra::with('responsable')-> where([['estado','LIKE','Autorizado'],['fecha','>=',$Fecha_inicio],['fecha','<=',$Fecha_corte]])->get();
+                $historyAproved = HoraHistory::with('responsable')->where([['state','LIKE','Aprobado'],['horasextras_id','LIKE',$horas[$i]['horasextras_id']]])->get();
+                $historyAuth = HoraHistory::with('responsable')->where([['state','LIKE','Autorizado'],['horasextras_id','LIKE',$horas[$i]['horasextras_id']]])->get();
                 $spreadsheet->getActiveSheet()->insertNewRowBefore($position, 1);
                 $sheet->setCellValue('C'.$position, $horas[$i]['fecha']);
                 $sheet->setCellValue('D'.$position, $horas[$i]['responsable']['nombre']);
                 $sheet->setCellValue('E'.$position, $horas[$i]['ot']);
                 $sheet->setCellValue('F'.$position, $horas[$i]['hora_inicial']);
-                $sheet->setCellValue('G'.$position, $horas[$i]['hora_final']);
-                $sheet->setCellValue('H'.$position, 'Director de Mantenimiento');
-                $sheet->setCellValue('I'.$position, $horas[$i]['cant_Horas']);
+                $sheet->setCellValue('G'.$position, $horas[$i]['hora_final']); 
+                if($historyAproved -> count() === 1){
+                    $sheet->setCellValue('H'.$position, $historyAproved[0]['responsable']['nombre']); 
+                }
+                if($historyAuth -> count() === 1){ 
+                    $sheet->setCellValue('I'.$position, $historyAuth[0]['responsable']['nombre']); 
+                }
+                $sheet->setCellValue('J'.$position, $horas[$i]['cant_Horas']);
                 $spreadsheet->getActiveSheet()->getStyle('C'.$position)->getFill()->getStartColor()->setARGB('FFFFFF');
                 $spreadsheet->getActiveSheet()->getStyle('D'.$position)->getFill()->getStartColor()->setARGB('FFFFFF');
                 $spreadsheet->getActiveSheet()->getStyle('E'.$position)->getFill()->getStartColor()->setARGB('FFFFFF');
@@ -169,68 +182,71 @@ class ExcelController extends Controller
 
     public function get_documentBonos($Fecha_inicio,$Fecha_corte)
     {
-        try {
-            date_default_timezone_set("America/Bogota");
-            set_time_limit(600);
+        date_default_timezone_set("America/Bogota");
+        set_time_limit(600);
 
-            
-            $inputFileName = base_path().'/public/assets/docs/Bonos.xlsx';
+        
+        $inputFileName = base_path().'/public/assets/docs/Bonos.xlsx';
 
-            // $inputFileName = '/home/gematech/reports.gematech.co/assets/docs/Bonos.xlsx';
+        // $inputFileName = '/home/gematech/reports.gematech.co/assets/docs/Bonos.xlsx';
 
-            /** Load $inputFileName to a Spreadsheet object **/
-            $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($inputFileName);
-            
-            $sheet = $spreadsheet->getActiveSheet();
+        /** Load $inputFileName to a Spreadsheet object **/
+        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($inputFileName);
+        
+        $sheet = $spreadsheet->getActiveSheet();
 
-            $cantidad_bono = count(Bono::where([
-                ['estado','LIKE','Autorizado']
-            ,
-                ['fecha_bono','>=',$Fecha_inicio]
-            ,
-                ['fecha_bono','<=',$Fecha_corte]
-            ])->get());
-            
-            
-            $position = 9 ;
-            if($cantidad_bono >= 1){
-                for($i = 0; $i < $cantidad_bono; $i++){
-                    $bonos = Bono::with('responsable')->where([['estado','LIKE','Autorizado'],['fecha_bono','>=',$Fecha_inicio],['fecha_bono','<=',$Fecha_corte]])->get();
-                    $spreadsheet->getActiveSheet()->insertNewRowBefore($position, 1);
-                    $sheet->setCellValue('C'.$position, $bonos[$i]['fecha_bono']);
-                    $sheet->setCellValue('D'.$position, $bonos[$i]['responsable']['nombre']);
-                    $sheet->setCellValue('E'.$position, $bonos[$i]['ot_id']);
-                    $sheet->setCellValue('F'.$position, $bonos[$i]['lugar_bono']);
-                    $sheet->setCellValue('G'.$position, $bonos[$i]['cliente']);
-                    $sheet->setCellValue('H'.$position, 'Director de Mantenimiento');
-                    $spreadsheet->getActiveSheet()->getStyle('C'.$position)->getFill()->getStartColor()->setARGB('FFFFFF');
-                    $spreadsheet->getActiveSheet()->getStyle('D'.$position)->getFill()->getStartColor()->setARGB('FFFFFF');
-                    $spreadsheet->getActiveSheet()->getStyle('E'.$position)->getFill()->getStartColor()->setARGB('FFFFFF');
-                    $spreadsheet->getActiveSheet()->getStyle('F'.$position)->getFill()->getStartColor()->setARGB('FFFFFF');
-                    $spreadsheet->getActiveSheet()->getStyle('G'.$position)->getFill()->getStartColor()->setARGB('FFFFFF');
-                    $spreadsheet->getActiveSheet()->getStyle('H'.$position)->getFill()->getStartColor()->setARGB('FFFFFF');
-                    $spreadsheet->getActiveSheet()->getStyle('C'.$position)->getFont()->getColor()->setARGB(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_BLACK);
-                    $spreadsheet->getActiveSheet()->getStyle('D'.$position)->getFont()->getColor()->setARGB(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_BLACK);
-                    $spreadsheet->getActiveSheet()->getStyle('E'.$position)->getFont()->getColor()->setARGB(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_BLACK);
-                    $spreadsheet->getActiveSheet()->getStyle('F'.$position)->getFont()->getColor()->setARGB(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_BLACK);
-                    $spreadsheet->getActiveSheet()->getStyle('G'.$position)->getFont()->getColor()->setARGB(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_BLACK);
-                    $spreadsheet->getActiveSheet()->getStyle('H'.$position)->getFont()->getColor()->setARGB(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_BLACK);
-                
-                    $position = $position+1;
+        $cantidad_bono = count(Bono::where([
+            ['estado','LIKE','Autorizado']
+        ,
+            ['fecha_bono','>=',$Fecha_inicio]
+        ,
+            ['fecha_bono','<=',$Fecha_corte]
+        ])->get());
+        
+        $position = 9 ;
+
+        if($cantidad_bono >= 1){
+            for($i = 0; $i < $cantidad_bono; $i++){
+                $bonos = Bono::with('responsable') -> where([['estado','LIKE','Autorizado'],['fecha','>=',$Fecha_inicio],['fecha','<=',$Fecha_corte]])->get();
+                $historyAproved = BonoHistory::with('responsable')->where([['state','LIKE','Aprobado'],['bono_id','LIKE',$bonos[$i]['bono_id']]])->get();
+                $historyAuth = BonoHistory::with('responsable')->where([['state','LIKE','Autorizado'],['bono_id','LIKE',$bonos[$i]['bono_id']]])->get();
+                $spreadsheet->getActiveSheet()->insertNewRowBefore($position, 1);  
+                $sheet->setCellValue('C'.$position, $bonos[$i]['fecha_bono']);
+                $sheet->setCellValue('D'.$position, $bonos[$i]['responsable']['nombre']);
+                $sheet->setCellValue('E'.$position, $bonos[$i]['ot_id']);
+                $sheet->setCellValue('F'.$position, $bonos[$i]['lugar_bono']);
+                $sheet->setCellValue('G'.$position, $bonos[$i]['cliente']);
+                if($historyAproved -> count() === 1){
+                    $sheet->setCellValue('H'.$position, $historyAproved[0]['responsable']['nombre']); 
                 }
-
+                if($historyAuth -> count() === 1){ 
+                    $sheet->setCellValue('I'.$position, $historyAuth[0]['responsable']['nombre']); 
+                }
+                $spreadsheet->getActiveSheet()->getStyle('C'.$position)->getFill()->getStartColor()->setARGB('FFFFFF');
+                $spreadsheet->getActiveSheet()->getStyle('D'.$position)->getFill()->getStartColor()->setARGB('FFFFFF');
+                $spreadsheet->getActiveSheet()->getStyle('E'.$position)->getFill()->getStartColor()->setARGB('FFFFFF');
+                $spreadsheet->getActiveSheet()->getStyle('F'.$position)->getFill()->getStartColor()->setARGB('FFFFFF');
+                $spreadsheet->getActiveSheet()->getStyle('G'.$position)->getFill()->getStartColor()->setARGB('FFFFFF');
+                $spreadsheet->getActiveSheet()->getStyle('H'.$position)->getFill()->getStartColor()->setARGB('FFFFFF');
+                $spreadsheet->getActiveSheet()->getStyle('C'.$position)->getFont()->getColor()->setARGB(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_BLACK);
+                $spreadsheet->getActiveSheet()->getStyle('D'.$position)->getFont()->getColor()->setARGB(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_BLACK);
+                $spreadsheet->getActiveSheet()->getStyle('E'.$position)->getFont()->getColor()->setARGB(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_BLACK);
+                $spreadsheet->getActiveSheet()->getStyle('F'.$position)->getFont()->getColor()->setARGB(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_BLACK);
+                $spreadsheet->getActiveSheet()->getStyle('G'.$position)->getFont()->getColor()->setARGB(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_BLACK);
+                $spreadsheet->getActiveSheet()->getStyle('H'.$position)->getFont()->getColor()->setARGB(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_BLACK);
+            
+                $position = $position+1;
             }
-            
-            $writer = new Xlsx($spreadsheet);
-            $Today = date("Y-m-d");
-            header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-            header("Content-Disposition: attachment;filename=Reporte_Bonos_{$Today}.xlsx");
-            header('Cache-Control: max-age=0');
-            $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx'); 
-            $writer -> save('php://output'); 
-            
-        } catch (\Throwable $th) {
-            dd($th);
+
         }
+        
+        $writer = new Xlsx($spreadsheet);
+        $Today = date("Y-m-d");
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header("Content-Disposition: attachment;filename=Reporte_Bonos_{$Today}.xlsx");
+        header('Cache-Control: max-age=0');
+        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx'); 
+        $writer -> save('php://output'); 
+        
     }
 }

@@ -9,6 +9,8 @@ class BonoHistory extends Model
 {
     use HasFactory;
 
+    protected $table = 'bonos_history';
+
     protected $fillable = [
        'bono_history_id',
        'bono_id',

@@ -31,17 +31,18 @@ export default function RegisterBonos({ cc, onClose }) {
   const day = today.getDate();
   
   const currentDate = `${year}-${month}-${String(day).padStart(2, '0')}`;
+  const PreviuslyMonth = `${year}-${month-1}-01`;
   const firstDayOfMonth = `${year}-${month}-01`;
   const thirteenthDayOfMonth = `${year}-${month}-30`;
   
   let minDate, maxDate;
   
-  if (day <= 30) {
+  if (day >= 1 && day <= 3 ) {
+    minDate = PreviuslyMonth;
+    maxDate = currentDate;
+  } else if ( day >= 4 && day <= 30 ) {
     minDate = firstDayOfMonth;
     maxDate = thirteenthDayOfMonth;
-  } else {
-    minDate = thirteenthDayOfMonth;
-    maxDate = currentDate;
   }
   
 

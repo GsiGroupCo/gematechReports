@@ -2,7 +2,7 @@ import { useFormik } from "formik";
 import { initialValue, validationSchema } from './DesautorizarBono.form';
 import { useForm } from '@inertiajs/react';
 
-export default function DesautorizarHora({ HoraData, onClose }) { 
+export default function DesautorizarHora({ HoraData, Admin, onClose }) { 
 
   const { data , post } = useForm()
   
@@ -12,7 +12,8 @@ export default function DesautorizarHora({ HoraData, onClose }) {
     validateOnChange: false,
     onSubmit: async (formValue) => {
       data.horasextras_id  = HoraData.horasextras_id
-      data.descripcion     = formValue.detalles 
+      data.descripcion     = formValue.detalles
+      data.user_id         = Admin.user_id
       post(`/horas/desautorizacion`)
       onClose()
     }

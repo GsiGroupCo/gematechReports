@@ -34,6 +34,8 @@ Route::controller(BonosController::class) -> group(function () {
     Route::post('/bono/autorizacion','auth')        -> name ('bono.autorizacion')     -> middleware('auth'); 
     Route::post('/bono/desautorizacion','desauth')  -> name ('bono.desautorizacion')  -> middleware('auth'); 
     Route::post('/bono/aprobada','aprobada')        -> name ('horas.aprobada')        -> middleware('auth'); 
+    Route::post('/bono/desaprobada','desaprobada')  -> name ('horas.desaprobada')     -> middleware('auth');
+    Route::post('/bonos/update','update')           -> name ('bonos.updates')         -> middleware('auth');
 });
 
 Route::controller(HorasController::class) -> group(function () {
@@ -41,6 +43,7 @@ Route::controller(HorasController::class) -> group(function () {
     Route::post('/horas/desautorizacion','desauth') -> name ('horas.disautorizacion') -> middleware('auth');
     Route::post('/horas/aprobada','aprobada')       -> name ('horas.aprobada')        -> middleware('auth'); 
     Route::post('/horas/desaprobada','desaprobada') -> name ('horas.aprobada')        -> middleware('auth'); 
+    Route::post('/horas/update','update')           -> name ('horas.updates')         -> middleware('auth'); 
     Route::post('/horas/store/','store')            -> name ('horas.store');
 });
 

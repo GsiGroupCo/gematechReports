@@ -9,6 +9,8 @@ class PermisosHistory extends Model
 {
     use HasFactory;
 
+    protected $table = 'permisos_history';
+
     protected $fillable = [
         'permisos_history_id',
         'permiso_id',

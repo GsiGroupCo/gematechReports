@@ -28,16 +28,20 @@ export default function RegisterHoras({ cc, onClose }) {
   const year = today.getFullYear();
   const month = String(today.getMonth() + 1).padStart(2, '0'); // los meses van de 0 a 11, por lo que añadimos 1
   const day = today.getDate();
-  
+
   const currentDate = `${year}-${month}-${String(day).padStart(2, '0')}`;
+  const PreviuslyMonth = `${year}-${month-1}-25`;
   const firstDayOfMonth = `${year}-${month}-01`;
   const fifteenthDayOfMonth = `${year}-${month}-15`;
   
   let minDate, maxDate;
   
-  if (day <= 15) {
+  if ( day <= 5 ) {
+    minDate = PreviuslyMonth;
+    maxDate = currentDate;
+  }else if (day <= 15) {
     minDate = firstDayOfMonth;
-    maxDate = fifteenthDayOfMonth;
+    maxDate = currentDate;
   } else {
     minDate = fifteenthDayOfMonth;
     maxDate = currentDate;

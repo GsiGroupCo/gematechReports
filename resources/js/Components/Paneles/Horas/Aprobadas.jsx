@@ -1,157 +1,88 @@
 
-import { useEffect, useState } from "react"
-import Modal from "../../UI/Modal";
+import { useEffect, useState } from "react" 
 
 const Aprobadas = ({ HorasExtras, Auth }) => {
-  
-    const [datosFiltrados, setDatosFiltrados] = useState(HorasExtras);
-    const [ModalShow, setModalShow] = useState(false);
-    const [HoraSelected, setHoraSelected] = useState({
-      horasextras_id: "",
-      empleado_id : "",
-      fecha: "",
-      hora_inicial: "",
-      hora_final: "",
-      cant_Horas: "",
-      estado: "",
-      ot: "",
-      observaciones:""
-    }) 
-     
-    useEffect(() => {
-      setDatosFiltrados(HorasExtras)
-    }, [HorasExtras])
-    
-    const filterData = ( searchTerm ) => {
-      const filtered = HorasExtras.filter((horas) => {
-          const horasextras_id = horas.horasextras_id.toLowerCase();
-          const nombre_empleado = horas.responsable.nombre.toLowerCase();
-          const ot = horas.ot.toLowerCase();
-          const fecha = horas.fecha.toString().toLowerCase();
-          const hora_final = horas.hora_final.toLowerCase();
-          const hora_inicial = horas.hora_inicial.toLowerCase();
-          return (
-              horasextras_id.includes(searchTerm)  ||
-              nombre_empleado.includes(searchTerm) ||
-              ot.includes(searchTerm)              ||
-              fecha.includes(searchTerm)           ||
-              hora_final.includes(searchTerm)      ||
-              hora_inicial.includes(searchTerm)
-          );
-      });
-      setDatosFiltrados(filtered);
-    };
+   
+  const [datosFiltrados, setDatosFiltrados] = useState(HorasExtras);
+   
+  useEffect(() => {
+    setDatosFiltrados(HorasExtrasAA)
+  }, [HorasExtras])
+
+  const HorasExtrasAA = HorasExtras.filter(
+    (horasExtras) => horasExtras.estado === "Autorizado" || horasExtras.estado === "Aprobado"
+  );
+
+  const filterData = ( searchTerm ) => {
+    const filtered = HorasExtrasAA.filter((horas) => {
+        const horasextras_id = horas.horasextras_id.toLowerCase();
+        const nombre_empleado = horas.responsable.nombre.toLowerCase();
+        const ot = horas.ot.toLowerCase();
+        const fecha = horas.fecha.toString().toLowerCase();
+        const hora_final = horas.hora_final.toLowerCase();
+        const hora_inicial = horas.hora_inicial.toLowerCase();
+        return (
+            horasextras_id.includes(searchTerm)  ||
+            nombre_empleado.includes(searchTerm) ||
+            ot.includes(searchTerm)              ||
+            fecha.includes(searchTerm)           ||
+            hora_final.includes(searchTerm)      ||
+            hora_inicial.includes(searchTerm)
+        );
+    });
+    setDatosFiltrados(filtered);
+  };
 
   return (
-    <div className="w-full h-auto bg-gray-200 flex flex-col justify-start items-start justify-items-center">
-      <div className='w-full h-auto bg-gray-200 gap-2 flex justify-evenly items-center justify-items-center p-2 '>
-        <input 
-          type="text" 
-          placeholder='Buscar...' 
-          className='w-full h-[45px] text-black px-4 py-2 focus:outline-none bg-white border border-black rounded-md ' 
-          onChange={(e) => filterData(e.target.value.toLowerCase())}
-        />
-      </div>
-      <div  className=' hidden w-full h-auto border-b-2 border-[#323c7c] cursor-pointer md:flex flex-col md:flex-row justify-center items-center justify-items-center bg-white'>
-          <div className='w-full py-4 md:w-full h-full flex flex-col md:flex-row justify-center items-center justify-items-center bg-[#323c7c] text-white'>
-            <div className={`${Auth ? 'w-[14%]' : 'hidden'} h-auto flex justify-center items-center`}>
-                <span className='font-bold'> Nombre </span>
-            </div>
-            <div className={`${Auth ? 'w-[14%]' : 'w-[16%]'} h-auto flex justify-center items-center`}>
-                <span className='font-bold'> ESTADO </span>
-            </div>
-            <div className={`${Auth ? 'w-[14%]' : 'w-[16%]'} h-auto flex justify-center items-center`}>
-                <span className='font-bold'> OT </span>
-            </div>
-            <div className={`${Auth ? 'w-[14%]' : 'w-[16%]'} h-auto flex justify-center items-center`}>
-                <span className='font-bold'> FECHA  </span>
-            </div>
-            <div className={`${Auth ? 'w-[14%]' : 'w-[16%]'} h-auto flex justify-center items-center`}>
-                <span className='font-bold'> HORA INICIO </span>
-            </div>
-            <div className={`${Auth ? 'w-[14%]' : 'w-[16%]'} h-auto flex justify-center items-center`}>
-                <span className='font-bold'> HORA FIN </span>
-            </div>
-            <div className={`${Auth ? 'w-[14%]' : 'w-[16%]'} h-auto flex justify-center items-center`}>
-                <span className='font-bold'> DETALLES </span>
-            </div>
-          </div>
-      </div>
+    <div className="w-full h-full flex flex-col px-4 xl:px-96 pb-16 bg-gray-800 justify-start items-start justify-items-center gap-2">
+      <input 
+        type="text" 
+        placeholder='Buscar...' 
+        className='w-full h-[45px] px-4 py-2 mt-4 focus:outline-none bg-gray-600 text-white placeholder-white' 
+        onChange={(e) => filterData(e.target.value.toLowerCase())}
+      />
       {
         datosFiltrados 
         ?  
           datosFiltrados.map((horasExtras) => (
-                <div key={horasExtras.id} onClick = { () => {
-                  setHoraSelected({
-                    horasextras_id:horasExtras.horasextras_id,
-                    empleado_id :horasExtras.responsable.nombre,
-                    fecha:horasExtras.fecha,
-                    hora_inicial:horasExtras.hora_inicial,
-                    hora_final:horasExtras.hora_final,
-                    cant_Horas:horasExtras.cant_Horas,
-                    estado:horasExtras.estado,
-                    ot:horasExtras.ot,
-                    observaciones: horasExtras.observaciones
-                  })
-                  setModalShow(true)
-                }} className='w-full h-auto border-b-2  cursor-pointer  px-4 py-4 gap-3  flex flex-col justify-center items-center justify-items-center bg-white'>
-                    <div className='w-full  h-full flex flex-col md:flex-row text-center justify-evenly items-start justify-items-center'>
-                      <div className={`${Auth ? 'w-full lg:w-[14%]' : 'w-full md:hidden'} h-full flex justify-start lg:justify-center items-center`}>
-                        <span className='font-semibold'><span className="sm:hidden"> Trabajador: </span> {horasExtras.responsable.nombre}</span>
-                      </div>
-                      <div className={`${Auth ? 'w-full lg:w-[14%]' : 'w-full md:w-[16%]'} h-full flex justify-start lg:justify-center items-center`}>
-                        <span className='font-semibold'><span className="sm:hidden"> Estado: </span> {horasExtras.estado}</span>
-                      </div>
-                      <div className={`${Auth ? 'w-full lg:w-[14%]' : 'w-full md:w-[16%]'} h-full flex justify-start lg:justify-center items-center`}>
-                        <span className='font-semibold'><span className="sm:hidden"> OT: </span> {horasExtras.ot}</span>
-                      </div>
-                      <div className={`${Auth ? 'w-full lg:w-[14%]' : 'w-full md:w-[16%]'} h-full flex justify-start lg:justify-center items-center`}>
-                        <span className='font-semibold'><span className="sm:hidden"> Fecha: </span> {horasExtras.fecha.toString()}</span>
-                      </div>
-                      <div className={`${Auth ? 'w-full lg:w-[14%]' : 'w-full md:w-[16%]'} h-full flex justify-start lg:justify-center items-center`}>
-                        <span className='font-semibold'><span className="sm:hidden"> Hora Inicial: </span> {horasExtras.hora_inicial}</span>
-                      </div>
-                      <div className={`${Auth ? 'w-full lg:w-[14%]' : 'w-full md:w-[16%]'} h-full flex justify-start lg:justify-center items-center`}>
-                        <span className='font-semibold'><span className="sm:hidden"> Hora Final: </span> {horasExtras.hora_final}</span>
-                      </div>
-                      <div className={`${Auth ? 'w-full lg:w-[14%]' : 'w-full md:w-[16%]'} h-full flex justify-start lg:justify-center items-center`}>
-                        <span className='font-semibold'><span className="sm:hidden"> Detalles: </span> {horasExtras.detalles}</span>
-                      </div>
-                    </div>
+              <div 
+                key={horasExtras.horasextras_id} 
+                className='w-full h-auto border-b-2  cursor-pointer gap-3 pb-2 flex flex-col justify-center items-start justify-items-center bg-white rounded-sm shadow-sm shadow-black'
+              >
+                <div className={` ${ horasExtras.estado === 'Pendiente' ? 'bg-red-500 text-white font-bold' : horasExtras.estado === 'Autorizado' ? 'bg-green-500 text-white font-bold' : horasExtras.estado === 'Desautorizado' ? 'bg-red-500 text-white font-bold' : 'bg-yellow-500 text-black font-bold' } w-full h-auto px-4 py-2 rounded-sm `}>
+                  { horasExtras.estado }
                 </div>
+                <div className="w-full flex flex-col sm:flex-row justify-between items-start sm:items-center px-4">
+                  <div className={`${Auth ? 'block' : 'hidden'}`}>
+                    Responsable: <span className="font-bold"> { horasExtras.responsable.nombre }</span>
+                  </div>
+                  <div>
+                    Fecha: { horasExtras.fecha }
+                  </div>
+                </div>
+                <div className="w-full flex  flex-col sm:flex-row justify-between items-start sm:items-center px-4">
+                  <div>
+                    Hora Inicial: { horasExtras.hora_inicial }
+                  </div>
+                  <div>
+                    Hora Final: { horasExtras.hora_final }
+                  </div>  
+                </div>
+                <div className="w-full flex  flex-col sm:flex-row justify-between items-start sm:items-center px-4">
+                  <div>
+                    Cantidad Horas: { horasExtras.cant_Horas }
+                  </div> 
+                  <div>
+                    OT: { horasExtras.ot }
+                  </div>
+                </div>
+                <div className="w-full flex  flex-col sm:flex-row justify-between items-start sm:items-center px-4">
+                  Observaciones: { horasExtras.observaciones }
+                </div> 
+              </div>
             ))
         : null
-      }
-      <Modal
-        isVisible = { ModalShow }
-        tittle = {` Detalles de Hora `}
-        onClose = { () => setModalShow(false) }
-      >
-        <div className="w-full h-auto p-4 flex flex-col justify-center items-center gap-3 ">
-          <div className="w-full flex justify-start items-center rounded-md border border-black px-4 py-2">
-           TRABAJADOR : { HoraSelected.empleado_id }
-          </div>
-          <div className="w-full flex flex-row justify-start items-center gap-3">
-            <div className="w-1/2 border border-black rounded-md px-4 py-2">
-              Hora de inicio: { HoraSelected.hora_inicial }
-            </div>
-            <div className="w-1/2 border border-black rounded-md px-4 py-2">
-              Hora de finalizacion: { HoraSelected.hora_final }
-            </div>
-          </div>
-          <div className="w-full flex flex-row justify-start items-center gap-3">
-            <div className="w-1/2 border border-black rounded-md px-4 py-2">
-              OT: { HoraSelected.ot }
-            </div>
-            <div className="w-1/2 border border-black rounded-md px-4 py-2">
-              Fecha: { HoraSelected.fecha }
-            </div>
-          </div>
-          <div className="w-full flex justify-start items-center rounded-md border border-black px-4 py-2">
-           OBSERVACIONES : { HoraSelected.observaciones }
-          </div>
-        </div>
-      </Modal>
+      } 
     </div>
   )
 }

@@ -18,7 +18,7 @@ export default function EditBonos({ BonoData , onClose }) {
       data.Lugar       = formValue.Lugar.toUpperCase()
       data.Ot          = formValue.Ot
       data.tipe        = formValue.tipe
-      post(`/bono/update`)
+      post(`/bonos/update`)
       onClose()
     }
   })

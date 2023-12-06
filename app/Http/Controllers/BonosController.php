@@ -5,19 +5,26 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Models\Empleado;
-use App\Models\Bono; 
+use App\Models\Bono;
+use App\Models\BonoHistory;
 
 class BonosController extends Controller
 {
-
     public function aprobada(Request $request)
     {        
         try {
             Bono::where('bono_id', 'LIKE', $request -> bono_id) -> update([
                 'estado' => 'Aprobado'
             ]);
+            BonoHistory::create([
+                'bono_history_id' => uniqid(TRUE),
+                'bono_id'         => $request -> bono_id,
+                'user_id'         => $request -> user_id,
+                'state'           => 'Aprobado'
+            ]);
             return redirect() -> route('home') -> with('status', 'Bono Aprobado');
         } catch (\Throwable $th) {
+            dd($th);
             return redirect() -> route('home') -> with('error', 'Problema Aprobando Bono');
         }
     }
@@ -28,6 +35,12 @@ class BonosController extends Controller
             Bono::where('bono_id', 'LIKE', $request -> bono_id) -> update([
                 'estado'   => 'Desaprobado',
                 'detalles' => $request -> descripcion
+            ]);
+            BonoHistory::create([
+                'bono_history_id' => uniqid(TRUE),
+                'bono_id'         => $request -> bono_id,
+                'user_id'         => $request -> user_id,
+                'state'           => 'Desaprobado'
             ]);
             return redirect() -> route('home') -> with('status', 'Bono desaprobado');
         } catch (\Throwable $th) {
@@ -40,6 +53,12 @@ class BonosController extends Controller
         try {
             Bono::where('bono_id', 'LIKE', $request -> bono_id) -> update([
                 'estado' => 'Autorizado'
+            ]);
+            BonoHistory::create([
+                'bono_history_id' => uniqid(TRUE),
+                'bono_id'         => $request -> bono_id,
+                'user_id'         => $request -> user_id,
+                'state'           => 'Autorizado'
             ]);
             return redirect() -> route('home') -> with('status', 'Bono Autorizado');
         } catch (\Throwable $th) {
@@ -55,6 +74,12 @@ class BonosController extends Controller
                 Bono::where('bono_id', 'LIKE', $request -> bono_id) -> update([
                     'estado'   => 'Desautorizado',
                     'detalles' => $request -> descripcion
+                ]);
+                BonoHistory::create([
+                    'bono_history_id' => uniqid(TRUE),
+                    'bono_id'         => $request -> bono_id,
+                    'user_id'         => $request -> user_id,
+                    'state'           => 'Desautorizado'
                 ]);
                 return redirect() -> route('home') -> with('status', 'Bono desautorizado');
             }else{
@@ -88,11 +113,10 @@ class BonosController extends Controller
         }
     }
 
-    public function update(Request $request){
-         
+    public function update(Request $request)
+    {
         try {
             $ot = $request -> tipe.$request -> Ot;
-
             Bono::where('bono_id', 'LIKE', $request -> bono_id) -> update([ 
                 'lugar_bono'   => $request -> Lugar,
                 'fecha_bono'   => $request -> Fecha,

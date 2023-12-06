@@ -9,6 +9,8 @@ class HoraHistory extends Model
 {
     use HasFactory;
 
+    protected $table = 'horas_history';
+
     protected $fillable = [
         'horas_history_id',
         'horasextras_id',

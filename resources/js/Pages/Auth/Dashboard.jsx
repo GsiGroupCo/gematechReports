@@ -13,7 +13,7 @@ import { Toaster, toast } from 'sonner'
 
 
 export default function Dashboard({ PermisosData, HorasData, BonosData, status, error, Personal, Admin }) {
-
+ 
     const [Permisos, setPermisos] = useState()
     const [Horas, setHoras] = useState()
     const [Bonos, setBonos] = useState()
@@ -89,20 +89,38 @@ export default function Dashboard({ PermisosData, HorasData, BonosData, status, 
     }
 
     return (
-        <main className='w-full h-screen'> 
+        <main className='w-full h-screen overflow-y-auto overflow-hidden'> 
             <Toaster richColors position="top-center"/>
             <Appbar>
                 <div className='w-full h-full flex justify-evenly items-center gap-3'>
                     <div className='w-[150px] md:w-auto px-2 py-1 h-auto flex flex-col md:flex-row justify-center items-center justify-items-center gap-3'> 
-                        <button onClick={ () => ChangeToHoras() } className={ ` w-full md:w-auto ${ HorasPanel ? 'bg-white text-black' : 'bg-gray-800 text-white' } px-4 py-2 rounded-md  font-bold shadow-sm shadow-black cursor-pointer hover:bg-white hover:text-black transition duration-700 ease-out`}>
-                        Horas Extras
-                        </button>
-                        <button onClick={ () => ChangeToBonos() } className={`w-full md:w-auto  ${ BonosPanel ? 'bg-white text-black' : 'bg-gray-800 text-white' } px-4 py-2 rounded-md  font-bold shadow-sm shadow-black cursor-pointer hover:bg-white hover:text-black transition duration-700 ease-out`}>
-                        Bonos
-                        </button>
-                        <button onClick={ () => ChangeToPermisos() } className={`w-full md:w-auto  ${ PermisosPanel ? 'bg-white text-black' : 'bg-gray-800 text-white' } px-4 py-2 rounded-md  font-bold shadow-sm shadow-black cursor-pointer hover:bg-white hover:text-black transition duration-700 ease-out`}>
-                        Permisos
-                        </button>
+                        {
+                            Admin.cargo === 'Logistica' ? (
+                                <>
+                                    <button onClick={ () => ChangeToHoras() } className={ ` w-full md:w-auto ${ HorasPanel ? 'bg-white text-black' : 'bg-gray-800 text-white' } px-4 py-2 rounded-md  font-bold shadow-sm shadow-black cursor-pointer hover:bg-white hover:text-black transition duration-700 ease-out`}>
+                                        Horas Extras
+                                    </button>
+                                </>
+                            ) : Admin.cargo === 'Gerencia' || Admin.cargo === 'Coordinador de MTTO' || Admin.cargo === 'Gerente general' || Admin.cargo === 'CONTABILIDAD'  ? (
+                                <>
+                                    <button onClick={ () => ChangeToHoras() } className={ ` w-full md:w-auto ${ HorasPanel ? 'bg-white text-black' : 'bg-gray-800 text-white' } px-4 py-2 rounded-md  font-bold shadow-sm shadow-black cursor-pointer hover:bg-white hover:text-black transition duration-700 ease-out`}>
+                                        Horas Extras
+                                    </button>
+                                    <button onClick={ () => ChangeToBonos() } className={`w-full md:w-auto  ${ BonosPanel ? 'bg-white text-black' : 'bg-gray-800 text-white' } px-4 py-2 rounded-md  font-bold shadow-sm shadow-black cursor-pointer hover:bg-white hover:text-black transition duration-700 ease-out`}>
+                                        Bonos
+                                    </button>
+                                    <button onClick={ () => ChangeToPermisos() } className={`w-full md:w-auto  ${ PermisosPanel ? 'bg-white text-black' : 'bg-gray-800 text-white' } px-4 py-2 rounded-md  font-bold shadow-sm shadow-black cursor-pointer hover:bg-white hover:text-black transition duration-700 ease-out`}>
+                                        Permisos
+                                    </button>
+                                </>
+                            ) :  Admin.cargo === 'AUX PERMISOS'  || Admin.cargo === 'HSEQ / GESTION DE TALENTO HUMANO' ? (
+                                <> 
+                                    <button onClick={ () => ChangeToPermisos() } className={`w-full md:w-auto  ${ PermisosPanel ? 'bg-white text-black' : 'bg-gray-800 text-white' } px-4 py-2 rounded-md  font-bold shadow-sm shadow-black cursor-pointer hover:bg-white hover:text-black transition duration-700 ease-out`}>
+                                        Permisos
+                                    </button>
+                                </>
+                            ) : null
+                        }
                     </div>
                     <div className='w-[150px] md:w-auto h-full flex  flex-col md:flex-row justify-center items-center justify-items-center gap-3'> 
                         <Link href="/logout" method="get" as="button" type="button" className={`w-full md:w-auto bg-gray-800 text-white px-4 py-2 rounded-md  font-bold shadow-sm shadow-black cursor-pointer hover:bg-white hover:text-black transition duration-700 ease-out`}>
@@ -114,34 +132,24 @@ export default function Dashboard({ PermisosData, HorasData, BonosData, status, 
                     </div>
                 </div>
             </Appbar>
-            <div className={`w-full h-full flex flex-col justify-center items-center justify-items-center  `} >
-                {
-                    DefaultPanel ? <div className='w-full h-full bg-gray-800 flex flex-col justify-center items-center'>
-                        <CursorIcon color="#fff" width={`70`} height={`70`} />
-                        <span className='text-white font-semibold'> Por favor selecciona una opcion </span>
-                        <span className='text-white font-semibold'> Horas Extras </span>
-                        <span className='text-white font-semibold'> Bonos </span>
-                        <span className='text-white font-semibold'> Permisos </span>
-                    </div> : null
-                }
-                {
-                    HorasPanel ? <PanelHoras HorasExtras = { Horas } Auth = { true } Admin = { Admin }  /> : null
-                }
-                {
-                    BonosPanel ? <PanelBonos  Bonos = { Bonos } Auth = { true } Admin = { Admin } /> : null
-                }
-                {
-                    PermisosPanel ? 
-                        <div className='w-full h-full bg-white flex flex-col justify-start items-start justify-items-center'>
-                            <div className="w-full h-full bg-white flex flex-col justify-start items-start justify-items-center">
-                                {
-                                    Permisos ? <PanelPermisos Admin = { Admin } Auth = { true } Permisos = { Permisos } /> : null
-                                }
-                            </div>
-                        </div>
-                    : null
-                }
-            </div>
+            {
+                DefaultPanel ? <div className='w-full h-full bg-gray-800 flex flex-col justify-center items-center'>
+                    <CursorIcon color="#fff" width={`70`} height={`70`} />
+                    <span className='text-white font-semibold'> Por favor selecciona una opcion </span>
+                    <span className='text-white font-semibold'> Horas Extras </span>
+                    <span className='text-white font-semibold'> Bonos </span>
+                    <span className='text-white font-semibold'> Permisos </span>
+                </div> : null
+            }
+            {
+                HorasPanel ? <PanelHoras  HorasExtras = { Horas } Auth = { true } Admin = { Admin } Empleados = { Personal } /> : null
+            }
+            {
+                BonosPanel ? <PanelBonos  Bonos = { Bonos } Auth = { true } Admin = { Admin } /> : null
+            }
+            {
+                PermisosPanel ? <PanelPermisos Permisos = { Permisos} Auth = { true } Admin = {Admin} /> : null
+            }
             <Modal 
                 tittle='Configuracion'
                 isVisible = { ModalShow }

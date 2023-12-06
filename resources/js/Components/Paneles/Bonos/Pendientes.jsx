@@ -5,64 +5,76 @@ import EditBonos from "../../forms/Bonos/EditBonos";
 import DesaprobarBono from "../../forms/Bonos/DesaprobarBono";
 import DesautorizarBono from "../../forms/Bonos/DesautorizarBono";
 
-const Pendientes = ({Bonos, Auth, Admin}) => {
-
-    const { data, post } = useForm();
-
-    const [ModalShow, setModalShow] = useState(false)
-    const [ModalInfoShow, setModalInfoShow] = useState(false)
+const Pendientes = ({Bonos, Auth, Admin }) => {
     
+    const { data, post } = useForm(); 
+
     const [Editar, setEditar] = useState(false)
     const [Desaprobar, setDesaprobar] = useState(false)
     const [Desautorizar, setDesautorizar] = useState(false)
-
-    const [BonoSelected, setBonoSelected] = useState({
-        bono_id      : "",
-        ot_id        : "",
-        empleado_id  : "",
-        lugar_bono   : "",
-        fecha_bono   : "",
-        cliente      : "",
-        observaciones: ""
-    }) 
-
+ 
     function AutorizarBono(bono_id){
         data.bono_id = bono_id
+        data.user_id = Admin.user_id
         post(`/bono/autorizacion`)
     }
 
     function AprobarBono(bono_id){
         data.bono_id = bono_id
+        data.user_id = Admin.user_id
         post(`/bono/aprobada`)
     }
+    
+    function EditarRegistro(Bonos){
+        setDesaprobar(false)
+        setDesautorizar(false)
+        setEditar(true)
+        setBonoSelected({
+            bono_id    : Bonos.bono_id,
+            ot_id      : Bonos.ot_id,
+            lugar_bono : Bonos.lugar_bono,
+            fecha_bono : Bonos.fecha_bono,
+            cliente    : Bonos.cliente, 
+        })  
+        setModalShow(true)
+    }
 
-    const BonosPendiente = Bonos.filter(
+    function DesaprobarRegistro(Bonos){
+        setEditar(false)
+        setDesautorizar(false)
+        setDesaprobar(true)
+        setBonoSelected({
+            bono_id     : Bonos.bono_id,
+            ot_id       : Bonos.ot_id,
+            lugar_bono  : Bonos.lugar_bono,
+            fecha_bono  : Bonos.fecha_bono,
+            cliente     : Bonos.cliente, 
+        })  
+        setModalShow(true)
+    }
+
+    
+    useEffect(() => {
+        setBonosPendientes(BonosP)
+        setBonosAutorizar(BonosA)
+        setBonosPenAut(BonosPA)
+    }, [Bonos]);
+
+    const BonosP = Bonos.filter(
         (bonos) => bonos.estado === "Pendiente"
     );
-    
-    const BonosxAutorizar = Bonos.filter(
-        (bonos) => bonos.estado === "Aprobado"
-    );
-    
-    const [datosFiltrados, setDatosFiltrados] = useState();
-    const [BonosAutorizar, setBonosAutorizar] = useState();
-    
-    useEffect(() => {
-        setDatosFiltrados(BonosPendiente)
-    }, [Bonos]);
-
-    useEffect(() => {
-        setBonosAutorizar(BonosxAutorizar)
-    }, [Bonos]);
-
-    const FiltrarBonosPendientes = ( searchTerm ) => {
-        const filteredPendientes  = BonosPendiente.filter((bonosPendientes) => { 
-            const nombre_empleado = bonosPendientes.responsable.nombre.toLowerCase();
-            const ot_id           = bonosPendientes.ot_id.toLowerCase();
-            const fecha_bono      = bonosPendientes.fecha_bono.toString().toLowerCase();
-            const cliente         = bonosPendientes.cliente.toLowerCase();
-            const lugar           = bonosPendientes.lugar_bono.toLowerCase();
+ 
+    const [BonosPendientes, setBonosPendientes] = useState(BonosP);
+    const FiltrarPendientes = ( searchTerm ) => {
+        const filteredPendientes  = BonosP.filter((data) => { 
+            const bono_id         = data.bono_id.toLowerCase();
+            const nombre_empleado = data.responsable.nombre.toLowerCase();
+            const ot_id           = data.ot_id.toLowerCase();
+            const fecha_bono      = data.fecha_bono.toString().toLowerCase();
+            const cliente         = data.cliente.toLowerCase();
+            const lugar           = data.lugar_bono.toLowerCase();
             return ( 
+                bono_id.includes(searchTerm)         ||
                 nombre_empleado.includes(searchTerm) ||
                 ot_id.includes(searchTerm)           ||
                 fecha_bono.includes(searchTerm)      ||
@@ -70,337 +82,242 @@ const Pendientes = ({Bonos, Auth, Admin}) => {
                 lugar.includes(searchTerm)
             );
         });
-        setDatosFiltrados(filteredPendientes); 
+        setBonosPendientes(filteredPendientes); 
     }; 
 
-    const FiltrarBonosAutorizar = ( searchTerm ) => {
-        const filteredAutorizados = BonosxAutorizar.filter((bonosAutorizar) => { 
-            const nombre_empleado = bonosAutorizar.responsable.nombre.toLowerCase();
-            const ot_id           = bonosAutorizar.ot_id.toLowerCase();
-            const fecha_bono      = bonosAutorizar.fecha_bono.toString().toLowerCase();
-            const cliente         = bonosAutorizar.cliente.toLowerCase();
-            const lugar           = bonosAutorizar.lugar_bono.toLowerCase();
+    const BonosA = Bonos.filter(
+        (bonos) => bonos.estado === "Aprobado"
+    );
+    
+    const [BonosAutorizar, setBonosAutorizar] = useState(BonosA);
+    const FiltrarAutorizados = ( searchTerm ) => {
+        const FiltrarAuth  = BonosA.filter((data) => { 
+            const bono_id         = data.bono_id.toLowerCase();
+            const nombre_empleado = data.responsable.nombre.toLowerCase();
+            const ot_id           = data.ot_id.toLowerCase();
+            const fecha_bono      = data.fecha_bono.toString().toLowerCase();
+            const cliente         = data.cliente.toLowerCase();
+            const lugar           = data.lugar_bono.toLowerCase();
             return ( 
                 nombre_empleado.includes(searchTerm) ||
+                bono_id.includes(searchTerm)         ||
                 ot_id.includes(searchTerm)           ||
                 fecha_bono.includes(searchTerm)      ||
                 cliente.includes(searchTerm)         ||
                 lugar.includes(searchTerm)
             );
-        }); 
-        setBonosAutorizar(filteredAutorizados); 
-    };
+        });
+        setBonosAutorizar(FiltrarAuth); 
+    }; 
     
-
+    const BonosPA = Bonos.filter(
+        (bonos) => bonos.estado === "Aprobado" || bonos.estado === "Pendiente"
+    );
+    const [BonosPenAut, setBonosPenAut] = useState(BonosPA);
+    const FiltrarPenAut = ( searchTerm ) => {
+        const FiltrarPenAut  = BonosPenAut.filter((data) => { 
+            const bono_id         = data.bono_id.toLowerCase();
+            const nombre_empleado = data.responsable.nombre.toLowerCase();
+            const ot_id           = data.ot_id.toLowerCase();
+            const fecha_bono      = data.fecha_bono.toString().toLowerCase();
+            const cliente         = data.cliente.toLowerCase();
+            const lugar           = data.lugar_bono.toLowerCase();
+            return ( 
+                nombre_empleado.includes(searchTerm) ||
+                bono_id.includes(searchTerm)         ||
+                ot_id.includes(searchTerm)           ||
+                fecha_bono.includes(searchTerm)      ||
+                cliente.includes(searchTerm)         ||
+                lugar.includes(searchTerm)
+            );
+        });
+        setBonosAutorizar(FiltrarPenAut); 
+    }; 
+ 
   return (
     <>
         {
-            Admin === 'Coordinador de MTTO' ? (
-                <div className="w-full h-full bg-white flex flex-col justify-start items-start justify-items-center  ">
-                    <div className='w-full h-auto bg-white gap-2 flex justify-evenly items-center justify-items-center p-2 '>
-                        <input 
-                            type="text" 
-                            placeholder='Buscar...' 
-                            className='w-full h-[45px] text-black px-4 py-2 focus:outline-none bg-white border border-black rounded-md ' 
-                            onChange={(e) => FiltrarBonosPendientes(e.target.value.toLowerCase())}
-                        />
-                    </div>
-                    <div  className=' hidden w-full h-auto border-b-2  cursor-pointer md:flex flex-col md:flex-row justify-center items-center justify-items-center bg-white'>
-                        <div className='w-full h-auto flex bg-[#323c7c] text-white'>
-                            <div className='w-full py-4 md:w-full h-full flex flex-col md:flex-row '>
-                                <div className={`${Auth ? 'w-full md:w-[19%]' : 'hidden'} h-auto flex justify-start md:justify-center items-center`}>
-                                    <span className='font-bold'> Nombre </span>
-                                </div>
-                                <div className={`${Auth ? 'w-full md:w-[19%]' : 'w-full md:w-[25%]'} h-auto flex justify-start md:justify-center items-center`}>
-                                    <span className='font-bold'> OT </span>
-                                </div>
-                                <div className={`${Auth ? 'w-full md:w-[19%]' : 'w-full md:w-[25%]'} h-auto flex justify-start md:justify-center items-center`}>
-                                    <span className='font-bold'> FECHA  </span>
-                                </div>
-                                <div className={`${Auth ? 'w-full md:w-[19%]' : 'w-full md:w-[25%]'} h-auto flex justify-start md:justify-center items-center`}>
-                                    <span className='font-bold'> CLIENTE </span>
-                                </div>
-                                <div className={`${Auth ? 'w-full md:w-[19%]' : 'w-full md:w-[25%]'} h-auto flex justify-start md:justify-center items-center`}>
-                                    <span className='font-bold'> LUGAR </span>
-                                </div>
-                            </div>
-                            <div className="w-[500px] h-auto flex justify-center items-center ">
-                                <span className='font-bold'> ACCIONES </span>
-                            </div>
-                        </div>
-                    </div>
+            Admin.cargo === 'Coordinador de MTTO' ? (
+                <div className="w-full h-full flex flex-col px-4 xl:px-96 pb-16 bg-gray-800 justify-start items-start justify-items-center gap-2">
+                    <input 
+                        type="text" 
+                        placeholder='Buscar...' 
+                        className='w-full h-[45px] px-4 py-2 mt-4 focus:outline-none bg-gray-600 text-white placeholder-white' 
+                        onChange={(e) => FiltrarPendientes(e.target.value.toLowerCase())}
+                    /> 
                     {
-                        datosFiltrados 
-                        ?  
-                            datosFiltrados.map((Bonos) => (
-                            <div key={Bonos.bono_id} className='w-full  h-auto border-b-2  cursor-pointer gap-3  px-4 py-2  flex flex-col md:flex-row justify-center items-center justify-items-center bg-white'>
-                                <div className='w-full md:w-full h-full flex flex-col text-center  md:flex-row justify-start items-center justify-items-center'>
-                                    <div className={`${Auth ? 'w-full lg:w-[20%]' : 'hidden'} h-auto flex  justify-start md:justify-center items-center`}>
-                                        <span className='font-bold'><span className="sm:hidden"> Trabajador: </span>{Bonos.responsable.nombre}</span>
-                                    </div>
-                                    <div className={`${Auth ? 'w-full lg:w-[20%]' : 'w-full md:w-[25%]'} h-auto flex justify-start md:justify-center items-center`}>
-                                    <span className='font-semibold'><span className="sm:hidden"> OT: </span>{Bonos.ot_id}</span>
-                                    </div>
-                                    <div className={`${Auth ? 'w-full lg:w-[20%]' : 'w-full md:w-[25%]'} h-auto flex justify-start md:justify-center items-center`}>
-                                    <span className='font-semibold'><span className="sm:hidden"> FECHA: </span>{Bonos.fecha_bono.toString()}</span>
-                                    </div>
-                                    <div className={`${Auth ? 'w-full lg:w-[20%]' : 'w-full md:w-[25%]'} h-auto flex justify-start md:justify-center items-center`}>
-                                    <span className='font-semibold'><span className="sm:hidden"> CLIENTE: </span> {Bonos.cliente}</span>
-                                    </div>
-                                    <div className={`${Auth ? 'w-full lg:w-[20%]' : 'w-full md:w-[25%]'} h-auto flex justify-start md:justify-center items-center`}>
-                                    <span className='font-semibold'><span className="sm:hidden"> LUGAR: </span> {Bonos.lugar_bono}</span>
-                                    </div>
-                                </div>
-                                <div className={` ${Auth ? 'w-full md:w-[500px] h-full flex flex-col lg:flex-row justify-center items-end justify-items-center gap-3' : 'hidden' } `}>
-                                    <div onClick = { () => AprobarBono( Bonos.bono_id )} className='w-full md:w-1/2 h-auto px-4 py-2 flex justify-center items-center text-white bg-green-500 hover:bg-green-800 hover:border-green-500 border border-white rounded-md hover:text-white transition duration-700 ease-out font-bold '>
-                                        Aprobar
-                                    </div>
-                                    <div onClick = { () => {
-                                        setDesaprobar(false)
-                                        setDesautorizar(false)
-                                        setEditar(true)
-                                        setBonoSelected({
-                                            bono_id    : Bonos.bono_id,
-                                            ot_id      : Bonos.ot_id,
-                                            lugar_bono : Bonos.lugar_bono,
-                                            fecha_bono : Bonos.fecha_bono,
-                                            cliente    : Bonos.cliente, 
-                                        })  
-                                        setModalShow(true)
-                                    }}   className='w-full md:w-1/2 h-auto px-4 py-2 text-white bg-yellow-500 hover:bg-yellow-800 hover:border-yellow-500 cursor-pointer border border-white rounded-md hover:text-white transition duration-700 ease-out font-bold flex justify-center items-center'>
-                                        Editar
-                                    </div>   
-                                    <div className='w-full md:w-1/4 h-auto px-4 py-2 text-white bg-blue-500 hover:bg-blue-800 hover:border-blue-500 cursor-pointer border border-white rounded-md hover:text-white transition duration-700 ease-out font-bold flex justify-center items-center' onClick={ () => {
-                                        setEditar(false)
-                                        setDesaprobar(false)
-                                        setDesautorizar(false)
-                                        setBonoSelected({
-                                            bono_id      : Bonos.bono_id,
-                                            empleado_id  : Bonos.responsable.nombre,
-                                            ot_id        : Bonos.ot_id,
-                                            lugar_bono   : Bonos.lugar_bono,
-                                            fecha_bono   : Bonos.fecha_bono,
-                                            cliente      : Bonos.cliente, 
-                                            observaciones: Bonos.observaciones
-                                        })  
-                                        setModalInfoShow(true)
-                                    }}
-                                    >
-                                        Informacion
-                                    </div>                                 
-                                    <div onClick = { () => {
-                                        setEditar(false)
-                                        setDesautorizar(false)
-                                        setDesaprobar(true)
-                                        setBonoSelected({
-                                            bono_id     : Bonos.bono_id,
-                                            ot_id       : Bonos.ot_id,
-                                            lugar_bono  : Bonos.lugar_bono,
-                                            fecha_bono  : Bonos.fecha_bono,
-                                            cliente     : Bonos.cliente, 
-                                        })  
-                                        setModalShow(true)
-                                    }}   className='w-full md:w-1/2 h-auto px-4 py-2 text-white bg-red-500 hover:bg-red-800 hover:border-red-500 cursor-pointer border border-white rounded-md hover:text-white transition duration-700 ease-out font-bold flex justify-center items-center'>
-                                        Desaprobar
-                                    </div>
-                                </div>
-                            </div>
-                            ))
-                        : null
-                    } 
-                    <Modal
-                        isVisible = { ModalInfoShow }
-                        tittle = {` Detalles de Bono `}
-                        onClose = { () => setModalInfoShow(false) }
-                    >
-                        <div className="w-full h-auto p-4 flex flex-col justify-center items-center gap-3 ">
-                        <div className="w-full flex justify-start items-center rounded-md border border-black px-4 py-2">
-                        TRABAJADOR : { BonoSelected.empleado_id }
-                        </div>
-                        <div className="w-full flex flex-row justify-start items-center gap-3">
-                            <div className="w-1/2 border border-black rounded-md px-4 py-2">
-                            Lugar : { BonoSelected.lugar_bono }
-                            </div>
-                            <div className="w-1/2 border border-black rounded-md px-4 py-2">
-                            Fecha: { BonoSelected.fecha_bono }
-                            </div>
-                        </div>
-                        <div className="w-full flex flex-row justify-start items-center gap-3">
-                            <div className="w-1/2 border border-black rounded-md px-4 py-2">
-                            OT: { BonoSelected.ot_id }
-                            </div>
-                            <div className="w-1/2 border border-black rounded-md px-4 py-2">
-                            Cliente: { BonoSelected.cliente }
-                            </div>
-                        </div>
-                        <div className="w-full flex justify-start items-center rounded-md border border-black px-4 py-2">
-                        OBSERVACIONES : { BonoSelected.observaciones }
-                        </div>
-                        </div>
-                    </Modal>
-                    {
-                        Editar ? (
-                            <Modal
-                                isVisible = { ModalShow }
-                                onClose   = { () => setModalShow(false) }
-                                tittle    = {` Editando Bono `}
+                        BonosPendientes  ?   BonosPendientes.map((Bonos) => (
+                            <div 
+                                key={Bonos.bono_id}
+                                className='w-full h-auto border-b-2  cursor-pointer gap-3 pb-2 flex flex-col justify-center items-start justify-items-center bg-white rounded-sm shadow-sm shadow-black'
                             >
-                                <EditBonos BonoData = { BonoSelected } onClose = { () => ModalShow(false) } />
-                            </Modal>
-                        ) : null
-                    }
-                    {
-                        Desaprobar ? (
-                            <Modal
-                                isVisible = { ModalShow }
-                                onClose   = { () => setModalShow(false) }
-                                tittle    = {` Desaprobando Bono `}
-                            >
-                                <DesaprobarBono BonoData = { BonoSelected } onClose = { () => ModalShow(false) } />
-                            </Modal>
-                        ) : null
+                                <div className={` flex flex-row justify-between ${ Bonos.estado === 'Pendiente' ? 'bg-red-500 text-white font-bold' : Bonos.estado === 'Autorizado' ? 'bg-green-500 text-white font-bold' : 'bg-yellow-500 text-black font-bold' } w-full h-auto px-4 py-2 rounded-sm `}>
+                                    <div className="w-auto">
+                                        { Bonos.estado }
+                                    </div>
+                                    <div className="w-auto flex gap-3">
+                                        <div onClick = {() => AprobarBono(Bonos.bono_id)} className="w-[25px] h-full bg-green-500  hover:bg-green-800 transition duration-700 ease-in-out rounded-full border border-white shadow shadow-black">
+                                            
+                                        </div>
+                                        <div onClick={()=> EditarRegistro(Bonos)} className="w-[25px] h-full bg-yellow-500 hover:bg-yellow-800 transition duration-700 ease-in-out rounded-full border border-white shadow shadow-black">
+                                            
+                                        </div>
+                                        <div onClick={() => DesaprobarRegistro(Bonos)} className="w-[25px] h-full bg-red-500 hover:bg-red-800 transition duration-700 ease-in-out rounded-full border border-white shadow shadow-black">
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="w-full flex flex-col sm:flex-row justify-between items-start sm:items-center px-4">
+                                    <div className={`${Auth ? 'block' : 'hidden'}`}>
+                                    Responsable: { Bonos.responsable.nombre }
+                                    </div>
+                                    <div>
+                                    Fecha: { Bonos.fecha_bono }
+                                    </div>
+                                </div>
+                                <div className="w-full flex  flex-col sm:flex-row justify-between items-start sm:items-center px-4">
+                                    <div>
+                                    Cliente: { Bonos.cliente }
+                                    </div>
+                                    <div>
+                                    Lugar: { Bonos.lugar_bono }
+                                    </div> 
+                                </div>
+                                <div className="w-full flex  flex-col sm:flex-row justify-between items-start sm:items-center px-4"> 
+                                    <div>
+                                    OT: { Bonos.ot_id }
+                                    </div>
+                                    <div>
+                                    Detalles: { Bonos.detalles }
+                                    </div>
+                                </div>
+                                <div className="w-full flex  flex-col sm:flex-row justify-between items-start sm:items-center px-4">
+                                    Observaciones: { Bonos.observaciones }
+                                </div> 
+                            </div>
+                        )) : null
                     }
                 </div>
-            ) : Admin === 'Gerencia' ||
-                Admin === 'Gerente general' ? 
-            (
-                <div className="w-full h-full bg-white flex flex-col justify-start items-start justify-items-center  ">
+            ) : Admin.cargo === 'Gerencia' ?  (
+                <div className="w-full h-full flex flex-col px-4 xl:px-96 pb-16 bg-gray-800 justify-start items-start justify-items-center gap-2">
+                    <input 
+                        type="text" 
+                        placeholder='Buscar...' 
+                        className='w-full h-[45px] px-4 py-2 mt-4 focus:outline-none bg-gray-600 text-white placeholder-white' 
+                        onChange={(e) => FiltrarAutorizados(e.target.value.toLowerCase())}
+                    /> 
                     {
-                        Desautorizar ? (
-                            <Modal
-                                isVisible = { ModalShow }
-                                onClose   = { () => setModalShow(false) }
-                                tittle    = {` Des-autorizando Bono `}
+                        BonosAutorizar ? BonosAutorizar.map((Bonos) => (
+                            <div 
+                                key={Bonos.bono_id}
+                                className='w-full h-auto border-b-2  cursor-pointer gap-3 pb-2 flex flex-col justify-center items-start justify-items-center bg-white rounded-sm shadow-sm shadow-black'
                             >
-                                <DesautorizarBono BonoData = { BonoSelected } onClose = { () => ModalShow(false) } />
-                            </Modal>
-                        ) : null
+                                <div className={` flex flex-row justify-between ${ Bonos.estado === 'Pendiente' ? 'bg-red-500 text-white font-bold' : Bonos.estado === 'Autorizado' ? 'bg-green-500 text-white font-bold' : 'bg-yellow-500 text-black font-bold' } w-full h-auto px-4 py-2 rounded-sm `}>
+                                    <div className="w-auto">
+                                        { Bonos.estado }
+                                    </div>
+                                    <div className="w-auto flex gap-3">
+                                        <div onClick = {() => AutorizarBono(Bonos.bono_id)} className="w-[25px] h-full bg-green-500  hover:bg-green-800 transition duration-700 ease-in-out rounded-full border border-white shadow shadow-black">
+                                            
+                                        </div>
+                                        <div onClick={()=> EditarRegistro(Bonos)} className="w-[25px] h-full bg-yellow-500 hover:bg-yellow-800 transition duration-700 ease-in-out rounded-full border border-white shadow shadow-black">
+                                            
+                                        </div>
+                                        <div onClick={() => DesaprobarRegistro(Bonos)} className="w-[25px] h-full bg-red-500 hover:bg-red-800 transition duration-700 ease-in-out rounded-full border border-white shadow shadow-black">
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="w-full flex flex-col sm:flex-row justify-between items-start sm:items-center px-4">
+                                    <div className={`${Auth ? 'block' : 'hidden'}`}>
+                                    Responsable: { Bonos.responsable.nombre }
+                                    </div>
+                                    <div>
+                                    Fecha: { Bonos.fecha_bono }
+                                    </div>
+                                </div>
+                                <div className="w-full flex  flex-col sm:flex-row justify-between items-start sm:items-center px-4">
+                                    <div>
+                                    Cliente: { Bonos.cliente }
+                                    </div>
+                                    <div>
+                                    Lugar: { Bonos.lugar_bono }
+                                    </div> 
+                                </div>
+                                <div className="w-full flex  flex-col sm:flex-row justify-between items-start sm:items-center px-4"> 
+                                    <div>
+                                    OT: { Bonos.ot_id }
+                                    </div>
+                                    <div>
+                                    Detalles: { Bonos.detalles }
+                                    </div>
+                                </div>
+                                <div className="w-full flex  flex-col sm:flex-row justify-between items-start sm:items-center px-4">
+                                    Observaciones: { Bonos.observaciones }
+                                </div> 
+                            </div>
+                        )) : null
                     }
-                    <Modal
-                        isVisible = { ModalInfoShow }
-                        tittle = {` Detalles de Bono `}
-                        onClose = { () => setModalInfoShow(false) }
-                    >
-                        <div className="w-full h-auto p-4 flex flex-col justify-center items-center gap-3 ">
-                        <div className="w-full flex justify-start items-center rounded-md border border-black px-4 py-2">
-                        TRABAJADOR : { BonoSelected.empleado_id }
-                        </div>
-                        <div className="w-full flex flex-row justify-start items-center gap-3">
-                            <div className="w-1/2 border border-black rounded-md px-4 py-2">
-                            Lugar : { BonoSelected.lugar_bono }
-                            </div>
-                            <div className="w-1/2 border border-black rounded-md px-4 py-2">
-                            Fecha: { BonoSelected.fecha_bono }
-                            </div>
-                        </div>
-                        <div className="w-full flex flex-row justify-start items-center gap-3">
-                            <div className="w-1/2 border border-black rounded-md px-4 py-2">
-                            OT: { BonoSelected.ot_id }
-                            </div>
-                            <div className="w-1/2 border border-black rounded-md px-4 py-2">
-                            Cliente: { BonoSelected.cliente }
-                            </div>
-                        </div>
-                        <div className="w-full flex justify-start items-center rounded-md border border-black px-4 py-2">
-                        OBSERVACIONES : { BonoSelected.observaciones }
-                        </div>
-                        </div>
-                    </Modal>
-                    <div className='w-full h-auto bg-white gap-2 flex justify-evenly items-center justify-items-center p-2 '>
-                        <input 
-                            type="text" 
-                            placeholder='Buscar...' 
-                            className='w-full h-[45px] text-black px-4 py-2 focus:outline-none bg-white border border-black rounded-md ' 
-                            onChange={(e) => FiltrarBonosAutorizar(e.target.value.toLowerCase())}
-                        />
-                    </div>
-                    <div  className=' hidden w-full h-auto border-b-2  cursor-pointer md:flex flex-col md:flex-row justify-center items-center justify-items-center bg-white'>
-                        <div className='w-full h-auto flex bg-[#323c7c] text-white'>
-                            <div className='w-full py-4 md:w-full h-full flex flex-col md:flex-row  '>
-                                <div className={`${Auth ? 'w-full md:w-[20%]' : 'hidden'} h-auto flex justify-start md:justify-center items-center`}>
-                                    <span className='font-bold'> Nombre </span>
-                                </div>
-                                <div className={`${Auth ? 'w-full md:w-[20%]' : 'w-full md:w-[25%]'} h-auto flex justify-start md:justify-center items-center`}>
-                                    <span className='font-bold'> OT </span>
-                                </div>
-                                <div className={`${Auth ? 'w-full md:w-[20%]' : 'w-full md:w-[25%]'} h-auto flex justify-start md:justify-center items-center`}>
-                                    <span className='font-bold'> FECHA  </span>
-                                </div>
-                                <div className={`${Auth ? 'w-full md:w-[20%]' : 'w-full md:w-[25%]'} h-auto flex justify-start md:justify-center items-center`}>
-                                    <span className='font-bold'> CLIENTE </span>
-                                </div>
-                                <div className={`${Auth ? 'w-full md:w-[20%]' : 'w-full md:w-[25%]'} h-auto flex justify-start md:justify-center items-center`}>
-                                    <span className='font-bold'> LUGAR </span>
-                                </div>
-                            </div>
-                            <div className="w-[500px] h-auto flex justify-center items-center ">
-                                <span className='font-bold'> ACCIONES </span>
-                            </div>
-                        </div>
-                    </div>
+                </div>
+            ) : Admin.cargo === 'Gerente general' ?  (
+                <div className="w-full h-full flex flex-col px-4 xl:px-96 pb-16 bg-gray-800 justify-start items-start justify-items-center gap-2">
+                    <input 
+                        type="text" 
+                        placeholder='Buscar...' 
+                        className='w-full h-[45px] px-4 py-2 mt-4 focus:outline-none bg-gray-600 text-white placeholder-white' 
+                        onChange={(e) => FiltrarPenAut(e.target.value.toLowerCase())}
+                    /> 
                     {
-                        BonosAutorizar 
-                        ?  
-                            BonosAutorizar.map((Bonos) => (
-                            <div key={Bonos.bono_id} className='w-full  h-auto border-b-2  cursor-pointer gap-3  px-4 py-2  flex flex-col md:flex-row justify-center items-center justify-items-center bg-white'>
-                                <div className='w-full md:w-full h-full flex flex-col text-center  md:flex-row justify-start items-center justify-items-center'>
-                                    <div className={`${Auth ? 'w-full md:w-[20%]' : 'hidden'} h-auto flex justify-start md:justify-center items-center`}>
-                                        <span className='font-bold'><span className="sm:hidden"> TRABAJADOR: </span>{Bonos.responsable.nombre}</span>
+                        BonosPenAut ? BonosPenAut.map((Bonos) => (
+                            <div 
+                                key={Bonos.bono_id}
+                                className='w-full h-auto border-b-2  cursor-pointer gap-3 pb-2 flex flex-col justify-center items-start justify-items-center bg-white rounded-sm shadow-sm shadow-black'
+                            >
+                                <div className={` flex flex-row justify-between ${ Bonos.estado === 'Pendiente' ? 'bg-red-500 text-white font-bold' : Bonos.estado === 'Autorizado' ? 'bg-green-500 text-white font-bold' : 'bg-yellow-500 text-black font-bold' } w-full h-auto px-4 py-2 rounded-sm `}>
+                                    <div className="w-auto">
+                                        { Bonos.estado }
                                     </div>
-                                    <div className={`${Auth ? 'w-full md:w-[20%]' : 'w-full md:w-[25%]'} h-auto flex justify-start md:justify-center items-center`}>
-                                    <span className='font-semibold'><span className="sm:hidden"> OT: </span>{Bonos.ot_id}</span>
-                                    </div>
-                                    <div className={`${Auth ? 'w-full md:w-[20%]' : 'w-full md:w-[25%]'} h-auto flex justify-start md:justify-center items-center`}>
-                                    <span className='font-semibold'><span className="sm:hidden"> FECHA: </span>{Bonos.fecha_bono.toString()}</span>
-                                    </div>
-                                    <div className={`${Auth ? 'w-full md:w-[20%]' : 'w-full md:w-[25%]'} h-auto flex justify-start md:justify-center items-center`}>
-                                    <span className='font-semibold'><span className="sm:hidden"> CLIENTE: </span> {Bonos.cliente}</span>
-                                    </div>
-                                    <div className={`${Auth ? 'w-full md:w-[20%]' : 'w-full md:w-[25%]'} h-auto flex justify-start md:justify-center items-center`}>
-                                    <span className='font-semibold'><span className="sm:hidden"> LUGAR: </span> {Bonos.lugar_bono}</span>
-                                    </div>
-                                </div>
-                                <div className={` ${Auth ? 'w-full md:w-[500px] h-full flex flex-col lg:flex-row justify-center items-center justify-items-center gap-3' : 'hidden' } `}>
-                                    <div onClick = { () => AutorizarBono( Bonos.bono_id )}   className='w-full lg:w-1/2 h-auto px-4 py-2 text-white bg-green-500 hover:bg-green-800 hover:border-green-500 cursor-pointer border border-white rounded-md hover:text-white transition duration-700 ease-out font-bold flex justify-center items-center'>
-                                        Autorizar
-                                    </div>
-                                    <div className='w-full lg:w-1/2 h-auto px-4 py-2 text-white bg-blue-500 hover:bg-blue-800 hover:border-blue-500 cursor-pointer border border-white rounded-md hover:text-white transition duration-700 ease-out font-bold flex justify-center items-center' onClick={ () => {
-                                        setEditar(false)
-                                        setDesaprobar(false)
-                                        setDesautorizar(false)
-                                        setBonoSelected({
-                                            empleado_id: Bonos.responsable.nombre,
-                                            bono_id    : Bonos.bono_id,
-                                            ot_id      : Bonos.ot_id,
-                                            lugar_bono : Bonos.lugar_bono,
-                                            fecha_bono : Bonos.fecha_bono,
-                                            cliente    : Bonos.cliente, 
-                                            observaciones: Bonos.observaciones
-                                        })  
-                                        setModalInfoShow(true)
-                                    }}
-                                    >
-                                        Informacion
-                                    </div>
-                                    <div onClick = { () => {
-                                        setEditar(false)
-                                        setDesaprobar(false)
-                                        setDesautorizar(true)
-                                        setBonoSelected({
-                                            bono_id    : Bonos.bono_id,
-                                            ot_id      : Bonos.ot_id,
-                                            lugar_bono : Bonos.lugar_bono,
-                                            fecha_bono : Bonos.fecha_bono,
-                                            cliente    : Bonos.cliente, 
-                                        })  
-                                        setModalShow(true)
-                                    } }   className='w-full lg:w-1/2 h-auto px-4 py-2 text-white bg-red-500 hover:bg-red-800 hover:border-red-500 cursor-pointer border border-white rounded-md hover:text-white transition duration-700 ease-out font-bold flex justify-center items-center'>
-                                        Desautorizar
+                                    <div className="w-auto flex gap-3">
+                                        <div  onClick = {() => AutorizarBono(Bonos.bono_id)} className="w-[25px] h-full bg-green-500  hover:bg-green-800 transition duration-700 ease-in-out rounded-full border border-white shadow shadow-black">
+                                            
+                                        </div>
+                                        <div onClick={()=> EditarRegistro(Bonos)} className="w-[25px] h-full bg-yellow-500 hover:bg-yellow-800 transition duration-700 ease-in-out rounded-full border border-white shadow shadow-black">
+                                            
+                                        </div>
+                                        <div onClick={() => DesaprobarRegistro(Bonos)} className="w-[25px] h-full bg-red-500 hover:bg-red-800 transition duration-700 ease-in-out rounded-full border border-white shadow shadow-black">
+                                            
+                                        </div>
                                     </div>
                                 </div>
-                            </div>                            
-                            ))
-                        : null
+                                <div className="w-full flex flex-col sm:flex-row justify-between items-start sm:items-center px-4">
+                                    <div className={`${Auth ? 'block' : 'hidden'}`}>
+                                    Responsable: { Bonos.responsable.nombre }
+                                    </div>
+                                    <div>
+                                    Fecha: { Bonos.fecha_bono }
+                                    </div>
+                                </div>
+                                <div className="w-full flex  flex-col sm:flex-row justify-between items-start sm:items-center px-4">
+                                    <div>
+                                    Cliente: { Bonos.cliente }
+                                    </div>
+                                    <div>
+                                    Lugar: { Bonos.lugar_bono }
+                                    </div> 
+                                </div>
+                                <div className="w-full flex  flex-col sm:flex-row justify-between items-start sm:items-center px-4"> 
+                                    <div>
+                                    OT: { Bonos.ot_id }
+                                    </div>
+                                    <div>
+                                    Detalles: { Bonos.detalles }
+                                    </div>
+                                </div>
+                                <div className="w-full flex  flex-col sm:flex-row justify-between items-start sm:items-center px-4">
+                                    Observaciones: { Bonos.observaciones }
+                                </div> 
+                            </div>
+                        )) : null
                     }
                 </div>
             ) : null

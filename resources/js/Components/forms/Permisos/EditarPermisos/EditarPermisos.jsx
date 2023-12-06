@@ -4,7 +4,7 @@ import { initialValue, validationSchema } from './EditarPermisos.form';
 import { useForm } from '@inertiajs/react';
 
 export default function EditPermiso({ PermisoSelected, onClose }) {
-   
+    
   const [files, setFiles] = useState([]);
   const [filtro, setFiltro] = useState("");
   const { data , patch } = useForm()
@@ -20,7 +20,8 @@ export default function EditPermiso({ PermisoSelected, onClose }) {
       data.Jornada           = formValue.Jornada,
       data.HoraInicio        = formValue.HoraInicio,
       data.HoraTerminacion   = formValue.HoraTerminacion, 
-      data.Observaciones     = formValue.Observaciones
+      data.Observaciones     = formValue.Observaciones,
+      data.permiso_id        = PermisoSelected.permiso_id
       for (const key in checkboxValues) {
         data[key] = checkboxValues[key];
       }

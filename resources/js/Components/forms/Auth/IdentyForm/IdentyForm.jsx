@@ -37,8 +37,8 @@ export default function IdentyForm() {
       onSubmit = { formik.handleSubmit }
       className = "flex flex-col justify-center items-center justify-items-center px-4 py-4 gap-4"
     >
-        <img src={ logo } alt="logo" />
-        <span className="text-center font-bold">PLANILLA DE REMUNERACIONES GENERAL SERVICES INTERNATIONAL GSI GROUP S.A.S</span>
+        <img src={ logo } alt="logo" className='w-auto h-[125px]' />
+        <span className="text-center font-bold">BIENVENIDO <br /> PLANILLA DE REMUNERACIONES GENERAL SERVICES INTERNATIONAL GSI GROUP S.A.S</span>
         <div className='w-full h-auto flex flex-col justify-center items-start justify-items-center gap-2'>
           <label htmlFor="cc" className='font-bold text-black'>
             Contraseña

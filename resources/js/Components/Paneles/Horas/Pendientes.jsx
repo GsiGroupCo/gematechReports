@@ -1,4 +1,4 @@
-import { Link, useForm } from "@inertiajs/react";
+import { useForm } from "@inertiajs/react";
 import { useEffect, useState } from "react";
 import Modal from "../../UI/Modal";
 import EditHoras from "../../forms/Horas/EditHoras";
@@ -6,7 +6,7 @@ import DesaprobarHora from "../../forms/Horas/DesaprobarHora";
 import DesautorizarHora from "../../forms/Horas/DesautorizarHora";
 
     const Pendientes = ({ HorasExtras, Auth, Admin }) => { 
-       
+  
     const { data, post } = useForm();
 
     const [Editar, setEditar]             = useState(false)
@@ -26,23 +26,92 @@ import DesautorizarHora from "../../forms/Horas/DesautorizarHora";
         ot: ""
     }) 
 
-    function AutorizarHora(horasextras_id){
+    function EditarRegistro(horasExtras){
+        setDesaprobar(false)
+        setDesautorizar(false)
+        setEditar(true)
+        setHoraSelected({
+            horasextras_id : horasExtras.horasextras_id,
+            empleado_id    : horasExtras.empleado_id,
+            fecha          : horasExtras.fecha,
+            hora_inicial   : horasExtras.hora_inicial,
+            hora_final     : horasExtras.hora_final,
+            cant_Horas     : horasExtras.cant_Horas,
+            estado         : horasExtras.estado,
+            ot             : horasExtras.ot
+        })  
+        setModalShow(true)
+    }
+
+    function DesautorizarHora(horasExtras){
+        setEditar(false)
+        setDesaprobar(false)
+        setDesautorizar(true)
+        setHoraSelected({
+            horasextras_id : horasExtras.horasextras_id,
+            empleado_id    : horasExtras.empleado_id,
+            fecha          : horasExtras.fecha,
+            hora_inicial   : horasExtras.hora_inicial,
+            hora_final     : horasExtras.hora_final,
+            cant_Horas     : horasExtras.cant_Horas,
+            estado         : horasExtras.estado,
+            ot             : horasExtras.ot
+        })  
+        setModalShow(true)
+    }
+
+    function AutorizarHora(horasextras_id){ 
         data.horasextras_id = horasextras_id 
+        data.user_id = Admin.user_id 
         post(`/horas/autorizacion`)
     }
  
     function AprobarHora(horasextras_id){
         data.horasextras_id = horasextras_id
+        data.user_id = Admin.user_id 
         post(`/horas/aprobada`)
     }
     
-    const HorasExtrasPendientesAprobar = HorasExtras.filter(
+
+    useEffect(() => { 
+        setHorasPendientes(HorasExtrasP)
+        setHorasAutorizar(HorasExtrasAp)
+        setHorasFiltradas(HorasExtrasPA)
+    }, [HorasExtras])
+
+    const HorasExtrasPA = HorasExtras.filter(
+        (horasExtras) => horasExtras.estado === "Pendiente" ||  horasExtras.estado === "Aprobado"
+    );
+
+    const [HorasFiltradas, setHorasFiltradas] = useState(HorasExtrasPA); 
+    const FiltroHoras = ( searchTerm ) => {
+        const filtered = HorasExtrasPA.filter((horas) => {
+            const horasextras_id = horas.horasextras_id.toLowerCase();
+            const nombre_empleado = horas.responsable.nombre.toLowerCase();
+            const ot = horas.ot.toLowerCase();
+            const fecha = horas.fecha.toString().toLowerCase();
+            const hora_final = horas.hora_final.toLowerCase();
+            const hora_inicial = horas.hora_inicial.toLowerCase();
+            return (
+                horasextras_id.includes(searchTerm) ||
+                nombre_empleado.includes(searchTerm) ||
+                ot.includes(searchTerm) ||
+                fecha.includes(searchTerm) ||
+                hora_final.includes(searchTerm) ||
+                hora_inicial.includes(searchTerm)
+            );
+        });
+        setHorasFiltradas(filtered);
+    };
+    
+    
+    const HorasExtrasP = HorasExtras.filter(
         (horasExtras) => horasExtras.estado === "Pendiente"
     );
 
-    const [HorasPendientesAprobar, setHorasPendientesAprobar] = useState(HorasExtrasPendientesAprobar); 
-    const FiltroPendientesAprobar = ( searchTerm ) => {
-        const filtered = HorasExtrasPendientesAprobar.filter((horas) => {
+    const [HorasPendientes, setHorasPendientes] = useState(HorasExtrasP); 
+    const FiltroPendientes = ( searchTerm ) => {
+        const filtered = HorasExtrasP.filter((horas) => {
             const horasextras_id = horas.horasextras_id.toLowerCase();
             const nombre_empleado = horas.responsable.nombre.toLowerCase();
             const ot = horas.ot.toLowerCase();
@@ -58,17 +127,16 @@ import DesautorizarHora from "../../forms/Horas/DesautorizarHora";
                 hora_inicial.includes(searchTerm)
             );
         });
-        setHorasPendientesAprobar(filtered);
+        setHorasPendientes(filtered);
     };
 
-    const HorasExtrasPendientesAutorizar = HorasExtras.filter(
+    const HorasExtrasAp = HorasExtras.filter(
         (horasExtras) => horasExtras.estado === "Aprobado"
     );
 
-    const [HorasPendientesAutorizar, setHorasPendientesAutorizar] = useState(HorasExtrasPendientesAutorizar);
-     
-    const FiltroPendientesAutorizar = ( searchTerm ) => {
-        const filtered = HorasExtrasPendientesAutorizar.filter((horas) => {
+    const [HorasAutorizar, setHorasAutorizar] = useState(HorasExtrasAp);
+    const FiltroAutorizar = ( searchTerm ) => {
+        const filtered = HorasExtrasAp.filter((horas) => {
             const horasextras_id = horas.horasextras_id.toLowerCase();
             const nombre_empleado = horas.responsable.nombre.toLowerCase();
             const ot = horas.ot.toLowerCase();
@@ -84,139 +152,82 @@ import DesautorizarHora from "../../forms/Horas/DesautorizarHora";
                 hora_inicial.includes(searchTerm)
             );
         });
-        setHorasPendientesAutorizar(filtered);
+        setHorasAutorizar(filtered);
     };
 
-    useEffect(() => { 
-        setHorasPendientesAprobar(HorasExtrasPendientesAprobar)
-        setHorasPendientesAutorizar(HorasExtrasPendientesAutorizar)
-    }, [HorasExtras])
-    
     return (
         <>
             {
-                Admin === 'Coordinador de MTTO' ? (
-                    <div className="w-full h-full bg-gray-200 flex flex-col justify-start items-start justify-items-center overflow-hidden overflow-y-auto">
-                        <div className='w-full h-auto bg-gray-200 gap-2 flex justify-evenly items-center justify-items-center p-2 '>
-                            <input 
-                                type="text" 
-                                placeholder='Buscar...' 
-                                className='w-full h-[45px] text-black px-4 py-2 focus:outline-none bg-gray-100 border border-black rounded-md ' 
-                                onChange={(e) => FiltroPendientesAutorizar(e.target.value.toLowerCase())}
-                            />
-                        </div>
-                        <div  className=' hidden w-full h-auto border-b-2 cursor-pointer md:flex flex-col md:flex-row justify-center items-center justify-items-center bg-white'>
-                            <div className='w-full py-4 md:w-full h-full flex flex-col md:flex-row   bg-[#323c7c] text-white'>
-                                <div className='w-full flex '> 
-                                    <div className={`${Auth ? 'w-full md:w-[20%]' : 'hidden'} h-auto flex justify-start md:justify-center items-center`}>
-                                        <span className='font-bold'> Nombre </span>
-                                    </div>
-                                    <div className={`${Auth ? 'w-full md:w-[20%]' : 'w-full md:w-[25%]'} h-auto flex justify-start md:justify-center items-center`}>
-                                        <span className='font-bold'> OT </span>
-                                    </div>
-                                    <div className={`${Auth ? 'w-full md:w-[20%]' : 'w-full md:w-[25%]'} h-auto flex justify-start md:justify-center items-center`}>
-                                        <span className='font-bold'> FECHA  </span>
-                                    </div>
-                                    <div className={`${Auth ? 'w-full md:w-[20%]' : 'w-full md:w-[25%]'} h-auto flex justify-start md:justify-center items-center`}>
-                                        <span className='font-bold'> HORA INICIO </span>
-                                    </div>
-                                    <div className={`${Auth ? 'w-full md:w-[20%]' : 'w-full md:w-[25%]'} h-auto flex justify-start md:justify-center items-center`}>
-                                        <span className='font-bold'> HORA FIN </span>
-                                    </div>
-                                </div>
-                                <div className="w-[500px] h-auto flex justify-center items-center">
-                                    <span className='font-bold'> ACCIONES </span>
-                                </div>
-                            </div>
-                        </div>
+                Admin.cargo === 'Coordinador de MTTO' ? (
+                    <div className="w-full h-full flex flex-col px-4 xl:px-96 pb-16 bg-gray-800 justify-start items-start justify-items-center gap-2">
+                        <input 
+                            type="text" 
+                            placeholder='Buscar...' 
+                            className='w-full h-[45px] px-4 py-2 mt-4 focus:outline-none bg-gray-600 text-white placeholder-white' 
+                            onChange={(e) => FiltroPendientes(e.target.value.toLowerCase())}
+                        /> 
                         {
-                            HorasPendientesAprobar 
-                            ?  
-                                HorasPendientesAprobar.map((horasExtras) => (
-                                    <div key={horasExtras.horasextras_id} className='w-full  h-auto border-b-2   cursor-pointer  px-4 py-2  flex flex-col md:flex-row justify-center items-center justify-items-center gap-3 bg-white'>
-                                        <div className='w-full md:w-full h-full flex flex-col text-center md:flex-row justify-center items-center justify-items-center'>
-                                            <div className={`${Auth ? 'w-full lg:w-[20%] ' : 'hidden'} h-auto flex lg:justify-center lg:items-center`}>
-                                                <span className='font-semibold'> <span className="sm:hidden"> Trabajador: </span> {horasExtras.responsable.nombre}</span>
-                                            </div>
-                                            <div className={`${Auth ? 'w-full lg:w-[20%] ' : 'w-[25%]'} h-auto flex lg:justify-center lg:items-center`}>
-                                                <span className='font-semibold'><span className="sm:hidden"> OT: </span> {horasExtras.ot}</span>
-                                            </div>
-                                            <div className={`${Auth ? 'w-full lg:w-[20%] ' : 'w-[25%]'} h-auto flex lg:justify-center lg:items-center`}>
-                                                <span className='font-semibold'> <span className="sm:hidden"> Fecha: </span> {horasExtras.fecha.toString()}</span>
-                                            </div>
-                                            <div className={`${Auth ? 'w-full lg:w-[20%] ' : 'w-[25%]'} h-auto flex lg:justify-center lg:items-center`}>
-                                                <span className='font-semibold'> <span className="sm:hidden"> Hora Inicial: </span> {horasExtras.hora_inicial}</span>
-                                            </div>
-                                            <div className={`${Auth ? 'w-full lg:w-[20%] ' : 'w-[25%]'} h-auto flex lg:justify-center lg:items-center`}>
-                                                <span className='font-semibold'> <span className="sm:hidden"> Hora Final: </span> {horasExtras.hora_final}</span>
-                                            </div>
+                            HorasPendientes  ?   HorasPendientes.map((horasExtras) => (
+                                <div 
+                                    key={horasExtras.horasextras_id}
+                                    className='w-full h-auto border-b-2  cursor-pointer gap-3 pb-2 flex flex-col justify-center items-start justify-items-center bg-white rounded-sm shadow-sm shadow-black'
+                                >
+                                    <div className={` flex flex-row justify-between ${ horasExtras.estado === 'Pendiente' ? 'bg-red-500 text-white font-bold' : horasExtras.estado === 'Autorizado' ? 'bg-green-500 text-white font-bold' : 'bg-yellow-500 text-black font-bold' } w-full h-auto px-4 py-2 rounded-sm `}>
+                                        <div className="w-auto">
+                                            { horasExtras.estado }
                                         </div>
-                                        <div className={` ${Auth ? 'w-full md:w-1/4 h-full flex flex-col justify-center items-center gap-1' : 'hidden' } `}>
-                                            <div className="w-full flex flex-col lg:flex-row gap-1 lg:gap-3 justify-center items-center">
-                                                <div onClick = { () => AprobarHora( horasExtras.horasextras_id )}   className='w-full h-auto px-4 py-2 text-white bg-green-500 hover:bg-green-800 hover:border-green-500 cursor-pointer border border-white rounded-md hover:text-white transition duration-700 ease-out font-bold flex justify-center items-center'>
-                                                    Aprobar
-                                                </div>
-                                                <div onClick = { () => { 
-                                                        setDesaprobar(false)
-                                                        setDesautorizar(false)
-                                                        setEditar(true)
-                                                        setHoraSelected({
-                                                            horasextras_id : horasExtras.horasextras_id,
-                                                            empleado_id    : horasExtras.empleado_id,
-                                                            fecha          : horasExtras.fecha,
-                                                            hora_inicial   : horasExtras.hora_inicial,
-                                                            hora_final     : horasExtras.hora_final,
-                                                            cant_Horas     : horasExtras.cant_Horas,
-                                                            estado         : horasExtras.estado,
-                                                            ot             : horasExtras.ot
-                                                        })  
-                                                        setModalShow(true)
-                                                }}   
-                                                    className='w-full h-auto px-4 py-2 text-white bg-yellow-500 hover:bg-yellow-800 hover:border-yellow-500 cursor-pointer border border-white rounded-md hover:text-white transition duration-700 ease-out font-bold flex justify-center items-center'>
-                                                    Editar
-                                                </div>
+                                        <div className="w-auto flex gap-3">
+                                            <div onClick={() => AprobarHora(horasExtras.horasextras_id, Admin.empleado_id) } className="w-[25px] h-full bg-green-500  hover:bg-green-800 transition duration-700 ease-in-out rounded-full border border-white shadow shadow-black">
+                                                
                                             </div>
-                                            <div className="w-full flex flex-col lg:flex-row gap-1 lg:gap-3 justify-center items-center">
-                                                <div className='w-full lg:w-1/2 h-auto px-4 py-2 text-white bg-blue-500 hover:bg-blue-800 hover:border-blue-500 cursor-pointer border border-white rounded-md hover:text-white transition duration-700 ease-out font-bold flex justify-center items-center' onClick={ () => {
-                                                    setHoraSelected({
-                                                        horasextras_id:horasExtras.horasextras_id,
-                                                        empleado_id :horasExtras.responsable.nombre,
-                                                        fecha:horasExtras.fecha,
-                                                        hora_inicial:horasExtras.hora_inicial,
-                                                        hora_final:horasExtras.hora_final,
-                                                        cant_Horas:horasExtras.cant_Horas,
-                                                        estado:horasExtras.estado,
-                                                        ot:horasExtras.ot,
-                                                        observaciones: horasExtras.observaciones
-                                                        })
-                                                        setModalInfoShow(true)
-                                                    }}
-                                                >
-                                                    Informacion
-                                                </div>
-                                                <div onClick = { () => {
-                                                    setEditar(false)
-                                                    setDesaprobar(false)
-                                                    setDesautorizar(true)
-                                                    setHoraSelected({
-                                                        horasextras_id : horasExtras.horasextras_id,
-                                                        empleado_id    : horasExtras.empleado_id,
-                                                        fecha          : horasExtras.fecha,
-                                                        hora_inicial   : horasExtras.hora_inicial,
-                                                        hora_final     : horasExtras.hora_final,
-                                                        cant_Horas     : horasExtras.cant_Horas,
-                                                        estado         : horasExtras.estado,
-                                                        ot             : horasExtras.ot
-                                                    })  
-                                                    setModalShow(true)
-                                                } }   className='w-full lg:w-1/2 h-auto px-4 py-2 text-white bg-red-500 hover:bg-red-800 hover:border-red-500 cursor-pointer border border-white rounded-md hover:text-white transition duration-700 ease-out font-bold flex justify-center items-center'>
-                                                    Desautorizar
-                                                </div>
+                                            <div onClick={() => EditarRegistro(horasExtras) } className="w-[25px] h-full bg-yellow-500 hover:bg-yellow-800 transition duration-700 ease-in-out rounded-full border border-white shadow shadow-black">
+                                                
+                                            </div>
+                                            <div onClick={() => DesaprobarHora(horasExtras) } className="w-[25px] h-full bg-red-500 hover:bg-red-800 transition duration-700 ease-in-out rounded-full border border-white shadow shadow-black">
+                                                
                                             </div>
                                         </div>
                                     </div>
-                                ))
-                            : null
+                                    <div className="w-full flex flex-col sm:flex-row justify-between items-start sm:items-center px-4">
+                                        <div className={`${Auth ? 'block' : 'hidden'}`}>
+                                            Responsable: <span className="font-bold">{ horasExtras.responsable.nombre }</span>
+                                        </div>
+                                        <div>
+                                            Fecha: { horasExtras.fecha }
+                                        </div>
+                                    </div>
+                                    <div className="w-full flex  flex-col sm:flex-row justify-between items-start sm:items-center px-4">
+                                        <div>
+                                            Hora Inicial: { horasExtras.hora_inicial }
+                                        </div>
+                                        <div>
+                                            Hora Final: { horasExtras.hora_final }
+                                        </div>  
+                                    </div>
+                                    <div className="w-full flex  flex-col sm:flex-row justify-between items-start sm:items-center px-4">
+                                        <div>
+                                            Cantidad Horas: { horasExtras.cant_Horas }
+                                        </div> 
+                                        <div>
+                                            OT: { horasExtras.ot }
+                                        </div>
+                                    </div>
+                                    <div className="w-full flex  flex-col sm:flex-row justify-between items-start sm:items-center px-4">
+                                        Observaciones: { horasExtras.observaciones }
+                                    </div> 
+                                </div>
+                            )) : null
+                        }
+                        {
+                            Editar ? (
+                                <Modal
+                                    isVisible = { ModalShow }
+                                    onClose   = { () => setModalShow(false) }
+                                    tittle    = {` Editando Hora Extra `}
+                                >
+                                    <EditHoras HoraData = { HoraSelected } onClose = { () => ModalShow(false) } />
+                                </Modal>
+                            ) : null
                         }
                         {
                             Desautorizar ? (
@@ -225,163 +236,81 @@ import DesautorizarHora from "../../forms/Horas/DesautorizarHora";
                                     onClose   = { () => setModalShow(false) }
                                     tittle    = {` Detalles de des-autorizacion `}
                                 >
-                                    <DesautorizarHora HoraData = { HoraSelected } onClose = { () => ModalShow(false) } />
+                                    <DesautorizarHora Admin = { Admin } HoraData = { HoraSelected } onClose = { () => ModalShow(false) } />
                                 </Modal>
                             ) : null
-                        } 
-                        <Modal
-                            isVisible = { ModalInfoShow }
-                            tittle = {` Detalles de Hora `}
-                            onClose = { () => setModalInfoShow(false) }
-                        >
-                            <div className="w-full h-auto p-4 flex flex-col justify-center items-center gap-3 ">
-                                <div className="w-full flex justify-start items-center rounded-md border border-black px-4 py-2">
-                                TRABAJADOR : { HoraSelected.empleado_id }
-                                </div>
-                                <div className="w-full flex flex-row justify-start items-center gap-3">
-                                    <div className="w-1/2 border border-black rounded-md px-4 py-2">
-                                    Hora de inicio: { HoraSelected.hora_inicial }
-                                    </div>
-                                    <div className="w-1/2 border border-black rounded-md px-4 py-2">
-                                    Hora de finalizacion: { HoraSelected.hora_final }
-                                    </div>
-                                </div>
-                                <div className="w-full flex flex-row justify-start items-center gap-3">
-                                    <div className="w-1/2 border border-black rounded-md px-4 py-2">
-                                    OT: { HoraSelected.ot }
-                                    </div>
-                                    <div className="w-1/2 border border-black rounded-md px-4 py-2">
-                                    Fecha: { HoraSelected.fecha }
-                                    </div>
-                                </div>
-                                <div className="w-full flex justify-start items-center rounded-md border border-black px-4 py-2">
-                                    OBSERVACIONES : { HoraSelected.observaciones }
-                                </div>
-                            </div>
-                        </Modal>
+                        }  
                     </div>
-                )  : Admin === 'Logistica' ? (
-                    <div className="w-full h-full bg-gray-200 flex flex-col justify-start items-start justify-items-center overflow-hidden overflow-y-auto">
-                        <div className='w-full h-auto bg-gray-200 gap-2 flex justify-evenly items-center justify-items-center p-2 '>
-                            <input 
-                                type="text" 
-                                placeholder='Buscar...' 
-                                className='w-full h-[45px] text-black px-4 py-2 focus:outline-none bg-gray-100 border border-black rounded-md ' 
-                                onChange={(e) => FiltroPendientesAutorizar(e.target.value.toLowerCase())}
-                            />
-                        </div>
-                        <div  className=' hidden w-full h-auto border-b-2 cursor-pointer md:flex flex-col md:flex-row justify-center items-center justify-items-center bg-white'>
-                            <div className='w-full py-4 md:w-full h-full flex flex-col md:flex-row   bg-[#323c7c] text-white'>
-                                <div className='w-full flex '> 
-                                    <div className={`${Auth ? 'w-full md:w-[20%]' : 'hidden'} h-auto flex justify-start md:justify-center items-center`}>
-                                        <span className='font-bold'> Nombre </span>
-                                    </div>
-                                    <div className={`${Auth ? 'w-full md:w-[20%]' : 'w-full md:w-[25%]'} h-auto flex justify-start md:justify-center items-center`}>
-                                        <span className='font-bold'> OT </span>
-                                    </div>
-                                    <div className={`${Auth ? 'w-full md:w-[20%]' : 'w-full md:w-[25%]'} h-auto flex justify-start md:justify-center items-center`}>
-                                        <span className='font-bold'> FECHA  </span>
-                                    </div>
-                                    <div className={`${Auth ? 'w-full md:w-[20%]' : 'w-full md:w-[25%]'} h-auto flex justify-start md:justify-center items-center`}>
-                                        <span className='font-bold'> HORA INICIO </span>
-                                    </div>
-                                    <div className={`${Auth ? 'w-full md:w-[20%]' : 'w-full md:w-[25%]'} h-auto flex justify-start md:justify-center items-center`}>
-                                        <span className='font-bold'> HORA FIN </span>
-                                    </div>
-                                </div>
-                                <div className="w-[500px] h-auto flex justify-center items-center">
-                                    <span className='font-bold'> ACCIONES </span>
-                                </div>
-                            </div>
-                        </div>
+                )  : Admin.cargo === 'Logistica' ? (
+                    <div className="w-full h-full flex flex-col px-4 xl:px-96 pb-16 bg-gray-800 justify-start items-start justify-items-center gap-2">
+                        <input 
+                            type="text" 
+                            placeholder='Buscar...' 
+                            className='w-full h-[45px] px-4 py-2 mt-4 focus:outline-none bg-gray-600 text-white placeholder-white' 
+                            onChange={(e) => FiltroAutorizar(e.target.value.toLowerCase())}
+                        /> 
                         {
-                            HorasPendientesAutorizar 
-                            ?  
-                                HorasPendientesAutorizar.map((horasExtras) => (
-                                    <div key={horasExtras.horasextras_id} className='w-full  h-auto border-b-2   cursor-pointer  px-4 py-2  flex flex-col md:flex-row justify-center items-center justify-items-center gap-3 bg-white'>
-                                        <div className='w-full md:w-full h-full flex flex-col text-center md:flex-row justify-center items-center justify-items-center'>
-                                            <div className={`${Auth ? 'w-full lg:w-[20%] ' : 'hidden'} h-auto flex lg:justify-center lg:items-center`}>
-                                                <span className='font-semibold'> <span className="sm:hidden"> Trabajador: </span> {horasExtras.responsable.nombre}</span>
-                                            </div>
-                                            <div className={`${Auth ? 'w-full lg:w-[20%] ' : 'w-[25%]'} h-auto flex lg:justify-center lg:items-center`}>
-                                                <span className='font-semibold'><span className="sm:hidden"> OT: </span> {horasExtras.ot}</span>
-                                            </div>
-                                            <div className={`${Auth ? 'w-full lg:w-[20%] ' : 'w-[25%]'} h-auto flex lg:justify-center lg:items-center`}>
-                                                <span className='font-semibold'> <span className="sm:hidden"> Fecha: </span> {horasExtras.fecha.toString()}</span>
-                                            </div>
-                                            <div className={`${Auth ? 'w-full lg:w-[20%] ' : 'w-[25%]'} h-auto flex lg:justify-center lg:items-center`}>
-                                                <span className='font-semibold'> <span className="sm:hidden"> Hora Inicial: </span> {horasExtras.hora_inicial}</span>
-                                            </div>
-                                            <div className={`${Auth ? 'w-full lg:w-[20%] ' : 'w-[25%]'} h-auto flex lg:justify-center lg:items-center`}>
-                                                <span className='font-semibold'> <span className="sm:hidden"> Hora Final: </span> {horasExtras.hora_final}</span>
-                                            </div>
+                            HorasAutorizar  ?   HorasAutorizar.map((horasExtras) => (
+                                <div 
+                                    key={horasExtras.horasextras_id}  
+                                    className='w-full h-auto border-b-2  cursor-pointer gap-3 pb-2 flex flex-col justify-center items-start justify-items-center bg-white rounded-sm shadow-sm shadow-black'
+                                >
+                                    <div className={` flex flex-row justify-between ${ horasExtras.estado === 'Pendiente' ? 'bg-red-500 text-white font-bold' : horasExtras.estado === 'Autorizado' ? 'bg-green-500 text-white font-bold' : 'bg-yellow-500 text-black font-bold' } w-full h-auto px-4 py-2 rounded-sm `}>
+                                        <div className="w-auto">
+                                            { horasExtras.estado }
                                         </div>
-                                        <div className={` ${Auth ? 'w-full md:w-1/4 h-full flex flex-col justify-center items-center gap-1' : 'hidden' } `}>
-                                            <div className="w-full flex flex-col lg:flex-row gap-1 lg:gap-3 justify-center items-center">
-                                                <div onClick = { () => AutorizarHora( horasExtras.horasextras_id )}   className='w-full h-auto px-4 py-2 text-white bg-green-500 hover:bg-green-800 hover:border-green-500 cursor-pointer border border-white rounded-md hover:text-white transition duration-700 ease-out font-bold flex justify-center items-center'>
-                                                    Autorizar
-                                                </div>
-                                                <div onClick = { () => { 
-                                                        setDesaprobar(false)
-                                                        setDesautorizar(false)
-                                                        setEditar(true)
-                                                        setHoraSelected({
-                                                            horasextras_id : horasExtras.horasextras_id,
-                                                            empleado_id    : horasExtras.empleado_id,
-                                                            fecha          : horasExtras.fecha,
-                                                            hora_inicial   : horasExtras.hora_inicial,
-                                                            hora_final     : horasExtras.hora_final,
-                                                            cant_Horas     : horasExtras.cant_Horas,
-                                                            estado         : horasExtras.estado,
-                                                            ot             : horasExtras.ot
-                                                        })  
-                                                        setModalShow(true)
-                                                }}   
-                                                    className='w-full h-auto px-4 py-2 text-white bg-yellow-500 hover:bg-yellow-800 hover:border-yellow-500 cursor-pointer border border-white rounded-md hover:text-white transition duration-700 ease-out font-bold flex justify-center items-center'>
-                                                    Editar
-                                                </div>
+                                        <div className="w-auto flex gap-3">
+                                            <div onClick={() => AutorizarHora(horasExtras.horasextras_id) } className="w-[25px] h-full bg-green-500  hover:bg-green-800 transition duration-700 ease-in-out rounded-full border border-white shadow shadow-black">
+                                                
                                             </div>
-                                            <div className="w-full flex flex-col lg:flex-row gap-1 lg:gap-3 justify-center items-center">
-                                                <div className='w-full lg:w-1/2 h-auto px-4 py-2 text-white bg-blue-500 hover:bg-blue-800 hover:border-blue-500 cursor-pointer border border-white rounded-md hover:text-white transition duration-700 ease-out font-bold flex justify-center items-center' onClick={ () => {
-                                                    setHoraSelected({
-                                                        horasextras_id:horasExtras.horasextras_id,
-                                                        empleado_id :horasExtras.responsable.nombre,
-                                                        fecha:horasExtras.fecha,
-                                                        hora_inicial:horasExtras.hora_inicial,
-                                                        hora_final:horasExtras.hora_final,
-                                                        cant_Horas:horasExtras.cant_Horas,
-                                                        estado:horasExtras.estado,
-                                                        ot:horasExtras.ot,
-                                                        observaciones: horasExtras.observaciones
-                                                        })
-                                                        setModalInfoShow(true)
-                                                    }}
-                                                >
-                                                    Informacion
-                                                </div>
-                                                <div onClick = { () => {
-                                                    setEditar(false)
-                                                    setDesaprobar(false)
-                                                    setDesautorizar(true)
-                                                    setHoraSelected({
-                                                        horasextras_id : horasExtras.horasextras_id,
-                                                        empleado_id    : horasExtras.empleado_id,
-                                                        fecha          : horasExtras.fecha,
-                                                        hora_inicial   : horasExtras.hora_inicial,
-                                                        hora_final     : horasExtras.hora_final,
-                                                        cant_Horas     : horasExtras.cant_Horas,
-                                                        estado         : horasExtras.estado,
-                                                        ot             : horasExtras.ot
-                                                    })  
-                                                    setModalShow(true)
-                                                } }   className='w-full lg:w-1/2 h-auto px-4 py-2 text-white bg-red-500 hover:bg-red-800 hover:border-red-500 cursor-pointer border border-white rounded-md hover:text-white transition duration-700 ease-out font-bold flex justify-center items-center'>
-                                                    Desautorizar
-                                                </div>
+                                            <div onClick={() => EditarRegistro(horasExtras) }  className="w-[25px] h-full bg-yellow-500 hover:bg-yellow-800 transition duration-700 ease-in-out rounded-full border border-white shadow shadow-black">
+                                                
+                                            </div>
+                                            <div onClick={()=> DesautorizarHora(horasExtras) } className="w-[25px] h-full bg-red-500 hover:bg-red-800 transition duration-700 ease-in-out rounded-full border border-white shadow shadow-black">
+                                                
                                             </div>
                                         </div>
                                     </div>
-                                ))
-                            : null
+                                    <div className="w-full flex flex-col sm:flex-row justify-between items-start sm:items-center px-4">
+                                        <div className={`${Auth ? 'block' : 'hidden'}`}>
+                                            Responsable: <span className="font-bold">{ horasExtras.responsable.nombre }</span>
+                                        </div>
+                                        <div>
+                                            Fecha: { horasExtras.fecha }
+                                        </div>
+                                    </div>
+                                    <div className="w-full flex  flex-col sm:flex-row justify-between items-start sm:items-center px-4">
+                                        <div>
+                                            Hora Inicial: { horasExtras.hora_inicial }
+                                        </div>
+                                        <div>
+                                            Hora Final: { horasExtras.hora_final }
+                                        </div>  
+                                    </div>
+                                    <div className="w-full flex  flex-col sm:flex-row justify-between items-start sm:items-center px-4">
+                                        <div>
+                                            Cantidad Horas: { horasExtras.cant_Horas }
+                                        </div> 
+                                        <div>
+                                            OT: { horasExtras.ot }
+                                        </div>
+                                    </div>
+                                    <div className="w-full flex  flex-col sm:flex-row justify-between items-start sm:items-center px-4">
+                                        Observaciones: { horasExtras.observaciones }
+                                    </div> 
+                                </div>
+                            )) : null
+                        }
+                        {
+                            Editar ? (
+                                <Modal
+                                    isVisible = { ModalShow }
+                                    onClose   = { () => setModalShow(false) }
+                                    tittle    = {` Editando Hora Extra `}
+                                >
+                                    <EditHoras HoraData = { HoraSelected } onClose = { () => ModalShow(false) } />
+                                </Modal>
+                            ) : null
                         }
                         {
                             Desautorizar ? (
@@ -390,40 +319,93 @@ import DesautorizarHora from "../../forms/Horas/DesautorizarHora";
                                     onClose   = { () => setModalShow(false) }
                                     tittle    = {` Detalles de des-autorizacion `}
                                 >
-                                    <DesautorizarHora HoraData = { HoraSelected } onClose = { () => ModalShow(false) } />
+                                    <DesautorizarHora Admin = { Admin } HoraData = { HoraSelected } onClose = { () => ModalShow(false) } />
                                 </Modal>
                             ) : null
-                        } 
-                        <Modal
-                            isVisible = { ModalInfoShow }
-                            tittle = {` Detalles de Hora `}
-                            onClose = { () => setModalInfoShow(false) }
-                        >
-                            <div className="w-full h-auto p-4 flex flex-col justify-center items-center gap-3 ">
-                                <div className="w-full flex justify-start items-center rounded-md border border-black px-4 py-2">
-                                TRABAJADOR : { HoraSelected.empleado_id }
-                                </div>
-                                <div className="w-full flex flex-row justify-start items-center gap-3">
-                                    <div className="w-1/2 border border-black rounded-md px-4 py-2">
-                                    Hora de inicio: { HoraSelected.hora_inicial }
+                        }  
+                    </div>
+                ) : Admin.cargo === 'Gerente general' ? (
+                    <div className="w-full h-full flex flex-col px-4 xl:px-96 pb-16 bg-gray-800 justify-start items-start justify-items-center gap-2">
+                        <input 
+                            type="text" 
+                            placeholder='Buscar...' 
+                            className='w-full h-[45px] px-4 py-2 mt-4 focus:outline-none bg-gray-600 text-white placeholder-white' 
+                            onChange={(e) => FiltroHoras(e.target.value.toLowerCase())}
+                        /> 
+                        {
+                            HorasFiltradas  ?   HorasFiltradas.map((horasExtras) => (
+                                <div 
+                                    key={horasExtras.horasextras_id}  
+                                    className='w-full h-auto border-b-2  cursor-pointer gap-3 pb-2 flex flex-col justify-center items-start justify-items-center bg-white rounded-sm shadow-sm shadow-black'
+                                >
+                                    <div className={` flex flex-row justify-between ${ horasExtras.estado === 'Pendiente' ? 'bg-red-500 text-white font-bold' : horasExtras.estado === 'Autorizado' ? 'bg-green-500 text-white font-bold' : 'bg-yellow-500 text-black font-bold' } w-full h-auto px-4 py-2 rounded-sm `}>
+                                        <div className="w-auto">
+                                            { horasExtras.estado }
+                                        </div>
+                                        <div className="w-auto flex gap-3">
+                                            <div onClick={() => AutorizarHora(horasExtras.horasextras_id) } className="w-[25px] h-full bg-green-500  hover:bg-green-800 transition duration-700 ease-in-out rounded-full border border-white shadow shadow-black">
+                                                
+                                            </div>
+                                            <div onClick={() => EditarRegistro(horasExtras)} className="w-[25px] h-full bg-yellow-500 hover:bg-yellow-800 transition duration-700 ease-in-out rounded-full border border-white shadow shadow-black">
+                                                
+                                            </div>
+                                            <div onClick={() => DesautorizarHora(horasExtras)} className="w-[25px] h-full bg-red-500 hover:bg-red-800 transition duration-700 ease-in-out rounded-full border border-white shadow shadow-black">
+                                                
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div className="w-1/2 border border-black rounded-md px-4 py-2">
-                                    Hora de finalizacion: { HoraSelected.hora_final }
+                                    <div className="w-full flex flex-col sm:flex-row justify-between items-start sm:items-center px-4">
+                                        <div className={`${Auth ? 'block' : 'hidden'}`}>
+                                            Responsable: <span className="font-bold">{ horasExtras.responsable.nombre }</span>
+                                        </div>
+                                        <div>
+                                            Fecha: { horasExtras.fecha }
+                                        </div>
                                     </div>
-                                </div>
-                                <div className="w-full flex flex-row justify-start items-center gap-3">
-                                    <div className="w-1/2 border border-black rounded-md px-4 py-2">
-                                    OT: { HoraSelected.ot }
+                                    <div className="w-full flex  flex-col sm:flex-row justify-between items-start sm:items-center px-4">
+                                        <div>
+                                            Hora Inicial: { horasExtras.hora_inicial }
+                                        </div>
+                                        <div>
+                                            Hora Final: { horasExtras.hora_final }
+                                        </div>  
                                     </div>
-                                    <div className="w-1/2 border border-black rounded-md px-4 py-2">
-                                    Fecha: { HoraSelected.fecha }
+                                    <div className="w-full flex  flex-col sm:flex-row justify-between items-start sm:items-center px-4">
+                                        <div>
+                                            Cantidad Horas: { horasExtras.cant_Horas }
+                                        </div> 
+                                        <div>
+                                            OT: { horasExtras.ot }
+                                        </div>
                                     </div>
+                                    <div className="w-full flex  flex-col sm:flex-row justify-between items-start sm:items-center px-4">
+                                        Observaciones: { horasExtras.observaciones }
+                                    </div> 
                                 </div>
-                                <div className="w-full flex justify-start items-center rounded-md border border-black px-4 py-2">
-                                    OBSERVACIONES : { HoraSelected.observaciones }
-                                </div>
-                            </div>
-                        </Modal>
+                            )) : null
+                        }
+                        {
+                            Editar ? (
+                                <Modal
+                                    isVisible = { ModalShow }
+                                    onClose   = { () => setModalShow(false) }
+                                    tittle    = {` Editando Hora Extra `}
+                                >
+                                    <EditHoras HoraData = { HoraSelected } onClose = { () => ModalShow(false) } />
+                                </Modal>
+                            ) : null
+                        }
+                        {
+                            Desautorizar ? (
+                                <Modal
+                                    isVisible = { ModalShow }
+                                    onClose   = { () => setModalShow(false) }
+                                    tittle    = {` Detalles de des-autorizacion `}
+                                >
+                                    <DesautorizarHora Admin = { Admin } HoraData = { HoraSelected } onClose = { () => ModalShow(false) } />
+                                </Modal>
+                            ) : null
+                        }  
                     </div>
                 ) : null
             }        

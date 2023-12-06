@@ -30,8 +30,8 @@ export default function LoginForm() {
         className="flex  flex-col justify-center items-center justify-items-center px-4 py-4 gap-4"
         method="POST"
       >
-      <img src={logo} alt="logo GSI" />
-      <span className="text-center font-bold"> PLANILLA DE REMUNERACIONES GENERAL SERVICES INTERNATIONAL GSI GROUP S.A.S </span>
+      <img src={logo} alt="logo GSI" className="w-auto h-[125px]"/> 
+      <span className="text-center font-bold"> BIENVENIDO  <br />PLANILLA DE REMUNERACIONES GENERAL SERVICES INTERNATIONAL GSI GROUP S.A.S </span>
       <div className='w-full h-auto flex flex-col justify-center items-start justify-items-center gap-2'>
         <label htmlFor="email" className='font-bold text-black'>
           Email

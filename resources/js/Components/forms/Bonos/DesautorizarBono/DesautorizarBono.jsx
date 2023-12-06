@@ -2,7 +2,7 @@ import { useFormik } from "formik";
 import { initialValue, validationSchema } from './DesautorizarBono.form';
 import { useForm } from '@inertiajs/react';
 
-export default function DesautorizarBono({ BonoData, onClose }) { 
+export default function DesautorizarBono({ BonoData, Admin, onClose }) { 
 
   const { data , post } = useForm()
   
@@ -12,7 +12,8 @@ export default function DesautorizarBono({ BonoData, onClose }) {
     validateOnChange: false,
     onSubmit: async (formValue) => {
       data.bono_id     = BonoData.bono_id
-      data.descripcion = formValue.detalles 
+      data.descripcion = formValue.detalles
+      data.user_id     = Admin.user_id
       post(`/bono/desautorizacion`)
       onClose()
     }

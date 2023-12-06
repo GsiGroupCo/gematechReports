@@ -14,14 +14,15 @@ export default function Login({ error }) {
   }, [error])
 
   return (
-    <main className='w-full h-screen flex '>
-        <Toaster richColors position='top-center'/>
-        <div className='w-full sd:w-[15%] sm:w-[500px] h-auto md:h-full flex flex-col  justify-center'>
-            <LoginForm/>
+    <>
+      <main className='w-full h-screen overflow-hidden bg-gray-800 flex flex-col justify-around items-center '>
+        <div className='w-full h-full'>
+          <img src={bg_login} alt="background_login" className='w-full h-full object-cover' />
         </div>
-        <div className=" hidden  sd:flex w-full h-full md:flex flex-col justify-center items-center justify-items-center">
-            <img src={bg_login} alt="bg_login" className = "w-full h-full object-cover"/>
+        <div className='absolute bg-white rounded-md w-[360px] md:w-[500px] h-[500px] flex justify-center items-center shadow shadow-black '>
+          <LoginForm/>
         </div>
-    </main>
+      </main>
+    </>
   )
 }
