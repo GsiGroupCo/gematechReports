@@ -64,11 +64,11 @@ export default function EditPermiso({ PermisoSelected, onClose }) {
   return (
     <form 
       onSubmit = { formik.handleSubmit }
-      className="w-[800px] h-auto overflow-y-auto flex flex-col justify-start items-start bg-gray-800  justify-items-center px-4 py-4 gap-5 "
+      className="w-full md:w-[800px] h-auto overflow-y-auto flex flex-col justify-start items-start bg-gray-800  justify-items-center px-4 py-4 gap-5 "
       method="POST"
     >
-      <div className='w-full flex justify-between items-center gap-3 '>
-        <div className='w-1/3 flex flex-col '>
+      <div className='w-full flex flex-col sm:flex-row justify-between items-center gap-3 '>
+        <div className='w-full sm:w-1/3 flex flex-col '>
           <label htmlFor="Motivo" className='font-bold text-white'>
             Motivo
           </label>  
@@ -92,7 +92,7 @@ export default function EditPermiso({ PermisoSelected, onClose }) {
             )
           }
         </div>
-        <div className='w-1/3 flex flex-col'>
+        <div className='w-full sm:w-1/3 flex flex-col'>
           <label htmlFor="FechaInicio" className='font-bold text-white'>
             Fecha Inicio
           </label>
@@ -103,7 +103,7 @@ export default function EditPermiso({ PermisoSelected, onClose }) {
             )
           }
         </div>
-        <div className='w-1/3 flex flex-col'>
+        <div className='w-full sm:w-1/3 flex flex-col'>
           <label htmlFor="FechaTerminacion" className='font-bold text-white'>
             Fecha Terminacion
           </label>
@@ -115,8 +115,8 @@ export default function EditPermiso({ PermisoSelected, onClose }) {
           }
         </div>
       </div>
-      <div className='w-full flex justify-center items-center gap-3'>
-        <div className='w-1/3 flex flex-col'>
+      <div className='w-full flex flex-col sm:flex-row justify-center items-center gap-3'>
+        <div className='w-full sm:w-1/3 flex flex-col'>
           <label htmlFor="Jornada" className='font-bold text-white'>
             Jornada
           </label>
@@ -137,7 +137,7 @@ export default function EditPermiso({ PermisoSelected, onClose }) {
             )
           }
         </div>
-        <div className='w-1/3 flex flex-col '>
+        <div className='w-full sm:w-1/3 flex flex-col '>
           <label htmlFor="HoraInicio" className='font-bold text-white'>
             Hora Inicio
           </label>
@@ -154,7 +154,7 @@ export default function EditPermiso({ PermisoSelected, onClose }) {
             )
           }
         </div>
-        <div className='w-1/3 flex flex-col'>
+        <div className='w-full sm:w-1/3 flex flex-col'>
           <label htmlFor="HoraTerminacion" className='font-bold text-white'>
             Hora Final
           </label>

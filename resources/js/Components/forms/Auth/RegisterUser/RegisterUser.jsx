@@ -89,7 +89,7 @@ export default function RegisterUser({ onClose }) {
             Gerencia
           </option>
           <option value="Gerente general">
-            Gerente General
+            Gerente general
           </option>
           <option value="Coordinador de MTTO">
             Director de Mantenimiento

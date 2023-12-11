@@ -26,8 +26,9 @@ export function validationSchema(){
             const now = new Date();
             const yearActual = now.getFullYear();
             const monthActual = now.getMonth();
-            const yearFecha = value.getFullYear();        
-            return (yearFecha === yearActual);
+            const monthFecha = value.getMonth();
+            const yearFecha = value.getFullYear();         
+            return (yearFecha === yearActual && monthFecha === monthActual);
         }
         return true; 
         })

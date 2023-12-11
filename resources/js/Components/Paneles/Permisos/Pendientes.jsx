@@ -4,6 +4,7 @@ import Modal from "../../UI/Modal";
 import DesautorizarPermiso from "../../forms/Permisos/DesautorizarPermiso";
 import EditPermiso from "@/Components/forms/Permisos/EditarPermisos/EditarPermisos";
 import pdf_icon from '../../../../../public/img/pdf.png'
+import Search from "@/Components/UI/Search";
  
     const Pendiente = ({ Permisos, Auth, Admin }) => {
     
@@ -49,8 +50,32 @@ import pdf_icon from '../../../../../public/img/pdf.png'
 
     const { data, patch } = useForm();
 
-    const [Editar, setEditar]               = useState(false)
-    const [Desautorizar, setDesautorizar]   = useState(false)
+
+    const [Editar, setEditar]                   = useState(false)
+    const [Desautorizar, setDesautorizar]       = useState(false)
+    const [DocumentoShow, setDocumentoShow]     = useState(false) 
+
+    const [PermisoSelected, setPermisoSelected] = useState({
+        permiso_id        : "",
+        empleado_id       : "",
+        motivo            : "",
+        fecha_inicio      : "",
+        fecha_terminacion : "",
+        jornada           : "",
+        hora_inicio       : "",
+        hora_fin          : "",
+        cant_horas        : "",
+        observaciones     : "",
+        remuneracion      : "",
+        estado            : ""
+    })
+    
+    const [DocumentosSeleccionado, setDocumentosSeleccionado]   = useState({
+        anexo_id : "",
+        permiso_id : "",
+        nombre_documento: "",
+        url: ""
+    })
 
     function AutorizarPermiso(permiso_id){
         data.permiso_id = permiso_id
@@ -59,8 +84,6 @@ import pdf_icon from '../../../../../public/img/pdf.png'
     }
 
     function EditarRegistro(permisos){
-        setDesautorizar(false)
-        setEditar(true)
         setPermisoSelected({
             permiso_id        : permisos.permiso_id,
             empleado_id       : permisos.empleado_id,
@@ -74,13 +97,13 @@ import pdf_icon from '../../../../../public/img/pdf.png'
             observaciones     : permisos.observaciones,
             remuneracion      : permisos.remuneracion,
             estado            : permisos.estado
-        })  
-        setModalShow(true)
+        })
+        setDesautorizar(false)
+        setDocumentoShow(false)
+        setEditar(true)
     }
 
-    function DesautorizarPermiso(permisos){
-        setEditar(false) 
-        setDesautorizar(true)
+    function DesAuthRegistro(permisos){ 
         setPermisoSelected({
             permiso_id        : permisos.permiso_id,
             empleado_id       : permisos.empleado_id,
@@ -94,8 +117,22 @@ import pdf_icon from '../../../../../public/img/pdf.png'
             observaciones     : permisos.observaciones,
             remuneracion      : permisos.remuneracion,
             estado            : permisos.estado    
-        })  
-        setModalShow(true)
+        })        
+        setDocumentoShow(false)
+        setEditar(false)
+        setDesautorizar(true)
+    }
+    
+    function SeleccionarDocumento(Documento){
+        setDocumentosSeleccionado({
+            anexo_id : Documento.anexo_id,
+            permiso_id : Documento.permiso_id,
+            nombre_documento: Documento.nombre_documento,
+            url: Documento.url
+        })
+        setDesautorizar(false)
+        setEditar(false)
+        setDocumentoShow(true)
     }
         
     const PermisosP = PermisoData.filter(
@@ -141,13 +178,8 @@ import pdf_icon from '../../../../../public/img/pdf.png'
       <>
         {
             Admin.cargo === 'Gerente general' ? (
-                <div className="w-full h-full flex flex-col px-4 xl:px-96 pb-16 bg-gray-800 justify-start items-start justify-items-center gap-2">
-                    <input 
-                        type="text" 
-                        placeholder='Buscar...' 
-                        className='w-full h-[45px] px-4 py-2 mt-4 focus:outline-none bg-gray-600 text-white placeholder-white' 
-                        onChange={(e) => FiltroPermisosP(e.target.value.toLowerCase())}
-                    />  
+                <div className="w-full h-full flex flex-col px-4 xl:px-96 pb-16 bg-gray-800 justify-start items-start justify-items-center gap-2"> 
+                    <Search SearchEvent = { (e) =>  FiltroPermisosP(e.target.value.toLowerCase()) } />
                  {
                     PermisosPFiltrados ? 
                         PermisosPFiltrados.map((permisos) => (
@@ -166,7 +198,7 @@ import pdf_icon from '../../../../../public/img/pdf.png'
                                     <div onClick={()=> EditarRegistro(permisos)} className="w-[25px] h-full bg-yellow-500 hover:bg-yellow-800 transition duration-700 ease-in-out rounded-full border border-white shadow shadow-black">
                                         
                                     </div>
-                                    <div onClick={() => DesautorizarPermiso(permisos)} className="w-[25px] h-full bg-red-500 hover:bg-red-800 transition duration-700 ease-in-out rounded-full border border-white shadow shadow-black">
+                                    <div onClick={() => DesAuthRegistro(permisos)} className="w-[25px] h-full bg-red-500 hover:bg-red-800 transition duration-700 ease-in-out rounded-full border border-white shadow shadow-black">
                                         
                                     </div>
                                 </div>
@@ -218,7 +250,7 @@ import pdf_icon from '../../../../../public/img/pdf.png'
                                 <div className='flex gap-3'>
                                     {
                                         permisos.anexos ? permisos.anexos.map((data) => (
-                                            <div key={data.anexo_id} className='w-[25px] h-auto'>
+                                            <div onClick={()=>SeleccionarDocumento(data)} key={data.anexo_id} className='w-[25px] h-auto'>
                                                 <img src={pdf_icon} alt="Anexos Permiso" className='w-full h-full object-cover'/>
                                             </div>
                                         )) : null
@@ -229,37 +261,33 @@ import pdf_icon from '../../../../../public/img/pdf.png'
                     ))
                     : null
                 }
-                {
-                    Desautorizar ? (
-                        <Modal
-                            isVisible = { ModalShow }
-                            onClose   = { () => setModalShow(false) }
-                            tittle    = {` Detalles de des-autorizacion `}
-                        >
-                            <DesautorizarPermiso PermisoData = { PermisoSelected } onClose = { () => setModalShow(false) } />
-                        </Modal>
-                    ) : null
-                }
-                {
-                    Editar ? (
-                        <Modal
-                            isVisible = { ModalShow }
-                            onClose   = { () => setModalShow(false) }
-                            tittle    = {` Editando Permiso `}
-                        >
-                            <EditPermiso PermisoSelected = { PermisoSelected } onClose = { () => setModalShow() } />
-                        </Modal>
-                    ) : null
-                }  
+                <Modal
+                    isVisible = { Desautorizar }
+                    onClose   = { () => setDesautorizar(false) }
+                    tittle    = {` Detalles de des-autorizacion `}
+                >
+                    <DesautorizarPermiso PermisoData = { PermisoSelected } onClose = { () => setDesautorizar(false) } />
+                </Modal>
+                <Modal
+                    isVisible = { Editar }
+                    onClose   = { () => setEditar(false) }
+                    tittle    = {` Editando Permiso `}
+                >
+                    <EditPermiso PermisoSelected = { PermisoSelected } onClose = { () => setEditar() } />
+                </Modal>
+                <Modal
+                    isVisible = { DocumentoShow }
+                    onClose = { () => setDocumentoShow(false) }
+                    tittle = { DocumentosSeleccionado.nombre_documento } 
+                >
+                    <div className='w-full  md:w-[750px] h-[600px] '>
+                        <embed src={`https://reports.gematech.co/storage/${DocumentosSeleccionado.url}`} type="application/pdf" className='w-full h-full' />
+                    </div>
+                </Modal>
               </div>
             ) : Admin.cargo === 'HSEQ / GESTION DE TALENTO HUMANO' || Admin.cargo === 'AUX PERMISOS' ? (
-                <div className="w-full h-full flex flex-col px-4 xl:px-96 pb-16 bg-gray-800 justify-start items-start justify-items-center gap-2">
-                    <input 
-                        type="text" 
-                        placeholder='Buscar...' 
-                        className='w-full h-[45px] px-4 py-2 mt-4 focus:outline-none bg-gray-600 text-white placeholder-white' 
-                        onChange={(e) => FiltroPermisosP(e.target.value.toLowerCase())}
-                    />  
+                <div className="w-full h-full flex flex-col px-4 xl:px-96 pb-16 bg-gray-800 justify-start items-start justify-items-center gap-2"> 
+                    <Search SearchEvent = { (e) =>  FiltroPermisosP(e.target.value.toLowerCase()) } />
                     {
                         PermisosPFiltrados ? 
                             PermisosPFiltrados.map((permisos) => (
@@ -278,7 +306,7 @@ import pdf_icon from '../../../../../public/img/pdf.png'
                                         <div onClick={()=> EditarRegistro(permisos)} className="w-[25px] h-full bg-yellow-500 hover:bg-yellow-800 transition duration-700 ease-in-out rounded-full border border-white shadow shadow-black">
                                             
                                         </div>
-                                        <div onClick={() => DesautorizarPermiso(permisos)} className="w-[25px] h-full bg-red-500 hover:bg-red-800 transition duration-700 ease-in-out rounded-full border border-white shadow shadow-black">
+                                        <div onClick={() => DesAuthRegistro(permisos)} className="w-[25px] h-full bg-red-500 hover:bg-red-800 transition duration-700 ease-in-out rounded-full border border-white shadow shadow-black">
                                             
                                         </div>
                                     </div>
@@ -330,7 +358,7 @@ import pdf_icon from '../../../../../public/img/pdf.png'
                                     <div className='flex gap-3'>
                                         {
                                             permisos.anexos ? permisos.anexos.map((data) => (
-                                                <div key={data.anexo_id} className='w-[25px] h-auto'>
+                                                <div onClick={()=>{SeleccionarDocumento(data)}} key={data.anexo_id} className='w-[25px] h-auto'>
                                                     <img src={pdf_icon} alt="Anexos Permiso" className='w-full h-full object-cover'/>
                                                 </div>
                                             )) : null
@@ -344,25 +372,38 @@ import pdf_icon from '../../../../../public/img/pdf.png'
                     {
                         Desautorizar ? (
                             <Modal
-                                isVisible = { ModalShow }
-                                onClose   = { () => setModalShow(false) }
+                                isVisible = { Desautorizar }
+                                onClose   = { () => setDesautorizar(false) }
                                 tittle    = {` Detalles de des-autorizacion `}
                             >
-                                <DesautorizarPermiso PermisoData = { PermisoSelected } onClose = { () => setModalShow(false) } />
+                                <DesautorizarPermiso PermisoData = { PermisoSelected } onClose = { () => setDesautorizar(false) } />
                             </Modal>
                         ) : null
                     }
                     {
                         Editar ? (
                             <Modal
-                                isVisible = { ModalShow }
-                                onClose   = { () => setModalShow(false) }
+                                isVisible = { Editar }
+                                onClose   = { () => setEditar(false) }
                                 tittle    = {` Editando Permiso `}
                             >
-                                <EditPermiso PermisoSelected = { PermisoSelected } onClose = { () => setModalShow() } />
+                                <EditPermiso PermisoSelected = { PermisoSelected } onClose = { () => setEditar() } />
                             </Modal>
                         ) : null
                     } 
+                    {
+                        DocumentoShow ? (
+                            <Modal
+                                isVisible = { DocumentoShow }
+                                onClose = { () => setDocumentoShow(false) }
+                                tittle = { DocumentosSeleccionado.nombre_documento } 
+                            >
+                                <div className='w-full  md:w-[750px] h-[600px] '>
+                                    <embed src={`https://reports.gematech.co/storage/${DocumentosSeleccionado.url}`} type="application/pdf" className='w-full h-full' />
+                                </div>
+                            </Modal>
+                        ) : null
+                    }
                 </div> 
             ) : null
         }        

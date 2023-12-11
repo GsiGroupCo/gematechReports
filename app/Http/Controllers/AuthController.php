@@ -19,21 +19,34 @@ class AuthController extends Controller
     public function Home()
     {       
         
-        $year = now()->year;
         $user = Auth::user();
+        $currentDate = now();
+        $fourMonthsAgo = $currentDate->subMonths(4);
         
-        return Inertia::render('Auth/Dashboard',[
+        return Inertia::render('Auth/Dashboard', [
             'Admin'        => $user,
             'Personal'     => Empleado::all(),
-            'PermisosData' => permisos::with('Responsable','Anexos')->whereHas('Responsable', function ($query) {
-                                $query->where('estado', 'LIKE', 'VIGENTE');
-                              }) -> whereYear('created_at', '>=', $year) ->orderBy('updated_at', 'desc') -> get(),  
-            'HorasData'    => HorasExtra::with('Responsable')->whereHas('Responsable', function ($query) {
-                                $query->where('estado', 'LIKE', 'VIGENTE');
-                              }) -> whereYear('created_at', '>=', $year) ->orderBy('updated_at', 'desc') -> get(),
-            'BonosData'    => Bono::with('Responsable') -> whereHas('Responsable', function ($query) {
-                                $query->where('estado', 'LIKE', 'VIGENTE');
-                              }) -> whereYear('created_at', '>=', $year) ->orderBy('updated_at', 'desc') -> get(),
+            'PermisosData' => permisos::with('Responsable', 'Anexos')
+                ->whereHas('Responsable', function ($query) {
+                    $query->where('estado', 'LIKE', 'VIGENTE');
+                })
+                ->where('created_at', '>=', $fourMonthsAgo)
+                ->orderBy('updated_at', 'desc')
+                ->get(),  
+            'HorasData'    => HorasExtra::with('Responsable')
+                ->whereHas('Responsable', function ($query) {
+                    $query->where('estado', 'LIKE', 'VIGENTE');
+                })
+                ->where('created_at', '>=', $fourMonthsAgo)
+                ->orderBy('updated_at', 'desc')
+                ->get(),
+            'BonosData'    => Bono::with('Responsable')
+                ->whereHas('Responsable', function ($query) {
+                    $query->where('estado', 'LIKE', 'VIGENTE');
+                })
+                ->where('created_at', '>=', $fourMonthsAgo)
+                ->orderBy('updated_at', 'desc')
+                ->get(),
             'status'       => session('status'),
             'error'        => session('error'),
         ]);

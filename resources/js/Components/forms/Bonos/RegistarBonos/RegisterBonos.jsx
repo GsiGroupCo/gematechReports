@@ -136,7 +136,7 @@ export default function RegisterBonos({ cc, onClose }) {
             <div className="text-red-500 font-bold">{formik.errors.observaciones}</div>
           )
         }
-        <input type="submit" value = "Registrar" className="w-full h-auto px-4 py-2 bg-green-500 hover:bg-green-800 text-black hover:text-white font-bold rounded-md border border-black hover:border-white cursor-pointer transition duration-300 ease-in-out" />
+        <input type="submit" value = "Registrar" className="w-full h-auto px-4 py-2 bg-[#323c7c] hover:bg-blue-800 text-white hover:text-white font-bold rounded-md border border-black hover:border-white cursor-pointer transition duration-300 ease-in-out" />
       </form>
   )
 }

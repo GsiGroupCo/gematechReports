@@ -4,30 +4,38 @@ import Aprobadas from './Aprobadas';
 import Pendientes from './Pendientes'; 
 
 const PanelHoras = ({ HorasExtras, Auth, Admin }) => {
-      
+       
     const [HorasAprobadas, setHorasAprobadas] = useState(false)
-    const [HorasPendientes, setHorasPendientes] = useState(true)
+    const [HorasPendientes, setHorasPendientes] = useState(false)
  
     function ShowAll() {
-        setHorasPendientes(false)
-        setHorasAprobadas(true)
+        if(HorasAprobadas){
+            setHorasAprobadas(false)
+        }else{
+            setHorasPendientes(false)
+            setHorasAprobadas(true)
+        }
     }
 
-    function ShowPendientes() { 
-        setHorasAprobadas(false)
-        setHorasPendientes(true)
+    function ShowPendientes() {
+        if(HorasPendientes){
+            setHorasPendientes(false)
+        }else{
+            setHorasAprobadas(false)
+            setHorasPendientes(true)
+        }
     }
  
     return (
         <div className='w-full h-auto flex flex-col justify-start items-start justify-items-center'>
             {
-                Auth ? (
+                Auth ?  (
                     <>
                         {
                             Admin.cargo === 'Coordinador de MTTO' || Admin.cargo === 'Gerente general' || Admin.cargo === 'Logistica' ? (
                                 <div className='w-full bg-gray-800 pt-4 h-auto flex justify-center items-center gap-3 px-4 sm:px-64'>
                                     <button onClick={ () => ShowAll() } className={`w-auto h-auto px-4 py-1 rounded-sm cursor-pointer transition duration-700 ease-in-out border border-white font-bold   hover:text-gray-800 hover:bg-white ${ HorasAprobadas ? 'bg-white text-gray-800 font-bold' : 'bg-gray-800 text-white font-bold'}`}>
-                                        Aprobados
+                                        Todos
                                     </button>
                                     <button onClick={ () => ShowPendientes() } className={`w-auto h-auto px-4 py-1 rounded-sm cursor-pointer transition duration-700 ease-in-out border border-white font-bold   hover:text-gray-800 hover:bg-white ${ HorasPendientes ? 'bg-white text-gray-800 font-bold' : 'bg-gray-800 text-white font-bold'}`}>
                                         Pendientes

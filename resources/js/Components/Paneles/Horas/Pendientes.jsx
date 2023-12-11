@@ -4,17 +4,14 @@ import Modal from "../../UI/Modal";
 import EditHoras from "../../forms/Horas/EditHoras";
 import DesaprobarHora from "../../forms/Horas/DesaprobarHora";
 import DesautorizarHora from "../../forms/Horas/DesautorizarHora";
+import Search from "@/Components/UI/Search";
 
     const Pendientes = ({ HorasExtras, Auth, Admin }) => { 
   
     const { data, post } = useForm();
-
     const [Editar, setEditar]             = useState(false)
-    const [Desaprobar, setDesaprobar]     = useState(false)
     const [Desautorizar, setDesautorizar] = useState(false)
-
-    const [ModalShow, setModalShow] = useState(false)
-    const [ModalInfoShow, setModalInfoShow] = useState(false)
+ 
     const [HoraSelected, setHoraSelected] = useState({
         horasextras_id: "",
         empleado_id : "",
@@ -26,27 +23,22 @@ import DesautorizarHora from "../../forms/Horas/DesautorizarHora";
         ot: ""
     }) 
 
-    function EditarRegistro(horasExtras){
-        setDesaprobar(false)
+    function EditarRegistro(horasExtras){ 
+        setHoraSelected({
+            horasextras_id : horasExtras.horasextras_id,
+            empleado_id    : horasExtras.empleado_id,
+            fecha          : horasExtras.fecha,
+            hora_inicial   : horasExtras.hora_inicial,
+            hora_final     : horasExtras.hora_final,
+            cant_Horas     : horasExtras.cant_Horas,
+            estado         : horasExtras.estado,
+            ot             : horasExtras.ot
+        })   
         setDesautorizar(false)
         setEditar(true)
-        setHoraSelected({
-            horasextras_id : horasExtras.horasextras_id,
-            empleado_id    : horasExtras.empleado_id,
-            fecha          : horasExtras.fecha,
-            hora_inicial   : horasExtras.hora_inicial,
-            hora_final     : horasExtras.hora_final,
-            cant_Horas     : horasExtras.cant_Horas,
-            estado         : horasExtras.estado,
-            ot             : horasExtras.ot
-        })  
-        setModalShow(true)
     }
 
-    function DesautorizarHora(horasExtras){
-        setEditar(false)
-        setDesaprobar(false)
-        setDesautorizar(true)
+    function DesAuthRegistro(horasExtras){
         setHoraSelected({
             horasextras_id : horasExtras.horasextras_id,
             empleado_id    : horasExtras.empleado_id,
@@ -56,8 +48,9 @@ import DesautorizarHora from "../../forms/Horas/DesautorizarHora";
             cant_Horas     : horasExtras.cant_Horas,
             estado         : horasExtras.estado,
             ot             : horasExtras.ot
-        })  
-        setModalShow(true)
+        })   
+        setEditar(false)
+        setDesautorizar(true)
     }
 
     function AutorizarHora(horasextras_id){ 
@@ -72,7 +65,6 @@ import DesautorizarHora from "../../forms/Horas/DesautorizarHora";
         post(`/horas/aprobada`)
     }
     
-
     useEffect(() => { 
         setHorasPendientes(HorasExtrasP)
         setHorasAutorizar(HorasExtrasAp)
@@ -159,13 +151,8 @@ import DesautorizarHora from "../../forms/Horas/DesautorizarHora";
         <>
             {
                 Admin.cargo === 'Coordinador de MTTO' ? (
-                    <div className="w-full h-full flex flex-col px-4 xl:px-96 pb-16 bg-gray-800 justify-start items-start justify-items-center gap-2">
-                        <input 
-                            type="text" 
-                            placeholder='Buscar...' 
-                            className='w-full h-[45px] px-4 py-2 mt-4 focus:outline-none bg-gray-600 text-white placeholder-white' 
-                            onChange={(e) => FiltroPendientes(e.target.value.toLowerCase())}
-                        /> 
+                    <div className="w-full h-full flex flex-col px-4 xl:px-96 pb-16 bg-gray-800 justify-start items-start justify-items-center gap-2"> 
+                        <Search SearchEvent = { (e) =>  FiltroPendientes(e.target.value.toLowerCase()) } />
                         {
                             HorasPendientes  ?   HorasPendientes.map((horasExtras) => (
                                 <div 
@@ -183,7 +170,7 @@ import DesautorizarHora from "../../forms/Horas/DesautorizarHora";
                                             <div onClick={() => EditarRegistro(horasExtras) } className="w-[25px] h-full bg-yellow-500 hover:bg-yellow-800 transition duration-700 ease-in-out rounded-full border border-white shadow shadow-black">
                                                 
                                             </div>
-                                            <div onClick={() => DesaprobarHora(horasExtras) } className="w-[25px] h-full bg-red-500 hover:bg-red-800 transition duration-700 ease-in-out rounded-full border border-white shadow shadow-black">
+                                            <div onClick={() => DesAuthRegistro(horasExtras) } className="w-[25px] h-full bg-red-500 hover:bg-red-800 transition duration-700 ease-in-out rounded-full border border-white shadow shadow-black">
                                                 
                                             </div>
                                         </div>
@@ -218,37 +205,24 @@ import DesautorizarHora from "../../forms/Horas/DesautorizarHora";
                                 </div>
                             )) : null
                         }
-                        {
-                            Editar ? (
-                                <Modal
-                                    isVisible = { ModalShow }
-                                    onClose   = { () => setModalShow(false) }
-                                    tittle    = {` Editando Hora Extra `}
-                                >
-                                    <EditHoras HoraData = { HoraSelected } onClose = { () => ModalShow(false) } />
-                                </Modal>
-                            ) : null
-                        }
-                        {
-                            Desautorizar ? (
-                                <Modal
-                                    isVisible = { ModalShow }
-                                    onClose   = { () => setModalShow(false) }
-                                    tittle    = {` Detalles de des-autorizacion `}
-                                >
-                                    <DesautorizarHora Admin = { Admin } HoraData = { HoraSelected } onClose = { () => ModalShow(false) } />
-                                </Modal>
-                            ) : null
-                        }  
+                        <Modal
+                            isVisible = { Editar }
+                            onClose   = { () => setEditar(false) }
+                            tittle    = {` Editando Hora Extra `}
+                        >
+                            <EditHoras HoraData = { HoraSelected } onClose = { () => Editar(false) } />
+                        </Modal>
+                        <Modal
+                            isVisible = { Desautorizar }
+                            onClose   = { () => setDesautorizar(false) }
+                            tittle    = {` Detalles de des-autorizacion `}
+                        >
+                            <DesautorizarHora Admin = { Admin } HoraData = { HoraSelected } onClose = { () => Desautorizar(false) } />
+                        </Modal>
                     </div>
                 )  : Admin.cargo === 'Logistica' ? (
-                    <div className="w-full h-full flex flex-col px-4 xl:px-96 pb-16 bg-gray-800 justify-start items-start justify-items-center gap-2">
-                        <input 
-                            type="text" 
-                            placeholder='Buscar...' 
-                            className='w-full h-[45px] px-4 py-2 mt-4 focus:outline-none bg-gray-600 text-white placeholder-white' 
-                            onChange={(e) => FiltroAutorizar(e.target.value.toLowerCase())}
-                        /> 
+                    <div className="w-full h-full flex flex-col px-4 xl:px-96 pb-16 bg-gray-800 justify-start items-start justify-items-center gap-2"> 
+                        <Search SearchEvent = { (e) =>  FiltroAutorizar(e.target.value.toLowerCase()) } />
                         {
                             HorasAutorizar  ?   HorasAutorizar.map((horasExtras) => (
                                 <div 
@@ -266,7 +240,7 @@ import DesautorizarHora from "../../forms/Horas/DesautorizarHora";
                                             <div onClick={() => EditarRegistro(horasExtras) }  className="w-[25px] h-full bg-yellow-500 hover:bg-yellow-800 transition duration-700 ease-in-out rounded-full border border-white shadow shadow-black">
                                                 
                                             </div>
-                                            <div onClick={()=> DesautorizarHora(horasExtras) } className="w-[25px] h-full bg-red-500 hover:bg-red-800 transition duration-700 ease-in-out rounded-full border border-white shadow shadow-black">
+                                            <div onClick={()=> DesAuthRegistro(horasExtras) } className="w-[25px] h-full bg-red-500 hover:bg-red-800 transition duration-700 ease-in-out rounded-full border border-white shadow shadow-black">
                                                 
                                             </div>
                                         </div>
@@ -300,38 +274,25 @@ import DesautorizarHora from "../../forms/Horas/DesautorizarHora";
                                     </div> 
                                 </div>
                             )) : null
-                        }
-                        {
-                            Editar ? (
-                                <Modal
-                                    isVisible = { ModalShow }
-                                    onClose   = { () => setModalShow(false) }
-                                    tittle    = {` Editando Hora Extra `}
-                                >
-                                    <EditHoras HoraData = { HoraSelected } onClose = { () => ModalShow(false) } />
-                                </Modal>
-                            ) : null
-                        }
-                        {
-                            Desautorizar ? (
-                                <Modal
-                                    isVisible = { ModalShow }
-                                    onClose   = { () => setModalShow(false) }
-                                    tittle    = {` Detalles de des-autorizacion `}
-                                >
-                                    <DesautorizarHora Admin = { Admin } HoraData = { HoraSelected } onClose = { () => ModalShow(false) } />
-                                </Modal>
-                            ) : null
-                        }  
+                        } 
+                        <Modal
+                            isVisible = { Editar }
+                            onClose   = { () => setEditar(false) }
+                            tittle    = {` Editando Hora Extra `}
+                        >
+                            <EditHoras HoraData = { HoraSelected } onClose = { () => Editar(false) } />
+                        </Modal>
+                        <Modal
+                            isVisible = { Desautorizar }
+                            onClose   = { () => setDesautorizar(false) }
+                            tittle    = {` Detalles de des-autorizacion `}
+                        >
+                            <DesautorizarHora Admin = { Admin } HoraData = { HoraSelected } onClose = { () => Desautorizar(false) } />
+                        </Modal> 
                     </div>
                 ) : Admin.cargo === 'Gerente general' ? (
-                    <div className="w-full h-full flex flex-col px-4 xl:px-96 pb-16 bg-gray-800 justify-start items-start justify-items-center gap-2">
-                        <input 
-                            type="text" 
-                            placeholder='Buscar...' 
-                            className='w-full h-[45px] px-4 py-2 mt-4 focus:outline-none bg-gray-600 text-white placeholder-white' 
-                            onChange={(e) => FiltroHoras(e.target.value.toLowerCase())}
-                        /> 
+                    <div className="w-full h-full flex flex-col px-4 xl:px-96 pb-16 bg-gray-800 justify-start items-start justify-items-center gap-2"> 
+                        <Search SearchEvent = { (e) =>  FiltroHoras(e.target.value.toLowerCase()) } />
                         {
                             HorasFiltradas  ?   HorasFiltradas.map((horasExtras) => (
                                 <div 
@@ -349,7 +310,7 @@ import DesautorizarHora from "../../forms/Horas/DesautorizarHora";
                                             <div onClick={() => EditarRegistro(horasExtras)} className="w-[25px] h-full bg-yellow-500 hover:bg-yellow-800 transition duration-700 ease-in-out rounded-full border border-white shadow shadow-black">
                                                 
                                             </div>
-                                            <div onClick={() => DesautorizarHora(horasExtras)} className="w-[25px] h-full bg-red-500 hover:bg-red-800 transition duration-700 ease-in-out rounded-full border border-white shadow shadow-black">
+                                            <div onClick={() => DesAuthRegistro(horasExtras)} className="w-[25px] h-full bg-red-500 hover:bg-red-800 transition duration-700 ease-in-out rounded-full border border-white shadow shadow-black">
                                                 
                                             </div>
                                         </div>
@@ -383,29 +344,21 @@ import DesautorizarHora from "../../forms/Horas/DesautorizarHora";
                                     </div> 
                                 </div>
                             )) : null
-                        }
-                        {
-                            Editar ? (
-                                <Modal
-                                    isVisible = { ModalShow }
-                                    onClose   = { () => setModalShow(false) }
-                                    tittle    = {` Editando Hora Extra `}
-                                >
-                                    <EditHoras HoraData = { HoraSelected } onClose = { () => ModalShow(false) } />
-                                </Modal>
-                            ) : null
-                        }
-                        {
-                            Desautorizar ? (
-                                <Modal
-                                    isVisible = { ModalShow }
-                                    onClose   = { () => setModalShow(false) }
-                                    tittle    = {` Detalles de des-autorizacion `}
-                                >
-                                    <DesautorizarHora Admin = { Admin } HoraData = { HoraSelected } onClose = { () => ModalShow(false) } />
-                                </Modal>
-                            ) : null
-                        }  
+                        } 
+                        <Modal
+                            isVisible = { Editar }
+                            onClose   = { () => setEditar(false) }
+                            tittle    = {` Editando Hora Extra `}
+                        >
+                            <EditHoras HoraData = { HoraSelected } onClose = { () => Editar(false) } />
+                        </Modal>
+                        <Modal
+                            isVisible = { Desautorizar }
+                            onClose   = { () => setDesautorizar(false) }
+                            tittle    = {` Detalles de des-autorizacion `}
+                        >
+                            <DesautorizarHora Admin = { Admin } HoraData = { HoraSelected } onClose = { () => Desautorizar(false) } />
+                        </Modal>
                     </div>
                 ) : null
             }        

@@ -11,13 +11,14 @@ use App\Models\Bono;
 use App\Models\Empleado;
 
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Facades\Image; 
 
 class WorkerController extends Controller
 {
 
     public function Home(Request $request, $cc)
-    {       
-    
+    {        
         $empleados_id = Empleado::where( 'cc', 'LIKE', $cc) -> get() ;
         $exist = $empleados_id -> count();
 
@@ -48,15 +49,16 @@ class WorkerController extends Controller
         $exist = Empleado::where('cc','LIKE',$request -> cc)->get()->count();
         if($exist > 0){ 
             return redirect() -> route('home') -> with('error', 'Ya existe un trabajador con esta cedula');
+        }else{ 
+            Empleado::create([
+                'empleado_id' => $empleado_id,
+                'nombre'      => $request -> nombre,
+                'cargo'       => $request -> cargo,
+                'cc'          => $request -> cc,
+                'estado'      => 'VIGENTE'
+            ]);
+            return redirect() -> route('home') -> with('status', 'Trabajador Registrado');
         }
-        Empleado::create([
-            'empleado_id' => $empleado_id,
-            'nombre'      => $request -> nombre,
-            'cargo'       => $request -> cargo,
-            'cc'          => $request -> cc,
-            'estado'      => 'VIGENTE'
-        ]);
-        return redirect() -> route('home') -> with('status', 'Trabajador Registrado');
     }
 
 }

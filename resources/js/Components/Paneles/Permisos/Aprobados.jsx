@@ -1,18 +1,41 @@
 import React, { useEffect, useState } from 'react' 
 import pdf_icon from '../../../../../public/img/pdf.png'
+import Search from '@/Components/UI/Search';
+import Modal from '@/Components/UI/Modal';
 
 export default function Aprobados({ Permisos, Auth }) {
+
+  const [DocumentoShow, setDocumentoShow]     = useState(false) 
+
+  const [DocumentosSeleccionado, setDocumentosSeleccionado]   = useState({
+    anexo_id : "",
+    permiso_id : "",
+    nombre_documento: "",
+    url: ""
+  })
+  
+  function SeleccionarDocumento(Documento){
+    setDocumentosSeleccionado({
+        anexo_id : Documento.anexo_id,
+        permiso_id : Documento.permiso_id,
+        nombre_documento: Documento.nombre_documento,
+        url: Documento.url
+    })
+    setDocumentoShow(true)
+  }
     
   const PermisoData = [];
   Permisos.forEach(Permisos => {
-    const anexosData = Permisos.anexos.map(documentos => ({
+    
+    const anexosData = Permisos.anexos && Permisos.anexos.length > 0 ?
+    Permisos.anexos.map(documentos => ({
       anexo_id: documentos.anexo_id,
       permiso_id: documentos.permiso_id,
       nombre_documento: documentos.nombre_documento,
       url: documentos.url,
       created_at: documentos.created_at,
       updated_at: documentos.updated_at,
-    })); 
+    })) : []; 
 
     PermisoData.push({
       permiso_id: Permisos.permiso_id,
@@ -43,14 +66,10 @@ export default function Aprobados({ Permisos, Auth }) {
     });
   }); 
 
-  const PermisosA = PermisoData.filter(
-    (PermisoData) => PermisoData.estado === "Aprobado"
-  ); 
-
-  const [PermisosFiltrados, setPermisosFiltrados] = useState(PermisosA); 
+  const [PermisosFiltrados, setPermisosFiltrados] = useState(Permisos); 
    
   useEffect(() => {
-    setPermisosFiltrados(PermisosA)
+    setPermisosFiltrados(Permisos)
   }, [Permisos])
    
   const filterData = ( searchTerm ) => {
@@ -84,13 +103,8 @@ export default function Aprobados({ Permisos, Auth }) {
   };
 
   return (
-    <div className="w-full h-full flex flex-col px-4 xl:px-96 pb-16 justify-start bg-gray-800 items-start justify-items-center gap-2"> 
-      <input 
-        type="text" 
-        placeholder='Buscar...' 
-        className='w-full h-[45px] px-4 py-2 mt-4 focus:outline-none bg-gray-600 text-white placeholder-white' 
-        onChange={(e) => filterData(e.target.value.toLowerCase())}
-      /> 
+    <div className="w-full h-full flex flex-col px-4 xl:px-96 pb-16 justify-start bg-gray-800 items-start justify-items-center gap-2">  
+      <Search SearchEvent = { (e) =>  filterData(e.target.value.toLowerCase()) } />
       {
         PermisosFiltrados 
         ?  
@@ -149,13 +163,22 @@ export default function Aprobados({ Permisos, Auth }) {
                   <div className='flex gap-3'>
                     {
                       permisos.anexos ? permisos.anexos.map((data) => (
-                        <div key={data.anexo_id} className='w-[25px] h-auto'>
+                        <div onClick={()=>SeleccionarDocumento(data)} key={data.anexo_id} className='w-[25px] h-auto'>
                           <img src={pdf_icon} alt="Anexos Permiso" className='w-full h-full object-cover'/>
                         </div>
                       )) : null
                     }
                   </div>
               </div>  
+              <Modal
+                isVisible = { DocumentoShow }
+                onClose = { () => setDocumentoShow(false) }
+                tittle = { DocumentosSeleccionado.nombre_documento } 
+              > 
+                <div className='w-full  md:w-[750px] h-[600px] '>
+                  <embed src={`https://reports.gematech.co/storage/${DocumentosSeleccionado.url}`} type="application/pdf" className='w-full h-full' />
+                </div>
+              </Modal> 
             </div>
           ))
         : null

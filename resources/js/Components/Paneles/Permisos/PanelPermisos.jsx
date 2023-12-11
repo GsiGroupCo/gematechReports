@@ -4,17 +4,25 @@ import Pendientes from './Pendientes'
 
 export default function PanelPermisos({  Permisos, Auth, Admin }) {
      
-    const [PermisosAutorizados, setPermisosAutorizados] = useState(false)
-    const [PermisosPendientes, setPermisosPendientes] = useState(true)
+    const [PermisosTotales, setPermisosTotales] = useState(false)
+    const [PermisosPendientes, setPermisosPendientes] = useState(false)
  
-    function ShowMePermisosAprobados() { 
-        setPermisosPendientes(false)
-        setPermisosAutorizados(true)
+    function ShowAll() { 
+        if(PermisosTotales){
+            setPermisosTotales(false)
+        }else{
+            setPermisosPendientes(false)
+            setPermisosTotales(true)
+        }
     }
 
-    function ShowMePermisosPendientes() {  
-        setPermisosAutorizados(false)
-        setPermisosPendientes(true)
+    function ShowPendientes() {  
+        if(PermisosPendientes){ 
+            setPermisosPendientes(false)
+        }else{ 
+            setPermisosTotales(false)
+            setPermisosPendientes(true)
+        }
     }
 
     return (
@@ -25,23 +33,23 @@ export default function PanelPermisos({  Permisos, Auth, Admin }) {
                         {
                             Admin.cargo === 'Gerente general' ? ( 
                                 <div className='w-full bg-gray-800 pt-4 h-auto flex justify-center items-center gap-3 px-4 sm:px-64'>
-                                    <button onClick={ () => ShowMePermisosAprobados() } className={`w-auto h-auto px-4 py-1 rounded-sm cursor-pointer transition duration-700 ease-in-out border border-white font-bold  hover:text-gray-800 hover:bg-white ${ PermisosAutorizados ? 'bg-white text-gray-800 font-bold' : 'bg-gray-800 text-white font-bold'}`}>
-                                        Aprobados
+                                    <button onClick={ () => ShowAll() } className={`w-auto h-auto px-4 py-1 rounded-sm cursor-pointer transition duration-700 ease-in-out border border-white font-bold  hover:text-gray-800 hover:bg-white ${ PermisosTotales ? 'bg-white text-gray-800 font-bold' : 'bg-gray-800 text-white font-bold'}`}>
+                                        Todos
                                     </button>
-                                    <button onClick={ () => ShowMePermisosPendientes() } className={`w-auto h-auto px-4 py-1 rounded-sm cursor-pointer transition duration-700 ease-in-out border border-white font-bold  hover:text-gray-800 hover:bg-white ${ PermisosPendientes ? 'bg-white text-gray-800 font-bold' : 'bg-gray-800 text-white font-bold'}`}>
+                                    <button onClick={ () => ShowPendientes() } className={`w-auto h-auto px-4 py-1 rounded-sm cursor-pointer transition duration-700 ease-in-out border border-white font-bold  hover:text-gray-800 hover:bg-white ${ PermisosPendientes ? 'bg-white text-gray-800 font-bold' : 'bg-gray-800 text-white font-bold'}`}>
                                         Pendientes
                                     </button>
                                 </div> 
                             ) : Admin.cargo === 'CONTABILIDAD' || Admin.cargo === 'HSEQ / GESTION DE TALENTO HUMANO' || Admin.cargo === 'AUX PERMISOS' || Admin.cargo === 'Gerencia' || Admin.cargo === 'Coordinador de MTTO' ? (
                                 <div className='w-full bg-gray-800 pt-4 h-auto flex justify-center items-center gap-3 px-4 sm:px-64'>
-                                    <button onClick={ () => ShowMePermisosPendientes() } className={`w-auto h-auto px-4 py-1 rounded-sm cursor-pointer transition duration-700 ease-in-out border border-white font-bold   hover:text-gray-800 hover:bg-white ${ PermisosPendientes ? 'bg-white text-gray-800 font-bold' : 'bg-gray-800 text-white font-bold'}`}>
+                                    <button onClick={ () => ShowAll() } className={`w-auto h-auto px-4 py-1 rounded-sm cursor-pointer transition duration-700 ease-in-out border border-white font-bold   hover:text-gray-800 hover:bg-white ${ PermisosTotales ? 'bg-white text-gray-800 font-bold' : 'bg-gray-800 text-white font-bold'}`}>
                                         Todos Los Permisos
                                     </button>
                                 </div> 
                             ) : null
                         }  
                         {
-                            PermisosAutorizados  ? (
+                            PermisosTotales  ? (
                                 <Aprobados Permisos = { Permisos } Auth = { Auth } />
                             ) :  null
                         }

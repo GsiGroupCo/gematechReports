@@ -8,6 +8,9 @@ use Illuminate\Http\Request;
 use App\Models\permisos;
 use App\Models\PermisosHistory;
 
+use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Facades\Image; 
+
 class PermisosController extends Controller
 {
     public function store(Request $request)
@@ -47,19 +50,18 @@ class PermisosController extends Controller
 
             for ($i = 1; $i <= $request -> CantDocs; $i++) {
                 $documento = $request -> file('Docs_'.$i);
-                $nombre = $documento -> getClientOriginalName();
-                $ruta = "/home/gematech/reports_inersia/public/permisos/".$permiso_id."/Documentos";
-                $documento->move($ruta, $nombre);
+                $filename = $documento->getClientOriginalName();  
+                $compressedImage = Image::make($documento)->encode('jpg', 80);
+                $compressedImage->move(public_path() . "/Permisos", $filename);
                 Anexos::create([
                     'anexo_id'         => uniqid(TRUE),
                     'permiso_id'       => $permiso_id,
-                    'nombre_documento' => $nombre,
-                    'url'              => $permiso_id . "/Documentos/" . $nombre,
+                    'nombre_documento' => $filename,
+                    'url'              => `/storage/Permisos/`.$filename,
                 ]);
             } 
             return redirect() -> route('home') -> with('status', 'Permiso Registrado'); 
-        } catch (\Throwable $th) {
-            dd($th);
+        } catch (\Throwable $th) { 
             return redirect() -> route('home') -> with('error', 'Problema registrnado permiso');
         }
     }
@@ -113,7 +115,6 @@ class PermisosController extends Controller
                 return redirect() -> route('home') -> with('status', 'Permiso No encontrado');
             }
         } catch (\Throwable $th) {
-            dd($th);
             return redirect() -> route('home') -> with('error', 'Problema Aprobando Permiso');
         }
     }
@@ -137,8 +138,7 @@ class PermisosController extends Controller
             }else{
                 return redirect() -> route('home') -> with('status', 'Upss.. Permiso No encontrado');
             }
-        } catch (\Throwable $th) {
-            dd($th);
+        } catch (\Throwable $th) { 
             return redirect() -> route('home') -> with('status', 'Problema Desaprobando Permiso');
         }
     }

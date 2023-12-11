@@ -1,20 +1,18 @@
+import Search from "@/Components/UI/Search";
 import { useEffect, useState } from "react" 
 
 const Aprobadas = ({Bonos, Auth}) => {
-
-  const BonosA = Bonos.filter(
-    (bonos) => bonos.estado === "Autorizado" ||   bonos.estado === "Aprobado"
-  );
-
-  const [datosFiltrados, setDatosFiltrados] = useState(BonosA);
+ 
+  const [datosFiltrados, setDatosFiltrados] = useState(Bonos);
   
   useEffect(() => {
-    setDatosFiltrados(BonosA)
+    setDatosFiltrados(Bonos)
   }, [Bonos])
     
   const filterData = ( searchTerm ) => {
-    const filtered = BonosA.filter((bonos) => {
+    const filtered = Bonos.filter((bonos) => {
         const bono_id     = bonos.bono_id.toLowerCase();
+        const estado      = bonos.estado.toLowerCase();
         const ot_id       = bonos.ot_id.toLowerCase();
         const responsable = bonos.responsable.nombre.toLowerCase();
         const fecha_bono  = bonos.fecha_bono.toString().toLowerCase();
@@ -22,6 +20,7 @@ const Aprobadas = ({Bonos, Auth}) => {
         const lugar       = bonos.lugar_bono.toLowerCase();
         return (
             bono_id.includes(searchTerm)      ||
+            estado.includes(searchTerm)       ||
             ot_id.includes(searchTerm)        ||
             responsable.includes(searchTerm)  ||
             fecha_bono.includes(searchTerm)   ||
@@ -33,13 +32,8 @@ const Aprobadas = ({Bonos, Auth}) => {
   };
 
   return (
-    <div className="w-full h-full flex flex-col px-4 xl:px-96 pb-16 justify-start bg-gray-800 items-start justify-items-center gap-2">
-      <input 
-        type="text" 
-        placeholder='Buscar...' 
-        className='w-full h-[45px] px-4 py-2 mt-4 focus:outline-none bg-gray-600 text-white placeholder-white' 
-        onChange={(e) => filterData(e.target.value.toLowerCase())}
-      /> 
+    <div className="w-full h-full flex flex-col px-4 xl:px-96 pb-16 justify-start bg-gray-800 items-start justify-items-center gap-2"> 
+      <Search SearchEvent = { (e) => filterData(e.target.value.toLowerCase()) } />
       {
         datosFiltrados  ?  
           datosFiltrados.map((Bonos) => (

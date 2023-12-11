@@ -1,3 +1,4 @@
+import Search from '@/Components/UI/Search';
 import React, { useEffect, useState } from 'react'
 
 export const PermisoRow = ({ Permisos, Auth }) => {
@@ -56,13 +57,8 @@ export const PermisoRow = ({ Permisos, Auth }) => {
 
     return (
         <>
-            <div className='w-full h-auto bg-gray-200 gap-2 flex justify-evenly items-center justify-items-center p-2 '>
-                <input 
-                    type="text" 
-                    placeholder='Buscar...' 
-                    className='w-full h-[45px] text-black px-4 py-2 focus:outline-none bg-white  border border-black rounded-md '
-                    onChange={(e) => filterData(e.target.value.toLowerCase())} 
-                />
+            <div className='w-full h-auto bg-gray-200 gap-2 flex justify-evenly items-center justify-items-center p-2 '> 
+                <Search SearchEvent = { (e) =>  filterData(e.target.value.toLowerCase()) } />
             </div>
             <div  className=' hidden w-full h-auto border-b-2  cursor-pointer md:flex flex-col md:flex-row justify-center items-center justify-items-center bg-white'>
                 <div className='w-full py-4 md:w-full h-full flex flex-col md:flex-row text-center justify-center items-center justify-items-center bg-[#323c7c] text-white'>

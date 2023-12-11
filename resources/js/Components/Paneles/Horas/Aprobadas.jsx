@@ -1,4 +1,5 @@
 
+import Search from "@/Components/UI/Search";
 import { useEffect, useState } from "react" 
 
 const Aprobadas = ({ HorasExtras, Auth }) => {
@@ -6,17 +7,14 @@ const Aprobadas = ({ HorasExtras, Auth }) => {
   const [datosFiltrados, setDatosFiltrados] = useState(HorasExtras);
    
   useEffect(() => {
-    setDatosFiltrados(HorasExtrasAA)
+    setDatosFiltrados(HorasExtras)
   }, [HorasExtras])
-
-  const HorasExtrasAA = HorasExtras.filter(
-    (horasExtras) => horasExtras.estado === "Autorizado" || horasExtras.estado === "Aprobado"
-  );
-
+ 
   const filterData = ( searchTerm ) => {
-    const filtered = HorasExtrasAA.filter((horas) => {
+    const filtered = HorasExtras.filter((horas) => {
         const horasextras_id = horas.horasextras_id.toLowerCase();
         const nombre_empleado = horas.responsable.nombre.toLowerCase();
+        const estado = horas.estado.toLowerCase();
         const ot = horas.ot.toLowerCase();
         const fecha = horas.fecha.toString().toLowerCase();
         const hora_final = horas.hora_final.toLowerCase();
@@ -24,6 +22,7 @@ const Aprobadas = ({ HorasExtras, Auth }) => {
         return (
             horasextras_id.includes(searchTerm)  ||
             nombre_empleado.includes(searchTerm) ||
+            estado.includes(searchTerm)          ||
             ot.includes(searchTerm)              ||
             fecha.includes(searchTerm)           ||
             hora_final.includes(searchTerm)      ||
@@ -34,13 +33,8 @@ const Aprobadas = ({ HorasExtras, Auth }) => {
   };
 
   return (
-    <div className="w-full h-full flex flex-col px-4 xl:px-96 pb-16 bg-gray-800 justify-start items-start justify-items-center gap-2">
-      <input 
-        type="text" 
-        placeholder='Buscar...' 
-        className='w-full h-[45px] px-4 py-2 mt-4 focus:outline-none bg-gray-600 text-white placeholder-white' 
-        onChange={(e) => filterData(e.target.value.toLowerCase())}
-      />
+    <div className="w-full h-full flex flex-col px-4 xl:px-96 pb-16 bg-gray-800 justify-start items-start justify-items-center gap-2"> 
+      <Search SearchEvent = { (e) =>  filterData(e.target.value.toLowerCase()) } />
       {
         datosFiltrados 
         ?  

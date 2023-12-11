@@ -13,16 +13,21 @@ class HorasController extends Controller
     public function aprobada(Request $request)
     {         
         try {
-            HorasExtra::where('horasextras_id', 'LIKE', $request -> horasextras_id) -> update([
-                'estado' => 'Aprobado'
-            ]);
-            HoraHistory::create([
-                'horas_history_id' => uniqid(TRUE),
-                'horasextras_id'  => $request -> horasextras_id,
-                'user_id'         => $request -> user_id,
-                'state'           => 'Aprobado'
-            ]);
-            return redirect() -> route('home') -> with('status', 'Hora Aprobada');
+            $exist = HorasExtra::where('horasextras_id', 'LIKE', $request -> horasextras_id)->get()->count();
+            if($exist){
+                HorasExtra::where('horasextras_id', 'LIKE', $request -> horasextras_id) -> update([
+                    'estado' => 'Aprobado'
+                ]);
+                HoraHistory::create([
+                    'horas_history_id' => uniqid(TRUE),
+                    'horasextras_id'  => $request -> horasextras_id,
+                    'user_id'         => $request -> user_id,
+                    'state'           => 'Aprobado'
+                ]);
+                return redirect() -> route('home') -> with('status', 'Hora Aprobada');
+            }else{ 
+                return redirect() -> route('home') -> with('error', 'Hora no encontrada');
+            }
         } catch (\Throwable $th) {
             return redirect() -> route('home') -> with('status', 'Problema Aprobando Hora');
         }
@@ -31,16 +36,21 @@ class HorasController extends Controller
     public function desaprobada(Request $request)
     {         
         try {
-            HorasExtra::where('horasextras_id', 'LIKE', $request -> horasextras_id) -> update([
-                'estado'   => 'Desaprobado',
-                'detalles' => $request -> descripcion
-            ]);
-            HoraHistory::create([
-                'horas_history_id' => uniqid(TRUE),
-                'horasextras_id'  => $request -> horasextras_id,
-                'user_id'         => $request -> user_id,
-                'state'           => 'Desaprobado'
-            ]);
+            $exist = HorasExtra::where('horasextras_id', 'LIKE', $request -> horasextras_id)->get()->count();
+            if($exist){
+                HorasExtra::where('horasextras_id', 'LIKE', $request -> horasextras_id) -> update([
+                    'estado'   => 'Desaprobado',
+                    'detalles' => $request -> descripcion
+                ]);
+                HoraHistory::create([
+                    'horas_history_id' => uniqid(TRUE),
+                    'horasextras_id'  => $request -> horasextras_id,
+                    'user_id'         => $request -> user_id,
+                    'state'           => 'Desaprobado'
+                ]);
+            }else{
+                return redirect() -> route('home') -> with('error', 'Hora no encontrada');
+            }
             return redirect() -> route('home') -> with('status', 'Hora desaprobada');
         } catch (\Throwable $th) {
             return redirect() -> route('home') -> with('error', 'Problema desaprobando hora');
@@ -50,18 +60,22 @@ class HorasController extends Controller
     public function auth(Request $request)
     {       
         try {
-            HorasExtra::where('horasextras_id', 'LIKE', $request -> horasextras_id) -> update([
-                'estado' => 'Autorizado'
-            ]);
-            HoraHistory::create([
-                'horas_history_id' => uniqid(TRUE),
-                'horasextras_id'  => $request -> horasextras_id,
-                'user_id'         => $request -> user_id,
-                'state'           => 'Autorizado'
-            ]);
-            return redirect() -> route('home') -> with('status', 'Hora Autorizada');
+            $exist = HorasExtra::where('horasextras_id', 'LIKE', $request -> horasextras_id)->get()->count();
+            if($exist){
+                HorasExtra::where('horasextras_id', 'LIKE', $request -> horasextras_id) -> update([
+                    'estado' => 'Autorizado'
+                ]);
+                HoraHistory::create([
+                    'horas_history_id' => uniqid(TRUE),
+                    'horasextras_id'  => $request -> horasextras_id,
+                    'user_id'         => $request -> user_id,
+                    'state'           => 'Autorizado'
+                ]);
+                return redirect() -> route('home') -> with('status', 'Hora Autorizada');
+            }else{
+                return redirect() -> route('home') -> with('status', 'Hora no encontrada');
+            }
         } catch (\Throwable $th) {
-            dd($th);
             return redirect() -> route('home') -> with('error', 'Problema Autorizando hora');
         }
     }
@@ -114,26 +128,31 @@ class HorasController extends Controller
                 return ($HORA_TRANSCURRIDA.':'.$MINUITOS_TRANSCURRIDOS.' Horas');
     
                 }
-            }
-            
+            } 
             $empleado = Empleado::where('cc','LIKE',$request -> cc) -> get();
-          
-            $ot = $request -> tipe.$request -> Ot;
-            HorasExtra::create([
-                'horasextras_id' => uniqid(TRUE),
-                'empleado_id'    => $empleado[0]['empleado_id'],
-                'fecha'          => $request -> Fecha,
-                'hora_inicial'   => $request -> HoraInicial,
-                'hora_final'     => $request -> HoraFinal,
-                'cant_Horas'     => calcular_tiempo_trasnc( $request ->HoraFinal, $request ->HoraInicial ),
-                'estado'         => 'Pendiente',
-                'detalles'       => 'SIN NOVEDAD',
-                'observaciones'  => $request -> observaciones,
-                'ot'             => $ot,
-            ]);
-    
+            $ot = $request -> tipe.$request -> Ot; 
+            $exist = HorasExtra::where([
+                ['fecha', 'LIKE', $request->Fecha],
+                ['empleado_id', 'LIKE', $empleado[0]['empleado_id']]
+            ])->exists();
+            if(!$exist){
+                HorasExtra::create([
+                    'horasextras_id' => uniqid(TRUE),
+                    'empleado_id'    => $empleado[0]['empleado_id'],
+                    'fecha'          => $request -> Fecha,
+                    'hora_inicial'   => $request -> HoraInicial,
+                    'hora_final'     => $request -> HoraFinal,
+                    'cant_Horas'     => calcular_tiempo_trasnc( $request ->HoraFinal, $request ->HoraInicial ),
+                    'estado'         => 'Pendiente',
+                    'detalles'       => 'SIN NOVEDAD',
+                    'observaciones'  => $request -> observaciones,
+                    'ot'             => $ot,
+                ]);
+            }else{
+                return redirect() -> route('dashboard',['cc' => $request -> cc]) -> with('error', 'Ya existe un reporte de Horas extra con esta fecha.');
+            } 
             return redirect() -> route('dashboard',['cc' => $request -> cc]) -> with('status', 'Hora Registrada');
-        } catch (\Throwable $th) {
+        } catch (\Throwable $th) { 
             return redirect() -> route('dashboard',['cc' => $request -> cc]) -> with('error', 'Problema Registrando hora');
         }
     }
@@ -164,15 +183,19 @@ class HorasController extends Controller
                 }
             }
     
-            $ot = $request -> tipe.$request -> Ot;
-    
-            HorasExtra::where('horasextras_id', 'LIKE', $request -> horasextras_id) -> update([
-                'fecha'          => $request -> Fecha,
-                'hora_inicial'   => $request -> HoraInicial,
-                'hora_final'     => $request -> HoraFinal,
-                'cant_Horas'     => calcular_tiempo_trasnc2( $request ->HoraFinal, $request ->HoraInicial ), 
-                'ot'             => $ot,
-            ]);
+            $ot = $request -> tipe.$request -> Ot; 
+            $exist =  HorasExtra::where('horasextras_id', 'LIKE', $request -> horasextras_id) -> count();
+            if($exist){
+                HorasExtra::where('horasextras_id', 'LIKE', $request -> horasextras_id) -> update([
+                    'fecha'          => $request -> Fecha,
+                    'hora_inicial'   => $request -> HoraInicial,
+                    'hora_final'     => $request -> HoraFinal,
+                    'cant_Horas'     => calcular_tiempo_trasnc2( $request ->HoraFinal, $request ->HoraInicial ), 
+                    'ot'             => $ot,
+                ]);
+            }else{ 
+                return redirect() -> route('home') -> with('error', 'Hora Extra no encontrada');
+            }
             return redirect() -> route('home') -> with('status', 'Hora Editada');
         } catch (\Throwable $th) {
             return redirect() -> route('home') -> with('status', 'Problema Editando Hora');

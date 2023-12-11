@@ -4,14 +4,22 @@ import Modal from "../../UI/Modal";
 import EditBonos from "../../forms/Bonos/EditBonos";
 import DesaprobarBono from "../../forms/Bonos/DesaprobarBono";
 import DesautorizarBono from "../../forms/Bonos/DesautorizarBono";
+import Search from "@/Components/UI/Search";
 
 const Pendientes = ({Bonos, Auth, Admin }) => {
     
     const { data, post } = useForm(); 
 
     const [Editar, setEditar] = useState(false)
-    const [Desaprobar, setDesaprobar] = useState(false)
-    const [Desautorizar, setDesautorizar] = useState(false)
+    const [Desaprobar, setDesaprobar] = useState(false) 
+
+    const [BonoSelected, setBonoSelected] = useState({
+        bono_id    : Bonos.bono_id,
+        ot_id      : Bonos.ot_id,
+        lugar_bono : Bonos.lugar_bono,
+        fecha_bono : Bonos.fecha_bono,
+        cliente    : Bonos.cliente,
+    })
  
     function AutorizarBono(bono_id){
         data.bono_id = bono_id
@@ -25,32 +33,28 @@ const Pendientes = ({Bonos, Auth, Admin }) => {
         post(`/bono/aprobada`)
     }
     
-    function EditarRegistro(Bonos){
-        setDesaprobar(false)
-        setDesautorizar(false)
-        setEditar(true)
+    function EditarRegistro(Bonos){ 
         setBonoSelected({
             bono_id    : Bonos.bono_id,
             ot_id      : Bonos.ot_id,
             lugar_bono : Bonos.lugar_bono,
             fecha_bono : Bonos.fecha_bono,
             cliente    : Bonos.cliente, 
-        })  
-        setModalShow(true)
+        })    
+        setDesaprobar(false)
+        setEditar(true)
     }
 
     function DesaprobarRegistro(Bonos){
-        setEditar(false)
-        setDesautorizar(false)
-        setDesaprobar(true)
         setBonoSelected({
             bono_id     : Bonos.bono_id,
             ot_id       : Bonos.ot_id,
             lugar_bono  : Bonos.lugar_bono,
             fecha_bono  : Bonos.fecha_bono,
             cliente     : Bonos.cliente, 
-        })  
-        setModalShow(true)
+        })   
+        setEditar(false) 
+        setDesaprobar(true)
     }
 
     
@@ -139,12 +143,7 @@ const Pendientes = ({Bonos, Auth, Admin }) => {
         {
             Admin.cargo === 'Coordinador de MTTO' ? (
                 <div className="w-full h-full flex flex-col px-4 xl:px-96 pb-16 bg-gray-800 justify-start items-start justify-items-center gap-2">
-                    <input 
-                        type="text" 
-                        placeholder='Buscar...' 
-                        className='w-full h-[45px] px-4 py-2 mt-4 focus:outline-none bg-gray-600 text-white placeholder-white' 
-                        onChange={(e) => FiltrarPendientes(e.target.value.toLowerCase())}
-                    /> 
+                    <Search SearchEvent = { (e) =>  FiltrarPendientes(e.target.value.toLowerCase()) } />
                     {
                         BonosPendientes  ?   BonosPendientes.map((Bonos) => (
                             <div 
@@ -197,15 +196,24 @@ const Pendientes = ({Bonos, Auth, Admin }) => {
                             </div>
                         )) : null
                     }
+                    <Modal
+                        isVisible = { Editar }
+                        onClose   = { () => setEditar(false) }
+                        tittle    = {` Editando Hora Extra `}
+                    >
+                        <EditBonos BonoData = { BonoSelected } onClose = { () => setEditar(false) } />
+                    </Modal>
+                    <Modal
+                        isVisible = { Desaprobar }
+                        onClose   = { () => setDesaprobar(false) }
+                        tittle    = {` Detalles de des-autorizacion `}
+                    >
+                        <DesautorizarBono Admin = { Admin }  BonoData = { BonoSelected } onClose = { () => setDesaprobar(false) } />
+                    </Modal>
                 </div>
             ) : Admin.cargo === 'Gerencia' ?  (
-                <div className="w-full h-full flex flex-col px-4 xl:px-96 pb-16 bg-gray-800 justify-start items-start justify-items-center gap-2">
-                    <input 
-                        type="text" 
-                        placeholder='Buscar...' 
-                        className='w-full h-[45px] px-4 py-2 mt-4 focus:outline-none bg-gray-600 text-white placeholder-white' 
-                        onChange={(e) => FiltrarAutorizados(e.target.value.toLowerCase())}
-                    /> 
+                <div className="w-full h-full flex flex-col px-4 xl:px-96 pb-16 bg-gray-800 justify-start items-start justify-items-center gap-2"> 
+                    <Search SearchEvent = {  (e) =>  FiltrarAutorizados(e.target.value.toLowerCase()) } />
                     {
                         BonosAutorizar ? BonosAutorizar.map((Bonos) => (
                             <div 
@@ -258,15 +266,24 @@ const Pendientes = ({Bonos, Auth, Admin }) => {
                             </div>
                         )) : null
                     }
+                    <Modal
+                        isVisible = { Editar }
+                        onClose   = { () => setEditar(false) }
+                        tittle    = {` Editando Hora Extra `}
+                    >
+                        <EditBonos BonoData = { BonoSelected } onClose = { () => setEditar(false) } />
+                    </Modal>
+                    <Modal
+                        isVisible = { Desaprobar }
+                        onClose   = { () => setDesaprobar(false) }
+                        tittle    = {` Detalles de des-autorizacion `}
+                    >
+                        <DesautorizarBono Admin = { Admin }  BonoData = { BonoSelected } onClose = { () => setDesaprobar(false) } />
+                    </Modal>
                 </div>
             ) : Admin.cargo === 'Gerente general' ?  (
-                <div className="w-full h-full flex flex-col px-4 xl:px-96 pb-16 bg-gray-800 justify-start items-start justify-items-center gap-2">
-                    <input 
-                        type="text" 
-                        placeholder='Buscar...' 
-                        className='w-full h-[45px] px-4 py-2 mt-4 focus:outline-none bg-gray-600 text-white placeholder-white' 
-                        onChange={(e) => FiltrarPenAut(e.target.value.toLowerCase())}
-                    /> 
+                <div className="w-full h-full flex flex-col px-4 xl:px-96 pb-16 bg-gray-800 justify-start items-start justify-items-center gap-2"> 
+                    <Search SearchEvent = {  (e) =>  FiltrarPenAut(e.target.value.toLowerCase()) } />
                     {
                         BonosPenAut ? BonosPenAut.map((Bonos) => (
                             <div 
@@ -319,6 +336,20 @@ const Pendientes = ({Bonos, Auth, Admin }) => {
                             </div>
                         )) : null
                     }
+                    <Modal
+                        isVisible = { Editar }
+                        onClose   = { () => setEditar(false) }
+                        tittle    = {` Editando Hora Extra `}
+                    >
+                        <EditBonos BonoData = { BonoSelected } onClose = { () => setEditar(false) } />
+                    </Modal>
+                    <Modal
+                        isVisible = { Desaprobar }
+                        onClose   = { () => setDesaprobar(false) }
+                        tittle    = {` Detalles de des-autorizacion `}
+                    >
+                        <DesautorizarBono Admin = { Admin }  BonoData = { BonoSelected } onClose = { () => setDesaprobar(false) } />
+                    </Modal>
                 </div>
             ) : null
         }

@@ -207,7 +207,7 @@ class ExcelController extends Controller
 
         if($cantidad_bono >= 1){
             for($i = 0; $i < $cantidad_bono; $i++){
-                $bonos = Bono::with('responsable') -> where([['estado','LIKE','Autorizado'],['fecha','>=',$Fecha_inicio],['fecha','<=',$Fecha_corte]])->get();
+                $bonos = Bono::with('responsable') -> where([['estado','LIKE','Autorizado'],['fecha_bono','>=',$Fecha_inicio],['fecha_bono','<=',$Fecha_corte]])->get();
                 $historyAproved = BonoHistory::with('responsable')->where([['state','LIKE','Aprobado'],['bono_id','LIKE',$bonos[$i]['bono_id']]])->get();
                 $historyAuth = BonoHistory::with('responsable')->where([['state','LIKE','Autorizado'],['bono_id','LIKE',$bonos[$i]['bono_id']]])->get();
                 $spreadsheet->getActiveSheet()->insertNewRowBefore($position, 1);  

@@ -127,6 +127,7 @@ export default function Dashboard({ Permisos, Horas, Bonos, status, error, cc, w
             >
                 <ConfiguracionPanel Auth = { false } cc = { cc } status = { status } error = { error }  onClose = { () => setModalShow(false) } />
             </Modal>
+            <Toaster richColors position='top-center'/>
         </main>
     )
 }

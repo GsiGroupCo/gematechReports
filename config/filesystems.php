@@ -70,7 +70,7 @@ return [
     */
 
     'links' => [
-        public_path('storage') => storage_path('app/public'),
+        base_path('../reports.gematech.co/storage') => storage_path('app/public'),
     ],
 
 ];
