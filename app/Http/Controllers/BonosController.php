@@ -126,7 +126,7 @@ class BonosController extends Controller
                     'ot_id'        => $ot,
                 ]);
             }else{
-                return redirect() -> route('dashboard',['cc' => $request -> cc]) -> with('error', 'Ya existe un reporte de Horas extra con esta fecha.');
+                return redirect() -> route('dashboard',['cc' => $request -> cc]) -> with('error', 'Ya existe un Bono registrado con esta fecha.');
             } 
             return redirect() -> route('dashboard',['cc' => $request -> cc]) -> with('status', 'Bono Registrado');
         } catch (\Throwable $th) {
