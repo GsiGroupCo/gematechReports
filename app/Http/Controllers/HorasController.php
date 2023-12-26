@@ -8,11 +8,14 @@ use App\Models\Empleado;
 use App\Models\HoraHistory;
 use App\Models\HorasExtra;
 
+use Illuminate\Support\Facades\Auth;
+
 class HorasController extends Controller
 {
     public function aprobada(Request $request)
     {         
         try {
+            $user = Auth::user();
             $exist = HorasExtra::where('horasextras_id', 'LIKE', $request -> horasextras_id)->get()->count();
             if($exist){
                 HorasExtra::where('horasextras_id', 'LIKE', $request -> horasextras_id) -> update([
@@ -21,7 +24,7 @@ class HorasController extends Controller
                 HoraHistory::create([
                     'horas_history_id' => uniqid(TRUE),
                     'horasextras_id'  => $request -> horasextras_id,
-                    'user_id'         => $request -> user_id,
+                    'user_id'         => $user -> user_id,
                     'state'           => 'Aprobado'
                 ]);
                 return redirect() -> route('home') -> with('status', 'Hora Aprobada');
@@ -33,9 +36,34 @@ class HorasController extends Controller
         }
     }
 
+    public function aprobada_all(){
+        try {
+            $user = Auth::user();
+            $exist = HorasExtra::where('estado', 'LIKE',`Pendiente`)-> count();
+            $Pendiente = HorasExtra::where('estado','LIKE','Pendiente')->get();
+            if($exist === 1){
+                HorasExtra::where('estado', 'LIKE',`Aprobado`) -> update([
+                    'estado' => 'Aprobado'
+                ]); 
+                for($i = 0; $i < $exist; $i++){
+                    HoraHistory::create([
+                        'bono_history_id' => uniqid(TRUE),
+                        'bono_id'         => $Pendiente[$i]['horasextras_id'],
+                        'user_id'         => $user -> user_id,
+                        'state'           => 'Aprobado'
+                    ]);
+                }
+            }            
+            return redirect() -> route('home') -> with('status', 'Horas Extras Aprobadas');
+        } catch (\Throwable $th) {
+            return redirect() -> route('home') -> with('error', 'Problema Aprobando Horas Extras');
+        }
+    }
+
     public function desaprobada(Request $request)
     {         
         try {
+            $user = Auth::user();
             $exist = HorasExtra::where('horasextras_id', 'LIKE', $request -> horasextras_id)->get()->count();
             if($exist){
                 HorasExtra::where('horasextras_id', 'LIKE', $request -> horasextras_id) -> update([
@@ -45,7 +73,7 @@ class HorasController extends Controller
                 HoraHistory::create([
                     'horas_history_id' => uniqid(TRUE),
                     'horasextras_id'  => $request -> horasextras_id,
-                    'user_id'         => $request -> user_id,
+                    'user_id'         => $user -> user_id,
                     'state'           => 'Desaprobado'
                 ]);
             }else{
@@ -56,10 +84,12 @@ class HorasController extends Controller
             return redirect() -> route('home') -> with('error', 'Problema desaprobando hora');
         }
     }
+    
 
     public function auth(Request $request)
     {       
         try {
+            $user = Auth::user();
             $exist = HorasExtra::where('horasextras_id', 'LIKE', $request -> horasextras_id)->get()->count();
             if($exist){
                 HorasExtra::where('horasextras_id', 'LIKE', $request -> horasextras_id) -> update([
@@ -68,7 +98,7 @@ class HorasController extends Controller
                 HoraHistory::create([
                     'horas_history_id' => uniqid(TRUE),
                     'horasextras_id'  => $request -> horasextras_id,
-                    'user_id'         => $request -> user_id,
+                    'user_id'         => $user -> user_id,
                     'state'           => 'Autorizado'
                 ]);
                 return redirect() -> route('home') -> with('status', 'Hora Autorizada');
@@ -83,6 +113,7 @@ class HorasController extends Controller
     public function desauth(Request $request)
     {        
         try {
+            $user = Auth::user();
             $exist =  HorasExtra::where('horasextras_id', 'LIKE', $request -> horasextras_id) -> count();
             if($exist > 0){
                 HorasExtra::where('horasextras_id', 'LIKE', $request -> horasextras_id) -> update([
@@ -92,7 +123,7 @@ class HorasController extends Controller
                 HoraHistory::create([
                     'horas_history_id' => uniqid(TRUE),
                     'horasextras_id'  => $request -> horasextras_id,
-                    'user_id'         => $request -> user_id,
+                    'user_id'         => $user -> user_id,
                     'state'           => 'Desautorizado'
                 ]);
                 return redirect() -> route('home') -> with('status', 'Hora desautorizada');
@@ -101,6 +132,30 @@ class HorasController extends Controller
             }
         } catch (\Throwable $th) {
             return redirect() -> route('home') -> with('status', 'Problema desautorizando hora');
+        }
+    }
+
+    public function auth_all(){
+        try {
+            $user = Auth::user();
+            $exist = HorasExtra::where('estado', 'LIKE',`Aprobado`)-> count();
+            $Aprobados = HorasExtra::where('estado','LIKE','Aprobado')->get();
+            if($exist === 1){
+                HorasExtra::where('estado', 'LIKE',`Aprobado`) -> update([
+                    'estado' => 'Autorizado'
+                ]); 
+                for($i = 0; $i < $exist; $i++){
+                    HoraHistory::create([
+                        'bono_history_id' => uniqid(TRUE),
+                        'bono_id'         => $Aprobados[$i]['horasextras_id'],
+                        'user_id'         => $user -> user_id,
+                        'state'           => 'Autorizado'
+                    ]);
+                }
+            }            
+            return redirect() -> route('home') -> with('status', 'Horas Extras Autorizadas');
+        } catch (\Throwable $th) {
+            return redirect() -> route('home') -> with('error', 'Problema Autorizado Horas Extras');
         }
     }
 

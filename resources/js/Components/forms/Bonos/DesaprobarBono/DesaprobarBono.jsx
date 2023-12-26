@@ -13,7 +13,6 @@ export default function DesaprobarBono({ BonoData, onClose, Admin }) {
     onSubmit: async (formValue) => {
       data.bono_id      = BonoData.bono_id
       data.descripcion  = formValue.detalles
-      data.user_id      = Admin.user_id
       post(`/bono/desaprobada`)
       onClose()
     }

@@ -23,13 +23,11 @@ const Pendientes = ({Bonos, Auth, Admin }) => {
  
     function AutorizarBono(bono_id){
         data.bono_id = bono_id
-        data.user_id = Admin.user_id
         post(`/bono/autorizacion`)
     }
 
     function AprobarBono(bono_id){
         data.bono_id = bono_id
-        data.user_id = Admin.user_id
         post(`/bono/aprobada`)
     }
     

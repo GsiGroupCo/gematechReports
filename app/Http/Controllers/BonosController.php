@@ -7,12 +7,16 @@ use Illuminate\Http\Request;
 use App\Models\Empleado;
 use App\Models\Bono;
 use App\Models\BonoHistory;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
+
 
 class BonosController extends Controller
 {
     public function aprobada(Request $request)
     {        
         try {
+            $user = Auth::user();
             $exist = Bono::where('bono_id', 'LIKE', $request -> bono_id) -> count(); 
             if($exist){
                 Bono::where('bono_id', 'LIKE', $request -> bono_id) -> update([
@@ -21,7 +25,7 @@ class BonosController extends Controller
                 BonoHistory::create([
                     'bono_history_id' => uniqid(TRUE),
                     'bono_id'         => $request -> bono_id,
-                    'user_id'         => $request -> user_id,
+                    'user_id'         => $user -> user_id,
                     'state'           => 'Aprobado'
                 ]);
                 return redirect() -> route('home') -> with('status', 'Bono Aprobado');
@@ -33,9 +37,34 @@ class BonosController extends Controller
         }
     }
 
+    public function aprobe_all(){
+        try {
+            $user = Auth::user();
+            $exist = Bono::where('estado', 'LIKE',`Pendiente`)-> count();
+            $pendientes = Bono::where('estado','LIKE','Pendiente')->get();
+            if($exist === 1){
+                Bono::where('estado', 'LIKE',`Pendiente`) -> update([
+                    'estado' => 'Aprobado'
+                ]); 
+                for($i = 0; $i < $exist; $i++){
+                    BonoHistory::create([
+                        'bono_history_id' => uniqid(TRUE),
+                        'bono_id'         => $pendientes[$i]['bono_id'],
+                        'user_id'         => $user -> user_id,
+                        'state'           => 'Aprobado'
+                    ]);
+                }
+            }            
+            return redirect() -> route('home') -> with('status', 'Bonos Aprobados');
+        } catch (\Throwable $th) {
+            return redirect() -> route('home') -> with('error', 'Problema Aprobando Bonos');
+        }
+    }
+
     public function desaprobada(Request $request)
     {        
         try {
+            $user = Auth::user();
             $exist = Bono::where('bono_id', 'LIKE', $request -> bono_id)->count();
             if($exist){
                 Bono::where('bono_id', 'LIKE', $request -> bono_id) -> update([
@@ -45,7 +74,7 @@ class BonosController extends Controller
                 BonoHistory::create([
                     'bono_history_id' => uniqid(TRUE),
                     'bono_id'         => $request -> bono_id,
-                    'user_id'         => $request -> user_id,
+                    'user_id'         => $user -> user_id,
                     'state'           => 'Desaprobado'
                 ]);
                 return redirect() -> route('home') -> with('status', 'Bono desaprobado');
@@ -60,6 +89,7 @@ class BonosController extends Controller
     public function auth(Request $request)
     {        
         try { 
+            $user = Auth::user();
             $exist = Bono::where('bono_id', 'LIKE', $request -> bono_id)->count();
             if($exist){
                 Bono::where('bono_id', 'LIKE', $request -> bono_id) -> update([
@@ -68,7 +98,7 @@ class BonosController extends Controller
                 BonoHistory::create([
                     'bono_history_id' => uniqid(TRUE),
                     'bono_id'         => $request -> bono_id,
-                    'user_id'         => $request -> user_id,
+                    'user_id'         => $user -> user_id,
                     'state'           => 'Autorizado'
                 ]);
                 return redirect() -> route('home') -> with('status', 'Bono Autorizado');
@@ -80,9 +110,34 @@ class BonosController extends Controller
         }
     } 
 
+    public function auth_all(){
+        try {
+            $user = Auth::user();
+            $exist = Bono::where('estado', 'LIKE',`Aprobado`)-> count();
+            $Aprobados = Bono::where('estado','LIKE','Aprobado')->get();
+            if($exist === 1){
+                Bono::where('estado', 'LIKE',`Aprobado`) -> update([
+                    'estado' => 'Autorizado'
+                ]); 
+                for($i = 0; $i < $exist; $i++){
+                    BonoHistory::create([
+                        'bono_history_id' => uniqid(TRUE),
+                        'bono_id'         => $Aprobados[$i]['bono_id'],
+                        'user_id'         => $user -> user_id,
+                        'state'           => 'Autorizado'
+                    ]);
+                }
+            }            
+            return redirect() -> route('home') -> with('status', 'Bonos Autorizados');
+        } catch (\Throwable $th) {
+            return redirect() -> route('home') -> with('error', 'Problema Autorizado Bonos');
+        }
+    }
+
     public function desauth(Request $request)
     {        
         try {
+            $user = Auth::user();
             $exist = Bono::where('bono_id','LIKE', $request -> bono_id) -> count();
             if($exist>0){
                 Bono::where('bono_id', 'LIKE', $request -> bono_id) -> update([
@@ -92,7 +147,7 @@ class BonosController extends Controller
                 BonoHistory::create([
                     'bono_history_id' => uniqid(TRUE),
                     'bono_id'         => $request -> bono_id,
-                    'user_id'         => $request -> user_id,
+                    'user_id'         => $user -> user_id,
                     'state'           => 'Desautorizado'
                 ]);
                 return redirect() -> route('home') -> with('status', 'Bono desautorizado');
@@ -107,31 +162,36 @@ class BonosController extends Controller
     public function store(Request $request)
     {   
         try {
-            $empleado = Empleado::where('cc','LIKE',$request -> cc) -> get();
-            $ot = $request -> tipe.$request -> Ot; 
-            $exist = Bono::where([
-                ['fecha_bono', 'LIKE', $request->Fecha],
-                ['empleado_id', 'LIKE', $empleado[0]['empleado_id']]
-            ])->exists();
-            if(!$exist){ 
-                Bono::create([
-                    'bono_id'      => uniqid(TRUE),
-                    'empleado_id'  => $empleado[0]['empleado_id'],
-                    'lugar_bono'   => $request -> Lugar,
-                    'fecha_bono'   => $request -> Fecha,
-                    'cliente'      => $request -> Cliente,
-                    'estado'       => 'Pendiente',
-                    'detalles'     => 'SIN NOVEDAD',
-                    'observaciones'=> $request -> observaciones,
-                    'ot_id'        => $ot,
-                ]);
-            }else{
-                return redirect() -> route('dashboard',['cc' => $request -> cc]) -> with('error', 'Ya existe un Bono registrado con esta fecha.');
-            } 
-            return redirect() -> route('dashboard',['cc' => $request -> cc]) -> with('status', 'Bono Registrado');
+            $empleado = Empleado::where('cc', 'LIKE', $request->cc)->first();
+            $ot = $request->tipe . $request->Ot;
+            $fechaInicial = Carbon::parse($request->FechaInicial);
+            $fechaFinal = Carbon::parse($request->FechaFinal);
+            $diferenciaDias = $fechaFinal->diffInDays($fechaInicial);
+        
+            for ($i = 0; $i <= $diferenciaDias; $i++) {
+                $exist = Bono::where('fecha_bono', $fechaInicial->copy()->addDays($i)->toDateString())
+                    ->where('empleado_id', $empleado->empleado_id)
+                    ->exists();
+        
+                if (!$exist) {
+                    Bono::create([
+                        'bono_id'       => uniqid(true),
+                        'empleado_id'   => $empleado->empleado_id,
+                        'lugar_bono'    => $request->Lugar,
+                        'fecha_bono'    => $fechaInicial->copy()->addDays($i)->toDateString(),
+                        'cliente'       => $request->Cliente,
+                        'estado'        => 'Pendiente',
+                        'detalles'      => 'SIN NOVEDAD',
+                        'observaciones' => $request->observaciones,
+                        'ot_id'         => $ot,
+                    ]);
+                }
+
+            }
+        
+            return redirect()->route('dashboard', ['cc' => $request->cc])->with('status', 'Bonos Registrados');
         } catch (\Throwable $th) {
-            dd($th);
-            return redirect() -> route('dashboard',['cc' => $request -> cc]) -> with('error', 'Problema  Registrado');
+            return redirect()->route('dashboard', ['cc' => $request->cc])->with('error', 'Problema Registrado Bonos');
         }
     }
 

@@ -13,7 +13,6 @@ export default function DesautorizarHora({ HoraData, Admin, onClose }) {
     onSubmit: async (formValue) => {
       data.horasextras_id  = HoraData.horasextras_id
       data.descripcion     = formValue.detalles
-      data.user_id         = Admin.user_id
       post(`/horas/desautorizacion`)
       onClose()
     }

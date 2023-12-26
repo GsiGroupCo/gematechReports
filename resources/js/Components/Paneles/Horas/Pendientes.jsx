@@ -54,14 +54,12 @@ import Search from "@/Components/UI/Search";
     }
 
     function AutorizarHora(horasextras_id){ 
-        data.horasextras_id = horasextras_id 
-        data.user_id = Admin.user_id 
+        data.horasextras_id = horasextras_id
         post(`/horas/autorizacion`)
     }
  
     function AprobarHora(horasextras_id){
         data.horasextras_id = horasextras_id
-        data.user_id = Admin.user_id 
         post(`/horas/aprobada`)
     }
     
@@ -152,7 +150,12 @@ import Search from "@/Components/UI/Search";
             {
                 Admin.cargo === 'Coordinador de MTTO' ? (
                     <div className="w-full h-full flex flex-col px-4 xl:px-96 pb-16 bg-gray-800 justify-start items-start justify-items-center gap-2"> 
-                        <Search SearchEvent = { (e) =>  FiltroPendientes(e.target.value.toLowerCase()) } />
+                        <div className="w-full flex flex-col xl:flex-row gap-3">
+                            <Search SearchEvent = { (e) =>  FiltroPendientes(e.target.value.toLowerCase()) } />
+                            <a href="/horas/aprobe/all" className="whitespace-nowrap w-auto h-[45px] grid place-content-center px-4 py-2 xl:mt-4 focus:outline-none bg-gray-600 hover:bg-green-500 cursor-pointer transition duration-700 hover:font-semibold text-white placeholder-white">
+                                Aprobar todo
+                            </a>
+                        </div> 
                         {
                             HorasPendientes  ?   HorasPendientes.map((horasExtras) => (
                                 <div 
@@ -221,8 +224,13 @@ import Search from "@/Components/UI/Search";
                         </Modal>
                     </div>
                 )  : Admin.cargo === 'Logistica' ? (
-                    <div className="w-full h-full flex flex-col px-4 xl:px-96 pb-16 bg-gray-800 justify-start items-start justify-items-center gap-2"> 
-                        <Search SearchEvent = { (e) =>  FiltroAutorizar(e.target.value.toLowerCase()) } />
+                    <div className="w-full h-full flex flex-col px-4 xl:px-96 pb-16 bg-gray-800 justify-start items-start justify-items-center gap-2">  
+                        <div className="w-full flex flex-col xl:flex-row gap-3">
+                            <Search SearchEvent = { (e) =>  FiltroAutorizar(e.target.value.toLowerCase()) } />
+                            <a href="/horas/auth/all" className="whitespace-nowrap w-auto h-[45px] grid place-content-center px-4 py-2 xl:mt-4 focus:outline-none bg-gray-600 hover:bg-green-500 cursor-pointer transition duration-700 hover:font-semibold text-white placeholder-white">
+                                Autorizar todo
+                            </a>
+                        </div> 
                         {
                             HorasAutorizar  ?   HorasAutorizar.map((horasExtras) => (
                                 <div 
@@ -291,8 +299,13 @@ import Search from "@/Components/UI/Search";
                         </Modal> 
                     </div>
                 ) : Admin.cargo === 'Gerente general' ? (
-                    <div className="w-full h-full flex flex-col px-4 xl:px-96 pb-16 bg-gray-800 justify-start items-start justify-items-center gap-2"> 
-                        <Search SearchEvent = { (e) =>  FiltroHoras(e.target.value.toLowerCase()) } />
+                    <div className="w-full h-full flex flex-col px-4 xl:px-96 pb-16 bg-gray-800 justify-start items-start justify-items-center gap-2">  
+                        <div className="w-full flex flex-col xl:flex-row gap-3">
+                            <Search SearchEvent = { (e) =>  FiltroHoras(e.target.value.toLowerCase()) } />
+                            <a href="/horas/auth/all" className="whitespace-nowrap w-auto h-[45px] grid place-content-center px-4 py-2 xl:mt-4 focus:outline-none bg-gray-600 hover:bg-green-500 cursor-pointer transition duration-700 hover:font-semibold text-white placeholder-white">
+                                Autorizar todo
+                            </a>
+                        </div> 
                         {
                             HorasFiltradas  ?   HorasFiltradas.map((horasExtras) => (
                                 <div 

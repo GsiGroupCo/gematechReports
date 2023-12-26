@@ -34,9 +34,18 @@ class WorkerController extends Controller
         
         return Inertia::render('Dashboard',[
             'cc'       => $cc,  
-            'Permisos' => permisos::with('Responsable')->where('empleado_id','LIKE', $empleados_id[0]['empleado_id']) -> get(), 
-            'Horas'    => HorasExtra::with('Responsable')->where('empleado_id','LIKE', $empleados_id[0]['empleado_id']) -> get(), 
-            'Bonos'    => Bono::with('Responsable')->where('empleado_id','LIKE', $empleados_id[0]['empleado_id']) -> get(),
+            'Permisos' => permisos::with('Responsable')
+                ->where('empleado_id', 'LIKE', $empleados_id[0]['empleado_id'])
+                ->orderBy('fecha_inicio', 'desc')
+                ->get(),
+            'Horas'    => HorasExtra::with('Responsable')
+                ->where('empleado_id', 'LIKE', $empleados_id[0]['empleado_id'])
+                ->orderBy('fecha', 'desc')
+                ->get(),
+            'Bonos'    => Bono::with('Responsable')
+                ->where('empleado_id', 'LIKE', $empleados_id[0]['empleado_id'])
+                ->orderBy('fecha_bono', 'desc')
+                ->get(),
             'status'   => session('status'),
             'welcome'  => session('welcome'),
             'error'    => session('error'),

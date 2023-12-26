@@ -9,6 +9,7 @@ use App\Models\permisos;
 use App\Models\PermisosHistory;
 
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 use Intervention\Image\Facades\Image; 
 
 class PermisosController extends Controller
@@ -99,6 +100,7 @@ class PermisosController extends Controller
     public function aprobe(Request $request)
     {        
         try {
+            $user = Auth::user();
             $exist = permisos::where('permiso_id', 'LIKE', $request -> permiso_id) -> count(); 
             if($exist === 1){
                 permisos::where('permiso_id', 'LIKE', $request -> permiso_id) -> update([
@@ -107,13 +109,38 @@ class PermisosController extends Controller
                 PermisosHistory::create([
                     'permisos_history_id' => uniqid(TRUE),
                     'permiso_id'          => $request -> permiso_id,
-                    'user_id'             => $request -> user_id,
+                    'user_id'             => $user -> user_id,
                     'state'               => 'Aprobado'
                 ]);
                 return redirect() -> route('home') -> with('status', 'Permiso Aprobado');
             }else{
                 return redirect() -> route('home') -> with('status', 'Permiso No encontrado');
             }
+        } catch (\Throwable $th) {
+            return redirect() -> route('home') -> with('error', 'Problema Aprobando Permiso');
+        }
+    }
+
+
+    public function aprobe_all(){
+        try {
+            $user = Auth::user();
+            $exist = permisos::where('estado', 'LIKE',`Pendiente`)-> count();
+            $pendientes = permisos::where('estado','LIKE','Pendiente')->get();
+            if($exist === 1){
+                permisos::where('estado', 'LIKE',`Pendiente`) -> update([
+                    'estado' => 'Aprobado'
+                ]); 
+                for($i = 0; $i < $exist; $i++){
+                    PermisosHistory::create([
+                        'permisos_history_id' => uniqid(TRUE),
+                        'permiso_id'          => $pendientes[$i]['permiso_id'],
+                        'user_id'             => $user -> user_id,
+                        'state'               => 'Aprobado'
+                    ]);
+                }
+            }            
+            return redirect() -> route('home') -> with('status', 'Permiso Aprobado');
         } catch (\Throwable $th) {
             return redirect() -> route('home') -> with('error', 'Problema Aprobando Permiso');
         }

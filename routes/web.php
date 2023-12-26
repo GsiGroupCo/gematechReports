@@ -48,10 +48,11 @@ Route::controller(HorasController::class) -> group(function () {
 });
 
 Route::controller(PermisosController::class) -> group(function () {
-    Route::post('/permisos/store','store')          -> name ('permiso.store')     -> middleware('auth');
-    Route::patch('/permisos/update','update')       -> name ('permiso.update')    -> middleware('auth');
-    Route::patch('/permisos/aprobe','aprobe')       -> name ('permiso.disaprobe') -> middleware('auth');
-    Route::patch('/permisos/disaprobe','disaprobe') -> name ('permiso.aprobe')    -> middleware('auth');
+    Route::post('/permisos/store','store')            -> name ('permiso.store')     -> middleware('auth');
+    Route::patch('/permisos/update','update')         -> name ('permiso.update')    -> middleware('auth');
+    Route::patch('/permisos/aprobe','aprobe')         -> name ('permiso.disaprobe') -> middleware('auth');
+    Route::patch('/permisos/disaprobe','disaprobe')   -> name ('permiso.aprobe')    -> middleware('auth');
+    Route::patch('/permisos/aprobe/all','aprobe_all') -> name ('permiso.aprobeall') -> middleware('auth');
 }); 
 
 Route::controller(AnexosController::class) -> group(function () {

@@ -11,37 +11,31 @@ import { useEffect, useState } from 'react'
 import { Toaster, toast } from 'sonner'
 import PanelPermisos from '@/Components/Paneles/Permisos/PanelPermisos'
 
-export default function Dashboard({ Permisos, Horas, Bonos, status, error, cc, welcome}) {
+export default function Dashboard({ Permisos, Horas, Bonos, status, error, cc }) {
 
     useEffect(() => {
         if(status){ 
             toast.success(status)
         }
-        if(welcome){ 
-            toast.success(welcome)
-        }
         if(error){ 
-            toast.success(error)
+            toast.error(error)
         }
-    }, [ status, error])
-
+    }, [ status, error ])
+    
     const [DefaultPanel, setDefaultPanel]   = useState(true)
     const [HorasPanel, setHorasPanel]       = useState(false)
     const [BonosPanel, setBonosPanel]       = useState(false)
     const [PermisosPanel, setPermisosPanel] = useState(false)
     const [ModalShow, setModalShow]         = useState(false)
 
-
     function ChangeToHoras(){
         if(HorasPanel){
             setHorasPanel(false)
             setBonosPanel(false)
-            setPermisosPanel(false)
-            setDefaultPanel(true)
+            setPermisosPanel(false) 
         }else{
             setBonosPanel(false)
-            setPermisosPanel(false)
-            setDefaultPanel(false)
+            setPermisosPanel(false) 
             setHorasPanel(true)
         }
     }
@@ -99,17 +93,7 @@ export default function Dashboard({ Permisos, Horas, Bonos, status, error, cc, w
                     </div>
                 </div>
             </Appbar>
-            <div className={`w-full h-full flex flex-col justify-start items-center justify-items-center  `} >
-                {
-                    DefaultPanel ? 
-                    <div className='w-full h-full bg-gray-800 flex flex-col justify-center items-center'>
-                        <CursorIcon color="#fff" width={`70`} height={`70`} />
-                        <span className='text-white font-semibold'> Por favor selecciona una opcion </span>
-                        <span className='text-white font-semibold'> Horas Extras </span>
-                        <span className='text-white font-semibold'> Bonos </span>
-                        <span className='text-white font-semibold'> Permisos </span>
-                    </div> : null
-                }
+            <div className={`w-full h-full flex flex-col justify-start items-center justify-items-center  `} > 
                 {
                     HorasPanel ? <PanelHoras HorasExtras = { Horas } Auth = { false } /> : null
                 }

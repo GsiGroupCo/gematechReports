@@ -15,7 +15,8 @@ export default function RegisterBonos({ cc, onClose }) {
     onSubmit: async (formValue) => {
       data.cc            = cc
       data.observaciones = formValue.observaciones.toUpperCase()
-      data.Fecha         = formValue.Fecha
+      data.FechaInicial  = formValue.FechaInicial
+      data.FechaFinal    = formValue.FechaFinal
       data.Cliente       = formValue.Cliente.toUpperCase()
       data.Lugar         = formValue.Lugar.toUpperCase()
       data.Ot            = formValue.Ot
@@ -52,21 +53,38 @@ export default function RegisterBonos({ cc, onClose }) {
         className="w-full flex flex-col justify-center items-start justify-items-center px-4 py-4 gap-2 bg-gray-800"
         method="POST"
       >
-        <label htmlFor="Fecha" className='font-bold text-white'>
-          Fecha de Bono
+        <label htmlFor="FechaInicial" className='font-bold text-white'>
+          Fecha de Inicio de Bono
         </label>
         <input
           type="date" 
-          name="Fecha" 
-          id="Fecha" 
+          name="FechaInicial" 
+          id="FechaInicial" 
           min={minDate}
-          max={maxDate}
-          value = { formik.values.Fecha } 
+          max={currentDate}
+          value = { formik.values.FechaInicial } 
           onChange = { formik.handleChange } 
-          className = {`w-full h-auto px-4 py-2 rounded-md focus:outline-none border border-black ${ formik.touched.Fecha && formik.errors.Fecha ? 'border-red-500' : 'border-black' }`} />
+          className = {`w-full h-auto px-4 py-2 rounded-md focus:outline-none border border-black ${ formik.touched.FechaInicial && formik.errors.FechaInicial ? 'border-red-500' : 'border-black' }`} />
         {
-          formik.touched.Fecha && formik.errors.Fecha && (
-            <div className="text-red-500 font-bold">{formik.errors.Fecha}</div>
+          formik.touched.FechaInicial && formik.errors.FechaInicial && (
+            <div className="text-red-500 font-bold">{formik.errors.FechaInicial}</div>
+          )
+        }
+        <label htmlFor="FechaFinal" className='font-bold text-white'>
+          Fecha de terminacion de Bonos
+        </label>
+        <input
+          type="date" 
+          name="FechaFinal" 
+          id="FechaFinal" 
+          min={minDate}
+          max={currentDate}
+          value = { formik.values.FechaFinal } 
+          onChange = { formik.handleChange } 
+          className = {`w-full h-auto px-4 py-2 rounded-md focus:outline-none border border-black ${ formik.touched.FechaFinal && formik.errors.FechaFinal ? 'border-red-500' : 'border-black' }`} />
+        {
+          formik.touched.FechaFinal && formik.errors.FechaFinal && (
+            <div className="text-red-500 font-bold">{formik.errors.FechaFinal}</div>
           )
         }
         <label htmlFor="Lugar" className='font-bold text-white'>

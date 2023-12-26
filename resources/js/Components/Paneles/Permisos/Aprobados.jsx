@@ -176,7 +176,7 @@ export default function Aprobados({ Permisos, Auth }) {
                 tittle = { DocumentosSeleccionado.nombre_documento } 
               > 
                 <div className='w-full  md:w-[750px] h-[600px] '>
-                  <embed src={`https://reports.gematech.co/storage/${DocumentosSeleccionado.url}`} type="application/pdf" className='w-full h-full' />
+                  <embed src={`https://reports.gematech.co/storage/Permisos/${DocumentosSeleccionado.permiso_id}/${DocumentosSeleccionado.url}`} type="application/pdf" className='w-full h-full' />
                 </div>
               </Modal> 
             </div>
