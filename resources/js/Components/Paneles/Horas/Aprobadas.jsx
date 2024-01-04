@@ -34,7 +34,7 @@ const Aprobadas = ({ HorasExtras, Auth }) => {
 
   return (
     <div className="w-full h-full flex flex-col px-4 xl:px-96 pb-16 bg-gray-800 justify-start items-start justify-items-center gap-2"> 
-      <Search SearchEvent = { (e) =>  filterData(e.target.value.toLowerCase()) } />
+      <Search SearchEvent = { (e) => filterData(e) } />
       {
         datosFiltrados 
         ?  

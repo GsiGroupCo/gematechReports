@@ -140,8 +140,8 @@ const Pendientes = ({Bonos, Auth, Admin }) => {
     <>
         {
             Admin.cargo === 'Coordinador de MTTO' ? (
-                <div className="w-full h-full flex flex-col px-4 xl:px-96 pb-16 bg-gray-800 justify-start items-start justify-items-center gap-2">
-                    <Search SearchEvent = { (e) =>  FiltrarPendientes(e.target.value.toLowerCase()) } />
+                <div className="w-full h-full flex flex-col px-4 xl:px-96 pb-16 bg-gray-800 justify-start items-start justify-items-center gap-2"> 
+                    <Search SearchEvent = { (e) => FiltrarPendientes(e) } />
                     {
                         BonosPendientes  ?   BonosPendientes.map((Bonos) => (
                             <div 
@@ -210,8 +210,8 @@ const Pendientes = ({Bonos, Auth, Admin }) => {
                     </Modal>
                 </div>
             ) : Admin.cargo === 'Gerencia' ?  (
-                <div className="w-full h-full flex flex-col px-4 xl:px-96 pb-16 bg-gray-800 justify-start items-start justify-items-center gap-2"> 
-                    <Search SearchEvent = {  (e) =>  FiltrarAutorizados(e.target.value.toLowerCase()) } />
+                <div className="w-full h-full flex flex-col px-4 xl:px-96 pb-16 bg-gray-800 justify-start items-start justify-items-center gap-2">  
+                    <Search SearchEvent = { (e) => FiltrarAutorizados(e) } />
                     {
                         BonosAutorizar ? BonosAutorizar.map((Bonos) => (
                             <div 
@@ -280,8 +280,8 @@ const Pendientes = ({Bonos, Auth, Admin }) => {
                     </Modal>
                 </div>
             ) : Admin.cargo === 'Gerente general' ?  (
-                <div className="w-full h-full flex flex-col px-4 xl:px-96 pb-16 bg-gray-800 justify-start items-start justify-items-center gap-2"> 
-                    <Search SearchEvent = {  (e) =>  FiltrarPenAut(e.target.value.toLowerCase()) } />
+                <div className="w-full h-full flex flex-col px-4 xl:px-96 pb-16 bg-gray-800 justify-start items-start justify-items-center gap-2">  
+                    <Search SearchEvent = { (e) => FiltrarPenAut(e) } />
                     {
                         BonosPenAut ? BonosPenAut.map((Bonos) => (
                             <div 

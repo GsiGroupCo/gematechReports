@@ -150,8 +150,8 @@ import Search from "@/Components/UI/Search";
             {
                 Admin.cargo === 'Coordinador de MTTO' ? (
                     <div className="w-full h-full flex flex-col px-4 xl:px-96 pb-16 bg-gray-800 justify-start items-start justify-items-center gap-2"> 
-                        <div className="w-full flex flex-col xl:flex-row gap-3">
-                            <Search SearchEvent = { (e) =>  FiltroPendientes(e.target.value.toLowerCase()) } />
+                        <div className="w-full flex flex-col xl:flex-row gap-3"> 
+                            <Search SearchEvent = { (e) => FiltroPendientes(e) } />
                             <a href="/horas/aprobe/all" className="whitespace-nowrap w-auto h-[45px] grid place-content-center px-4 py-2 xl:mt-4 focus:outline-none bg-gray-600 hover:bg-green-500 cursor-pointer transition duration-700 hover:font-semibold text-white placeholder-white">
                                 Aprobar todo
                             </a>
@@ -225,8 +225,8 @@ import Search from "@/Components/UI/Search";
                     </div>
                 )  : Admin.cargo === 'Logistica' ? (
                     <div className="w-full h-full flex flex-col px-4 xl:px-96 pb-16 bg-gray-800 justify-start items-start justify-items-center gap-2">  
-                        <div className="w-full flex flex-col xl:flex-row gap-3">
-                            <Search SearchEvent = { (e) =>  FiltroAutorizar(e.target.value.toLowerCase()) } />
+                        <div className="w-full flex flex-col xl:flex-row gap-3"> 
+                            <Search SearchEvent = { (e) => FiltroAutorizar(e) } />
                             <a href="/horas/auth/all" className="whitespace-nowrap w-auto h-[45px] grid place-content-center px-4 py-2 xl:mt-4 focus:outline-none bg-gray-600 hover:bg-green-500 cursor-pointer transition duration-700 hover:font-semibold text-white placeholder-white">
                                 Autorizar todo
                             </a>
@@ -300,8 +300,8 @@ import Search from "@/Components/UI/Search";
                     </div>
                 ) : Admin.cargo === 'Gerente general' ? (
                     <div className="w-full h-full flex flex-col px-4 xl:px-96 pb-16 bg-gray-800 justify-start items-start justify-items-center gap-2">  
-                        <div className="w-full flex flex-col xl:flex-row gap-3">
-                            <Search SearchEvent = { (e) =>  FiltroHoras(e.target.value.toLowerCase()) } />
+                        <div className="w-full flex flex-col xl:flex-row gap-3"> 
+                            <Search SearchEvent = { (e) => FiltroHoras(e) } />
                             <a href="/horas/auth/all" className="whitespace-nowrap w-auto h-[45px] grid place-content-center px-4 py-2 xl:mt-4 focus:outline-none bg-gray-600 hover:bg-green-500 cursor-pointer transition duration-700 hover:font-semibold text-white placeholder-white">
                                 Autorizar todo
                             </a>

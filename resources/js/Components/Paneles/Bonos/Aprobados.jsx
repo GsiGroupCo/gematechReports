@@ -33,7 +33,7 @@ const Aprobadas = ({Bonos, Auth}) => {
 
   return (
     <div className="w-full h-full flex flex-col px-4 xl:px-96 pb-16 justify-start bg-gray-800 items-start justify-items-center gap-2"> 
-      <Search SearchEvent = { (e) => filterData(e.target.value.toLowerCase()) } />
+      <Search SearchEvent = { (e) => filterData(e) } />
       {
         datosFiltrados  ?  
           datosFiltrados.map((Bonos) => (

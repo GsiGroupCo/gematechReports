@@ -103,14 +103,14 @@ export default function Aprobados({ Permisos, Auth }) {
   };
 
   return (
-    <div className="w-full h-full flex flex-col px-4 xl:px-96 pb-16 justify-start bg-gray-800 items-start justify-items-center gap-2">  
-      <Search SearchEvent = { (e) =>  filterData(e.target.value.toLowerCase()) } />
+    <div className="w-full h-full flex flex-col px-4 xl:px-96 pb-16 justify-start bg-gray-800 items-start justify-items-center gap-2"> 
+      <Search SearchEvent = { (e) => filterData(e) } />
       {
         PermisosFiltrados 
         ?  
           PermisosFiltrados.map((permisos) => (
             <div 
-              key={permisos.permiso_id}
+              key = {permisos.permiso_id}
               className='w-full h-auto border-b-2  cursor-pointer gap-3 pb-2 flex flex-col justify-center items-start justify-items-center bg-white rounded-sm shadow-sm shadow-black'
             >
               <div className={` ${ permisos.estado === 'Pendiente' ? 'bg-red-500 text-white font-bold' : permisos.estado === 'Aprobado' ? 'bg-green-500 text-white font-bold' : 'bg-yellow-500 text-black font-bold' } w-full h-auto px-4 py-2 rounded-sm `}>

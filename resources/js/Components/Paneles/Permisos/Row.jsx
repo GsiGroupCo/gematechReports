@@ -58,7 +58,9 @@ export const PermisoRow = ({ Permisos, Auth }) => {
     return (
         <>
             <div className='w-full h-auto bg-gray-200 gap-2 flex justify-evenly items-center justify-items-center p-2 '> 
-                <Search SearchEvent = { (e) =>  filterData(e.target.value.toLowerCase()) } />
+                <Search SearchEvent={(e) => { 
+                    filterData(e)
+                }} />
             </div>
             <div  className=' hidden w-full h-auto border-b-2  cursor-pointer md:flex flex-col md:flex-row justify-center items-center justify-items-center bg-white'>
                 <div className='w-full py-4 md:w-full h-full flex flex-col md:flex-row text-center justify-center items-center justify-items-center bg-[#323c7c] text-white'>

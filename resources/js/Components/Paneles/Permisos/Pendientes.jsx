@@ -179,7 +179,7 @@ import Search from "@/Components/UI/Search";
         {
             Admin.cargo === 'Gerente general' ? (
                 <div className="w-full h-full flex flex-col px-4 xl:px-96 pb-16 bg-gray-800 justify-start items-start justify-items-center gap-2"> 
-                    <Search SearchEvent = { (e) =>  FiltroPermisosP(e.target.value.toLowerCase()) } />
+                    <Search SearchEvent = { (e) => FiltroPermisosP(e) } />
                  {
                     PermisosPFiltrados ? 
                         PermisosPFiltrados.map((permisos) => (
@@ -287,7 +287,7 @@ import Search from "@/Components/UI/Search";
               </div>
             ) : Admin.cargo === 'HSEQ / GESTION DE TALENTO HUMANO' || Admin.cargo === 'AUX PERMISOS' ? (
                 <div className="w-full h-full flex flex-col px-4 xl:px-96 pb-16 bg-gray-800 justify-start items-start justify-items-center gap-2"> 
-                    <Search SearchEvent = { (e) =>  FiltroPermisosP(e.target.value.toLowerCase()) } />
+                    <Search SearchEvent = { (e) => FiltroPermisosP(e) } />
                     {
                         PermisosPFiltrados ? 
                             PermisosPFiltrados.map((permisos) => (
